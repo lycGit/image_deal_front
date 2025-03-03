@@ -59,7 +59,7 @@
               class="nav-subitem" 
               :class="{ active: isActive }"
               @click="navigate"
-            >AI段图</div>
+            >AI抠图</div>
           </router-link>
         </div>
 
