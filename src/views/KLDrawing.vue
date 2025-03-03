@@ -54,6 +54,36 @@
         开始生成
       </button>
     </div>
+    
+    <!-- 添加右侧展示区域 -->
+    <div class="right-panel">
+      <div class="top-bar">
+        <div class="status-text">没有更多了</div>
+        <div class="actions">
+          <button class="action-button">案例</button>
+          <button class="action-button">我的作品</button>
+          <button class="action-button">收藏</button>
+        </div>
+      </div>
+      
+      <div class="gallery">
+        <div class="image-group">
+          <div class="group-title">
+            <i class="copy-icon"></i>
+            一只熊猫在写书法
+          </div>
+          <div class="image-container">
+            <div class="image-wrapper">
+              <img src="path-to-panda-image" alt="熊猫书法" />
+              <div class="image-actions">
+                <button class="image-action">垫图</button>
+                <button class="image-action">生成视频</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -105,9 +135,22 @@ const handleFile = (file) => {
   reader.readAsDataURL(file)
 }
 
+// 添加生成记录数组
+const generatedItems = ref([])
+
 const handleGenerate = () => {
   if (!canGenerate.value) return
-  // TODO: 实现生成逻辑
+  
+  // 添加新的生成记录
+  generatedItems.value.unshift({
+    id: Date.now(),
+    prompt: prompt.value,
+    image: 'https://picsum.photos/400/400', // 临时使用随机图片
+    timestamp: new Date().toLocaleString()
+  })
+
+  // 清空输入
+  prompt.value = ''
 }
 </script>
 
@@ -259,4 +302,69 @@ textarea:focus {
 .hidden {
   display: none;
 }
+
+.right-panel {
+  flex: 1;
+  height: 100vh;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.gallery {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.image-group {
+  min-height: calc(33.333vh - 20px);
+  background-color: #2a2c34;
+  border-radius: 12px;
+  overflow: hidden;
+  animation: fadeIn 0.3s ease-in-out;  /* 添加动画效果 */
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.group-title {
+  padding: 16px;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 1px solid #40444b;
+}
+
+.copy-icon {
+  width: 16px;
+  height: 16px;
+  background-color: #8e9297;
+  border-radius: 2px;
+}
+
+.image-container {
+  padding: 16px;
+  display: flex;
+  justify-content: center;
+}
+
+.image-wrapper {
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+  width: 50%;  /* 修改为50% */
+  max-width: 400px;  /* 修改最大宽度 */
+  margin: 0 auto;
+}
+
+.image-wrapper img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* 移除不需要的 .image-grid 相关样式 */
 </style>
