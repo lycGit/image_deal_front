@@ -5,23 +5,29 @@
       <!-- 生成的图片展示区域 -->
       <div class="scrollable-content">
         <div class="image-display" v-if="generatedImages.length > 0">
-          <div class="image-grid">
-            <div 
-              v-for="(image, index) in generatedImages" 
-              :key="index"
-              class="image-item"
-            >
-              <img :src="image.url" :alt="'生成图片 ' + (index + 1)" />
-              <div class="image-actions">
-                <button class="action-button">
-                  <i class="fas fa-download"></i>
-                </button>
-                <button class="action-button">
-                  <i class="fas fa-heart"></i>
-                </button>
-                <button class="action-button">
-                  <i class="fas fa-share"></i>
-                </button>
+          <div class="message-group" v-for="(image, index) in generatedImages" :key="index">
+            <div class="message-header">
+              <div class="bot-info">
+                <img src="/bot-avatar.png" alt="Bot Avatar" class="bot-avatar" />
+                <span class="bot-name">Midjourney Bot</span>
+                <span class="message-time">{{ formatTime(image.timestamp) }}</span>
+              </div>
+              <div class="prompt-text">{{ image.prompt }}</div>
+            </div>
+            <div class="image-grid">
+              <div class="image-item">
+                <img :src="image.url" :alt="'生成图片 ' + (index + 1)" />
+                <div class="image-actions">
+                  <button class="action-button">
+                    <i class="fas fa-download"></i>
+                  </button>
+                  <button class="action-button">
+                    <i class="fas fa-heart"></i>
+                  </button>
+                  <button class="action-button">
+                    <i class="fas fa-share"></i>
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -93,18 +99,19 @@ const handleEnter = () => {
   handleSubmit()
 }
 
+const formatTime = (timestamp) => {
+  const date = new Date(timestamp)
+  return `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日 ${date.getHours()}:${String(date.getMinutes()).padStart(2, '0')}`
+}
+
 const handleSubmit = () => {
   if (!prompt.value.trim()) return
   
-  // TODO: 调用 API 生成图片
-  console.log('提交:', {
-    prompt: prompt.value
-  })
-
   // 模拟生成图片
   generatedImages.value.push({
     url: 'https://picsum.photos/400/400',
-    timestamp: Date.now()
+    timestamp: Date.now(),
+    prompt: prompt.value // 添加提示词
   })
 }
 </script>
@@ -183,5 +190,66 @@ const handleSubmit = () => {
   flex: 1;
   overflow-y: auto;
   padding: 20px 20px 140px 20px;
+}
+
+.message-group {
+  margin-bottom: 32px;
+  background-color: #1e1f22;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.message-header {
+  padding: 16px;
+}
+
+.bot-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.bot-avatar {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+}
+
+.bot-name {
+  color: #ffffff;
+  font-weight: 500;
+}
+
+.message-time {
+  color: #8e9297;
+  font-size: 12px;
+}
+
+.prompt-text {
+  color: #dcddde;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.image-grid {
+  padding: 0 16px 16px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);  /* 修改为4列 */
+  gap: 12px;  /* 减小间距 */
+}
+
+.image-item {
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+  aspect-ratio: 1;  /* 添加宽高比 */
+}
+
+.image-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 </style>
