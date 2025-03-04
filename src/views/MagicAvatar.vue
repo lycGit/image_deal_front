@@ -1,498 +1,333 @@
 <template>
-  <div class="view-container">
-    <div class="content">
-      <!-- 上传区域 -->
-      <div class="upload-section">
-        <div class="upload-area" @click="triggerUpload" @dragover.prevent @drop="handleDrop">
-          <input type="file" ref="fileInput" class="hidden" @change="handleFileChange" accept="image/*" />
-          <div class="upload-content" v-if="!sourceImage">
-            <i class="fas fa-cloud-upload-alt"></i>
-            <p>点击或拖拽上传照片</p>
-            <span class="upload-tip">支持 jpg、png 格式，推荐尺寸 512x512</span>
-          </div>
-          <img v-else :src="sourceImage" class="preview-image" alt="原始照片" />
+  <div class="magic-avatar">
+    <div class="header">泡咖AI魔法头像</div>
+    
+    <!-- 第一步：上传图片 -->
+    <div class="section">
+      <div class="section-title">第一步：上传您的头像(可选)</div>
+      <div class="upload-area" @click="triggerUpload" @dragover.prevent @drop="handleDrop">
+        <input type="file" ref="fileInput" class="hidden" @change="handleFileChange" accept="image/*" />
+        <div class="upload-content" v-if="!uploadedImage">
+          <div class="upload-icon">+</div>
+          <div class="upload-text">拖拽/粘贴图片到此处</div>
+        </div>
+        <img v-else :src="uploadedImage" class="preview-image" alt="上传的图片" />
+      </div>
+      
+      <!-- 相似度滑块 -->
+      <div class="slider-container">
+        <div class="slider-label">相似度：</div>
+        <input 
+          type="range" 
+          v-model="similarity" 
+          min="0" 
+          max="1" 
+          step="0.1" 
+          class="slider"
+        />
+        <div class="slider-value">{{ similarity }}</div>
+      </div>
+    </div>
+
+    <!-- 第二步：提示词 -->
+    <div class="section">
+      <div class="section-title">第二步：增加提示词</div>
+      <div class="prompt-input">
+        <input 
+          type="text" 
+          v-model="prompt"
+          placeholder="请输入AI提示词,支持中文。"
+        />
+      </div>
+      <div class="quick-prompts">
+        <button 
+          v-for="(prompt, index) in quickPrompts" 
+          :key="index"
+          class="prompt-tag"
+          @click="selectQuickPrompt(prompt)"
+        >
+          {{ prompt }}
+        </button>
+      </div>
+    </div>
+
+    <!-- 第三步：选择风格 -->
+    <div class="section">
+      <div class="section-title">第三步：选择头像风格</div>
+      <div class="style-grid">
+        <div 
+          v-for="style in styles" 
+          :key="style.id"
+          class="style-card"
+          :class="{ active: selectedStyle === style.id }"
+          @click="selectStyle(style.id)"
+        >
+          <img :src="style.preview" :alt="style.name" />
+          <div class="style-name">{{ style.name }}</div>
         </div>
       </div>
+    </div>
 
-      <!-- 风格选择区域 -->
-      <div class="style-section" v-if="sourceImage">
-        <h3>选择生成风格</h3>
-        <div class="style-grid">
-          <div 
-            v-for="style in styles" 
-            :key="style.id"
-            class="style-item"
-            :class="{ active: selectedStyle === style.id }"
-            @click="selectStyle(style.id)"
-          >
-            <img :src="style.preview" :alt="style.name" />
-            <div class="style-info">
-              <span class="style-name">{{ style.name }}</span>
-              <span class="style-desc">{{ style.description }}</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- 生成按钮 -->
-        <div class="action-bar">
-          <button class="reset-button" @click="resetUpload">
-            <i class="fas fa-undo"></i>
-            重新上传
-          </button>
-          <button 
-            class="generate-button" 
-            :disabled="isLoading || !canGenerate"
-            @click="handleGenerate"
-          >
-            <i class="fas fa-magic"></i>
-            开始生成
-          </button>
-        </div>
-      </div>
-
-      <!-- 生成结果展示区域 -->
-      <div class="result-section" v-if="generatedAvatars.length > 0">
-        <h3>生成结果</h3>
-        <div class="avatar-grid">
-          <div 
-            v-for="(avatar, index) in generatedAvatars" 
-            :key="index"
-            class="avatar-item"
-          >
-            <img :src="avatar.url" :alt="'生成头像 ' + (index + 1)" />
-            <div class="avatar-actions">
-              <button class="action-button" @click="handleDownload(avatar)">
-                <i class="fas fa-download"></i>
-              </button>
-              <button 
-                class="action-button" 
-                :class="{ 'active': avatar.isLiked }"
-                @click="handleLike(avatar)"
-              >
-                <i class="fas fa-heart"></i>
-              </button>
-              <button class="action-button" @click="handleShare(avatar)">
-                <i class="fas fa-share"></i>
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- 加载状态 -->
-      <div class="loading-state" v-if="isLoading">
-        <div class="loading-spinner">
-          <i class="fas fa-spinner fa-spin"></i>
-        </div>
-        <p>正在生成魔法头像...</p>
-      </div>
+    <!-- 底部状态和生成按钮 -->
+    <div class="footer">
+      <div class="status">当前为放松模式，生成需2算力</div>
+      <button class="generate-button" @click="handleGenerate">
+        开始AI生成
+      </button>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref } from 'vue'
 
-// 响应式状态
-const sourceImage = ref(null)
-const selectedStyle = ref(null)
-const generatedAvatars = ref([])
-const isLoading = ref(false)
+const uploadedImage = ref(null)
 const fileInput = ref(null)
+const similarity = ref(0.5)
+const prompt = ref('')
+const selectedStyle = ref('')
 
-// 风格数据
-const styles = [
-  {
-    id: 'anime',
-    name: '二次元动漫',
-    description: '将照片转换为动漫风格头像',
-    preview: 'https://www.baidu.com/img/PCtm_d9c8750bed0b3c7d089fa7d55720d6cf.png'
-  },
-  {
-    id: 'realistic',
-    name: '写实风格',
-    description: '保持真实感的艺术头像',
-    preview: 'https://www.baidu.com/img/PCtm_d9c8750bed0b3c7d089fa7d55720d6cf.png'
-  },
-  {
-    id: 'cartoon',
-    name: '卡通风格',
-    description: '可爱有趣的卡通头像',
-    preview: 'https://www.baidu.com/img/PCtm_d9c8750bed0b3c7d089fa7d55720d6cf.png'
-  },
-  {
-    id: 'oil',
-    name: '油画风格',
-    description: '富有艺术感的油画头像',
-    preview: 'https://www.baidu.com/img/PCtm_d9c8750bed0b3c7d089fa7d55720d6cf.png'
-  },
-  {
-    id: 'sketch',
-    name: '素描风格',
-    description: '黑白素描艺术头像',
-    preview: 'https://www.baidu.com/img/PCtm_d9c8750bed0b3c7d089fa7d55720d6cf.png'
-  },
-  {
-    id: 'cyberpunk',
-    name: '赛博朋克',
-    description: '未来科技风格头像',
-    preview: 'https://www.baidu.com/img/PCtm_d9c8750bed0b3c7d089fa7d55720d6cf.png'
-  }
+const quickPrompts = [
+  '换一批',
+  '可爱女孩',
+  '漂亮女孩',
+  '阳光男孩',
+  '大叔'
 ]
 
-// 计算属性
-const canGenerate = computed(() => {
-  return sourceImage.value && selectedStyle.value
-})
+const styles = [
+  { id: 'japanese', name: '日系冷酷少女', preview: '/path-to-preview' },
+  { id: 'disney', name: '迪士尼3D', preview: '/path-to-preview' },
+  { id: 'punk', name: '皮克斯风格', preview: '/path-to-preview' },
+  { id: 'ink', name: '国风水墨', preview: '/path-to-preview' },
+  { id: 'girl', name: '国风少女', preview: '/path-to-preview' },
+  { id: 'cyberpunk', name: '赛博朋克', preview: '/path-to-preview' },
+  { id: '2d', name: '二次元', preview: '/path-to-preview' },
+  { id: 'romantic', name: '浪漫玛特霍恩', preview: '/path-to-preview' },
+  { id: 'special', name: '特摄霓虹风', preview: '/path-to-preview' },
+  { id: 'simple', name: '简笔艺术签书', preview: '/path-to-preview' }
+]
 
-// 方法
 const triggerUpload = () => {
   fileInput.value.click()
 }
 
 const handleFileChange = (event) => {
   const file = event.target.files[0]
-  if (file) {
-    handleFile(file)
-  }
+  if (file) handleFile(file)
 }
 
 const handleDrop = (event) => {
   event.preventDefault()
   const file = event.dataTransfer.files[0]
-  if (file) {
-    handleFile(file)
-  }
+  if (file) handleFile(file)
 }
 
 const handleFile = (file) => {
-  if (!file.type.startsWith('image/')) {
-    // TODO: 显示错误提示
-    return
-  }
-
+  if (!file.type.startsWith('image/')) return
   const reader = new FileReader()
   reader.onload = (e) => {
-    sourceImage.value = e.target.result
+    uploadedImage.value = e.target.result
   }
   reader.readAsDataURL(file)
+}
+
+const selectQuickPrompt = (selectedPrompt) => {
+  prompt.value = selectedPrompt
 }
 
 const selectStyle = (styleId) => {
   selectedStyle.value = styleId
 }
 
-const resetUpload = () => {
-  sourceImage.value = null
-  selectedStyle.value = null
-  fileInput.value.value = ''
-}
-
-const handleGenerate = async () => {
-  if (!canGenerate.value || isLoading.value) return
-  
-  isLoading.value = true
-  try {
-    // TODO: 调用实际的 API
-    await new Promise(resolve => setTimeout(resolve, 2000)) // 模拟 API 调用
-    
-    // 模拟生成多个头像
-    const newAvatars = Array(4).fill(null).map(() => ({
-      url: 'https://picsum.photos/300/300',
-      timestamp: Date.now(),
-      isLiked: false
-    }))
-    
-    generatedAvatars.value.push(...newAvatars)
-  } catch (error) {
-    console.error('生成头像失败:', error)
-    // TODO: 显示错误提示
-  } finally {
-    isLoading.value = false
-  }
-}
-
-const handleDownload = (avatar) => {
-  const link = document.createElement('a')
-  link.href = avatar.url
-  link.download = `magic-avatar-${avatar.timestamp}.jpg`
-  link.click()
-}
-
-const handleLike = (avatar) => {
-  avatar.isLiked = !avatar.isLiked
-  // TODO: 调用收藏 API
-}
-
-const handleShare = (avatar) => {
-  if (navigator.share) {
-    navigator.share({
-      title: '魔法头像',
-      text: '查看我用魔法头像生成的作品',
-      url: avatar.url
-    })
-  }
+const handleGenerate = () => {
+  // TODO: 实现生成逻辑
 }
 </script>
 
 <style scoped>
-.view-container {
-  padding: 20px;
-  height: 100%;
-  overflow-y: auto;
+.magic-avatar {
+  padding: 24px;
+  background-color: #1a1b1e;
+  color: #ffffff;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
 }
 
-.content {
-  max-width: 1200px;
-  margin: 0 auto;
-  position: relative;
+.header {
+  font-size: 24px;
+  color: #4776E6;
+  font-weight: 500;
 }
 
-.upload-section {
-  margin-bottom: 40px;
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.section-title {
+  font-size: 16px;
+  color: #8e9297;
 }
 
 .upload-area {
-  background-color: #1f2128;
-  border-radius: 12px;
-  padding: 40px;
-  text-align: center;
+  border: 2px dashed #40444b;
+  border-radius: 8px;
+  height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
-  border: 2px dashed #2a2c34;
-  transition: all 0.2s;
-  max-width: 400px;
-  margin: 0 auto;
+  transition: all 0.3s;
 }
 
 .upload-area:hover {
-  border-color: #2d65f2;
+  border-color: #4776E6;
 }
 
 .upload-content {
-  color: #8b8c91;
+  text-align: center;
 }
 
-.upload-content i {
-  font-size: 48px;
-  margin-bottom: 16px;
-}
-
-.upload-content p {
-  font-size: 16px;
-  margin: 0;
-}
-
-.upload-tip {
-  font-size: 12px;
-  margin-top: 8px;
-  display: block;
+.upload-icon {
+  font-size: 32px;
+  color: #8e9297;
+  margin-bottom: 8px;
 }
 
 .preview-image {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.slider-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.slider {
+  flex: 1;
+  height: 4px;
+  background: #40444b;
+  border-radius: 2px;
+  appearance: none;
+}
+
+.slider::-webkit-slider-thumb {
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  background: #4776E6;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.prompt-input {
   width: 100%;
-  max-width: 300px;
-  height: auto;
+  background: #2f3136;
   border-radius: 8px;
+  padding: 2px;
 }
 
-.style-section {
-  margin-bottom: 40px;
+.prompt-input input {
+  width: 100%;
+  height: 40px;
+  padding: 0 12px;
+  background: #2f3136;
+  border: 1px solid #40444b;
+  border-radius: 8px;
+  color: #ffffff;
+  font-size: 14px;
+  outline: none;
 }
 
-.style-section h3 {
-  font-size: 18px;
-  margin-bottom: 20px;
+.prompt-input input:focus {
+  border-color: #4776E6;
+  background: #373a40;
+}
+
+.prompt-input input::placeholder {
+  color: #8e9297;
+}
+
+.quick-prompts {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.prompt-tag {
+  padding: 6px 12px;
+  background: #2f3136;
+  border: 1px solid #40444b;
+  border-radius: 16px;
+  color: #ffffff;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.prompt-tag:hover {
+  border-color: #4776E6;
 }
 
 .style-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 20px;
-  margin-bottom: 30px;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 16px;
 }
 
-.style-item {
-  background-color: #1f2128;
-  border-radius: 12px;
+.style-card {
+  background: #2f3136;
+  border-radius: 8px;
   overflow: hidden;
   cursor: pointer;
-  transition: all 0.2s;
-  border: 2px solid transparent;
+  transition: all 0.3s;
 }
 
-.style-item:hover {
-  transform: translateY(-2px);
-}
-
-.style-item.active {
-  border-color: #2d65f2;
-}
-
-.style-item img {
+.style-card img {
   width: 100%;
   height: 150px;
   object-fit: cover;
 }
 
-.style-info {
-  padding: 12px;
+.style-card.active {
+  border: 2px solid #4776E6;
 }
 
 .style-name {
-  display: block;
+  padding: 8px;
+  text-align: center;
   font-size: 14px;
-  font-weight: 500;
-  margin-bottom: 4px;
 }
 
-.style-desc {
-  display: block;
-  font-size: 12px;
-  color: #8b8c91;
-}
-
-.action-bar {
+.footer {
+  margin-top: auto;
   display: flex;
-  justify-content: center;
-  gap: 16px;
-}
-
-.reset-button {
-  background: none;
-  border: 1px solid #2a2c34;
-  color: #ffffff;
-  padding: 0 24px;
-  height: 40px;
-  border-radius: 8px;
-  cursor: pointer;
-  display: flex;
+  justify-content: space-between;
   align-items: center;
-  gap: 8px;
-  transition: all 0.2s;
-  font-size: 14px;
+  padding-top: 24px;
 }
 
-.reset-button:hover {
-  background-color: #2a2c34;
+.status {
+  color: #8e9297;
 }
 
 .generate-button {
-  background-color: #2d65f2;
-  color: white;
+  padding: 12px 24px;
+  background: linear-gradient(90deg, #4776E6 0%, #8E54E9 100%);
   border: none;
-  padding: 0 24px;
-  height: 40px;
   border-radius: 8px;
+  color: #ffffff;
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  transition: all 0.2s;
-  font-size: 14px;
-}
-
-.generate-button:hover {
-  background-color: #1e54e7;
-}
-
-.generate-button:disabled {
-  background-color: #4a4b52;
-  cursor: not-allowed;
-}
-
-.result-section {
-  margin-top: 40px;
-}
-
-.result-section h3 {
-  font-size: 18px;
-  margin-bottom: 20px;
-}
-
-.avatar-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 20px;
-}
-
-.avatar-item {
-  background-color: #1f2128;
-  border-radius: 12px;
-  overflow: hidden;
-  position: relative;
-}
-
-.avatar-item img {
-  width: 100%;
-  aspect-ratio: 1;
-  object-fit: cover;
-  display: block;
-}
-
-.avatar-actions {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
-  padding: 20px;
-  display: flex;
-  gap: 10px;
-  justify-content: center;
-  opacity: 0;
-  transition: opacity 0.3s;
-}
-
-.avatar-item:hover .avatar-actions {
-  opacity: 1;
-}
-
-.action-button {
-  background-color: rgba(255, 255, 255, 0.2);
-  border: none;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  color: white;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s;
-}
-
-.action-button:hover {
-  background-color: rgba(255, 255, 255, 0.3);
-}
-
-.action-button.active {
-  background-color: #2d65f2;
-  color: white;
+  font-size: 16px;
 }
 
 .hidden {
   display: none;
 }
-
-.loading-state {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background-color: rgba(0, 0, 0, 0.8);
-  padding: 20px 40px;
-  border-radius: 12px;
-  text-align: center;
-  color: white;
-}
-
-.loading-spinner {
-  font-size: 32px;
-  margin-bottom: 12px;
-}
-
-.loading-state p {
-  font-size: 14px;
-  margin: 0;
-}
-</style> 
+</style>
