@@ -101,6 +101,45 @@
         开始AI换脸
       </button>
     </div>
+    <div class="right-panel">
+      <div class="result-card">
+        <!-- 卡片顶部 -->
+        <div class="card-header">
+          <div class="user-info">
+            <img src="/path-to-avatar" alt="" class="avatar" />
+            <span class="name">泡咖AI换脸</span>
+            <span class="time">2025/02/15 23:29</span>
+          </div>
+          <div class="header-actions">
+            <button class="action-btn">
+              <i class="icon">★</i>
+              收藏
+            </button>
+            <button class="action-btn">
+              <i class="icon">🗑</i>
+              删除
+            </button>
+          </div>
+        </div>
+
+        <!-- 卡片内容 -->
+        <div class="card-content">
+          <div class="source-images">
+            <div class="source-image">
+              <img v-if="templateImages[0]" :src="templateImages[0]" alt="模板图" />
+            </div>
+            <div class="plus-icon">+</div>
+            <div class="source-image">
+              <img v-if="faceImages[0]" :src="faceImages[0]" alt="人脸图" />
+            </div>
+          </div>
+          <div class="result-image">
+            <img v-if="resultImage" :src="resultImage" alt="结果图" />
+          </div>
+          <div class="status-text">生成成功！本次消耗4个算力</div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -328,5 +367,131 @@ const handleFaceUpload = (event) => {
 
 .hidden {
   display: none;
+}
+
+.right-panel {
+  flex: 1;
+  padding: 24px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  background: #1a1b1e;
+}
+
+.result-card {
+  width: 100%;
+  max-width: 800px;
+  background: #1e1f23;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  border-bottom: 1px solid #2f3136;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #2f3136;
+}
+
+.name {
+  font-weight: 500;
+}
+
+.time {
+  color: #8e9297;
+  font-size: 14px;
+}
+
+.header-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.action-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  background: #2f3136;
+  border: none;
+  color: #ffffff;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.action-btn:hover {
+  background: #40444b;
+}
+
+.card-content {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.source-images {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+
+.source-image {
+  width: 120px;
+  height: 120px;
+  background: #2f3136;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.source-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.plus-icon {
+  font-size: 24px;
+  color: #8e9297;
+}
+
+.result-image {
+  width: 100%;
+  height: 500px;
+  background: #2f3136;
+  border-radius: 8px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.result-image img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.status-text {
+  text-align: center;
+  color: #8e9297;
+  padding: 16px 0;
+  border-top: 1px solid #2f3136;
 }
 </style>
