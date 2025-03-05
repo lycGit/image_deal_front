@@ -86,6 +86,49 @@
         开始生成
       </button>
     </div>
+
+    <div class="right-panel">
+      <!-- 顶部操作栏 -->
+      <div class="top-actions">
+        <div class="left-actions">
+          <button class="action-btn">
+            <i class="icon">⬇️</i>
+          </button>
+        </div>
+        <div class="right-actions">
+          <button class="action-btn">案例</button>
+          <button class="action-btn">我的作品</button>
+          <button class="action-btn">收藏</button>
+        </div>
+      </div>
+
+      <!-- 视频预览区域 -->
+      <div class="video-preview">
+        <div class="video-placeholder">
+          <div class="placeholder-text">>Hello,Vidu!</div>
+          <div class="time-indicator">01:31</div>
+        </div>
+      </div>
+
+      <!-- 视频说明 -->
+      <div class="video-description">
+        <div class="description-icon">📝</div>
+        <div class="description-text">
+          Vidu是对标Sora新一代AI视频生成模型，具有高通真度、高一致性的特色，特别生成速度走行业领先，生成一段4s视频只需30秒，此外，Vidu还能生成影视级特效画面，如烟雾、炫光效果、CG特效等
+        </div>
+      </div>
+
+      <!-- 示例视频 -->
+      <div class="example-video">
+        <video class="video-thumbnail" poster="/path-to-poster">
+          <source src="/path-to-video" type="video/mp4">
+        </video>
+        <div class="video-duration">00:15</div>
+        <button class="download-btn">
+          <i class="icon">⬇️</i>
+        </button>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -284,5 +327,109 @@ textarea {
 
 .hidden {
   display: none;
+}
+
+.right-panel {
+  flex: 1;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  background: #1a1b1e;
+}
+
+.top-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.right-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.action-btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  background: #2f3136;
+  color: #ffffff;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.video-preview {
+  flex: 1;
+  background: #000000;
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+  min-height: 400px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.placeholder-text {
+  font-size: 48px;
+  color: #4776E6;
+  text-shadow: 0 0 10px rgba(71, 118, 230, 0.5);
+  margin-bottom: 12px;
+}
+
+.time-indicator {
+  color: #8e9297;
+  font-size: 14px;
+  text-align: center;
+}
+
+.video-description {
+  display: flex;
+  gap: 12px;
+  padding: 16px;
+  background: #2f3136;
+  border-radius: 8px;
+}
+
+.description-text {
+  color: #8e9297;
+  line-height: 1.6;
+}
+
+.example-video {
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #2f3136;
+}
+
+.video-thumbnail {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+
+.video-duration {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  padding: 4px 8px;
+  background: rgba(0, 0, 0, 0.7);
+  border-radius: 4px;
+  color: #ffffff;
+  font-size: 12px;
+}
+
+.download-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  padding: 8px;
+  border: none;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.7);
+  color: #ffffff;
+  cursor: pointer;
 }
 </style>
