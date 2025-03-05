@@ -172,6 +172,9 @@ const handleUpload = (event) => {
 }
 const videoUrl = ref(null)
 const videoPlayer = ref(null)
+
+// 添加风格选择
+const style = ref('realistic')
 </script>
 
 <style scoped>
