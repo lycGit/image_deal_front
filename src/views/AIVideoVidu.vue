@@ -104,7 +104,14 @@
 
       <!-- 视频预览区域 -->
       <div class="video-preview">
-        <div class="video-placeholder">
+        <video
+          v-if="videoUrl"
+          ref="videoPlayer"
+          class="video-player"
+          controls
+          :src="videoUrl"
+        ></video>
+        <div v-else class="video-placeholder">
           <div class="placeholder-text">>Hello,Vidu!</div>
           <div class="time-indicator">01:31</div>
         </div>
@@ -163,6 +170,8 @@ const handleUpload = (event) => {
     // 处理文件上传
   }
 }
+const videoUrl = ref(null)
+const videoPlayer = ref(null)
 </script>
 
 <style scoped>
@@ -369,6 +378,13 @@ textarea {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.video-player {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #000000;
 }
 
 .placeholder-text {
