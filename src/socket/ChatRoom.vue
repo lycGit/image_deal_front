@@ -125,13 +125,16 @@ export default {
   border-radius: 8px;
   padding: 16px;
   overflow-y: auto;
+  background: #ffffff;
 }
 
 .message {
   margin-bottom: 8px;
-  padding: 8px;
-  background: #f5f5f5;
+  padding: 8px 12px;
+  background: #e3f2fd;
   border-radius: 4px;
+  color: #333333;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .input-area {
