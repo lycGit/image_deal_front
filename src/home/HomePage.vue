@@ -124,6 +124,13 @@
               @click="navigate"
             >AI视频(Prka)</div>
           </router-link>
+          <router-link to="/chat-room" custom v-slot="{ navigate, isActive }">
+            <div 
+              class="nav-subitem" 
+              :class="{ active: isActive }"
+              @click="navigate"
+            >socket聊天室</div>
+          </router-link>
         </div>
       </div>
 

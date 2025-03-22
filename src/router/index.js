@@ -12,6 +12,7 @@ import AIDressing from '../views/AIDressing.vue'
 import AIVideoVidu from '../views/AIVideoVidu.vue'
 import AIVideoKL from '../views/AIVideoKL.vue'
 import AIVideoPrka from '../views/AIVideoPrka.vue'
+import ChatRoom from '@/socket/ChatRoom.vue'
 
 const routes = [
   {
@@ -78,6 +79,11 @@ const routes = [
     path: '/ai-video-prka',
     name: 'aiVideoPrka',
     component: AIVideoPrka
+  },
+  {
+    path: '/chat-room',
+    name: 'chatRoom',
+    component: ChatRoom
   }
 ]
 

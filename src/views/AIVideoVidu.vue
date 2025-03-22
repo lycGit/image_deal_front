@@ -55,36 +55,49 @@
         </div>
       </div>
 
-      <!-- 创意描述 -->
-      <div class="section">
-        <div class="section-title">创意描述</div>
-        <div class="textarea-box">
-          <textarea 
-            v-model="description" 
-            placeholder="请输入创意描述"
-            maxlength="500"
-          ></textarea>
-          <div class="word-count">{{ description.length }}/500</div>
-        </div>
-      </div>
-
-      <!-- 参数设置 -->
-      <div class="section">
-        <div class="section-title">参数设置</div>
-        <div class="param-item">
-          <span class="param-label">时长</span>
-          <div class="select-box">
-            <select v-model="duration">
-              <option value="4">4s</option>
-            </select>
+      <template v-if="currentSubTab === 'text'">
+        <!-- 创意描述 -->
+        <div class="section">
+          <div class="section-title">创意描述</div>
+          <div class="textarea-box">
+            <textarea 
+              v-model="description" 
+              placeholder="请输入创意描述"
+              maxlength="500"
+            ></textarea>
+            <div class="word-count">{{ description.length }}/500</div>
           </div>
         </div>
-      </div>
 
-      <!-- 生成按钮 -->
-      <button class="generate-button">
-        开始生成
-      </button>
+        <!-- 参数设置 -->
+        <div class="section">
+          <div class="section-title">参数设置</div>
+          <div class="param-item">
+            <span class="param-label">风格</span>
+            <div class="select-box">
+              <select v-model="style">
+                <option value="realistic">写实</option>
+              </select>
+            </div>
+          </div>
+          <div class="param-item">
+            <span class="param-label">时长</span>
+            <div class="select-box">
+              <select v-model="duration">
+                <option value="4">4s</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- 生成按钮 -->
+        <button class="generate-button">开始生成</button>
+      </template>
+
+      <!-- 图生视频的内容 -->
+      <template v-else>
+        <!-- 原有的上传图片等内容 -->
+      </template>
     </div>
 
     <div class="right-panel">
