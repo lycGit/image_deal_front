@@ -104,15 +104,37 @@ const formatTime = (timestamp) => {
   return `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日 ${date.getHours()}:${String(date.getMinutes()).padStart(2, '0')}`
 }
 
-const handleSubmit = () => {
+const handleSubmit = async () => {
+  console.log("prompt:--", prompt)
   if (!prompt.value.trim()) return
   
-  // 模拟生成图片
-  generatedImages.value.push({
-    url: 'https://picsum.photos/400/400',
-    timestamp: Date.now(),
-    prompt: prompt.value // 添加提示词
-  })
+  try {
+    const response = await fetch(`http://localhost:8091/api/createImage/${encodeURIComponent(prompt.value)}`, {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json'
+      }
+    })
+
+    if (!response.ok) {
+      console.log("网络请求失败")
+      throw new Error('网络请求失败')
+    }
+
+    const data = await response.json()
+    console.log("网络请求成功", data)
+    generatedImages.value.push({
+      url: data.imageUrl,        // 假设后端返回的图片URL字段为imageUrl
+      description: data.description, // 假设后端返回的描述字段为description
+      timestamp: Date.now(),
+      prompt: prompt.value
+    })
+
+    prompt.value = '' // 清空输入框
+  } catch (error) {
+    console.error('生成图片失败:', error)
+    // 这里可以添加错误提示
+  }
 }
 </script>
 
