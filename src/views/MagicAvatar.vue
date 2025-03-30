@@ -140,8 +140,51 @@ const selectStyle = (styleId) => {
   selectedStyle.value = styleId
 }
 
-const handleGenerate = () => {
-  // TODO: 实现生成逻辑
+const handleGenerate = async () => {
+  if (!uploadedImage.value) {
+    alert('请先上传图片')
+    return
+  }
+
+  try {
+    // 创建 FormData 对象
+    const formData = new FormData()
+    
+    // 将 base64 图片转换为 Blob
+    const base64Data = uploadedImage.value.split(',')[1]
+    const blob = await fetch(`data:image/jpeg;base64,${base64Data}`).then(res => res.blob())
+    formData.append('file', blob, 'avatar.jpg')
+    
+    // 添加其他参数
+    formData.append('description', prompt.value)
+    formData.append('category', 'MAGIC_AVATAR')
+    formData.append('tags', JSON.stringify({
+      style: selectedStyle.value,
+      similarity: similarity.value
+    }))
+
+    const response = await fetch('http://localhost:8091/api/files/upload', {
+      method: 'POST',
+      body: formData
+    })
+
+    if (!response.ok) {
+      throw new Error('上传失败')
+    }
+
+    const result = await response.text()
+    console.log('上传成功:', result)
+    
+    // 清空表单
+    uploadedImage.value = null
+    prompt.value = ''
+    selectedStyle.value = ''
+    similarity.value = 0.5
+
+  } catch (error) {
+    console.error('生成失败:', error)
+    alert('生成失败，请重试')
+  }
 }
 </script>
 
