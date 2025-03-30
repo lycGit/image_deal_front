@@ -111,37 +111,37 @@ const clothesStyles = [
     id: 'casual',
     name: '休闲风格',
     description: '舒适日常的休闲装扮',
-    preview: 'https://www.baidu.com/img/PCtm_d9c8750bed0b3c7d089fa7d55720d6cf.png'
+    preview: '/images/styles/casual.jpg'
   },
   {
     id: 'formal',
     name: '正装风格',
     description: '正式场合的商务装扮',
-    preview: 'https://www.baidu.com/img/PCtm_d9c8750bed0b3c7d089fa7d55720d6cf.png'
+    preview: '/images/styles/formal.jpg'
   },
   {
     id: 'fashion',
     name: '时尚风格',
     description: '潮流前卫的时尚装扮',
-    preview: 'https://www.baidu.com/img/PCtm_d9c8750bed0b3c7d089fa7d55720d6cf.png'
+    preview: '/images/styles/fashion.jpg'
   },
   {
     id: 'sport',
     name: '运动风格',
     description: '动感活力的运动装扮',
-    preview: 'https://www.baidu.com/img/PCtm_d9c8750bed0b3c7d089fa7d55720d6cf.png'
+    preview: '/images/styles/sport.jpg'
   },
   {
     id: 'traditional',
     name: '传统风格',
     description: '古典优雅的传统装扮',
-    preview: 'https://www.baidu.com/img/PCtm_d9c8750bed0b3c7d089fa7d55720d6cf.png'
+    preview: '/images/styles/traditional.jpg'
   },
   {
     id: 'street',
     name: '街头风格',
     description: '个性张扬的街头装扮',
-    preview: 'https://www.baidu.com/img/PCtm_d9c8750bed0b3c7d089fa7d55720d6cf.png'
+    preview: '/images/styles/street.jpg'
   }
 ]
 
@@ -200,14 +200,44 @@ const handleGenerate = async () => {
   
   isLoading.value = true
   try {
-    // TODO: 调用实际的换装 API
-    await new Promise(resolve => setTimeout(resolve, 2000)) // 模拟 API 调用
+    // 创建 FormData 对象
+    const formData = new FormData()
     
-    // 模拟生成结果
-    resultImage.value = personImage.value // 这里应该是 API 返回的换装结果
+    // 将人物图片转换为 Blob
+    const personBlob = await fetch(personImage.value).then(res => res.blob())
+    // 获取选中的风格图片并转换为 Blob
+    const styleData = clothesStyles.find(style => style.id === selectedStyle.value)
+    const styleBlob = await fetch(styleData.preview).then(res => res.blob())
+    
+    formData.append('file1', personBlob, 'person.jpg')
+    formData.append('file2', styleBlob, 'style.jpg')
+    
+    // 添加其他参数
+    formData.append('category', 'CLOTH_DRESSING')
+    formData.append('description', '智能换装')
+    formData.append('tags', JSON.stringify({
+      styleId: selectedStyle.value,
+      styleName: styleData.name
+    }))
+
+    const response = await fetch('http://localhost:8091/api/files/upload2image', {
+      method: 'POST',
+      body: formData
+    })
+
+    if (!response.ok) {
+      throw new Error('换装失败')
+    }
+
+    const result = await response.json()
+    console.log('换装成功:', result)
+    
+    // 更新结果图片
+    resultImage.value = result.imageUrl
+
   } catch (error) {
     console.error('换装失败:', error)
-    // TODO: 显示错误提示
+    alert('换装失败，请重试')
   } finally {
     isLoading.value = false
   }
@@ -507,4 +537,4 @@ const handleShare = () => {
 .hidden {
   display: none;
 }
-</style> 
+</style>
