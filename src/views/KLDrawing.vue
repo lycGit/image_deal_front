@@ -67,14 +67,14 @@
       </div>
       
       <div class="gallery">
-        <div class="image-group">
+        <div v-for="(item, index) in generatedItems" :key="index" class="image-group">
           <div class="group-title">
             <i class="copy-icon"></i>
-            一只熊猫在写书法
+            {{ item.description }}
           </div>
           <div class="image-container">
             <div class="image-wrapper">
-              <img src="path-to-panda-image" alt="熊猫书法" />
+              <img :src="item.url" :alt="item.description" />
               <div class="image-actions">
                 <button class="image-action">垫图</button>
                 <button class="image-action">生成视频</button>
@@ -138,19 +138,53 @@ const handleFile = (file) => {
 // 添加生成记录数组
 const generatedItems = ref([])
 
-const handleGenerate = () => {
+const handleGenerate = async () => {
   if (!canGenerate.value) return
   
-  // 添加新的生成记录
-  generatedItems.value.unshift({
-    id: Date.now(),
-    prompt: prompt.value,
-    image: 'https://picsum.photos/400/400', // 临时使用随机图片
-    timestamp: new Date().toLocaleString()
-  })
+  try {
+    // 创建 FormData 对象
+    const formData = new FormData()
+    let uploadedImageUrl = null
+    
+    // 如果有参考图片，添加到 formData
+    if (referenceImage.value) {
+      const base64Data = referenceImage.value.split(',')[1]
+      const blob = await fetch(`data:image/jpeg;base64,${base64Data}`).then(res => res.blob())
+      formData.append('file', blob, 'reference.jpg')
+      uploadedImageUrl = URL.createObjectURL(blob)
+    }
+    
+    // 添加其他参数
+    formData.append('description', prompt.value)
+    formData.append('category', 'KL_DRAWING')
+    formData.append('tags', selectedRatio.value)
 
-  // 清空输入
-  prompt.value = ''
+    const response = await fetch('http://localhost:8091/api/files/upload', {
+      method: 'POST',
+      body: formData
+    })
+
+    if (!response.ok) {
+      throw new Error('网络请求失败')
+    }
+
+    const result = await response.text()
+    console.log('上传成功:', result)
+
+    // 添加到生成记录
+    generatedItems.value.unshift({
+      url: uploadedImageUrl || '/placeholder-image.png', // 如果没有上传图片则使用占位图
+      description: prompt.value,
+      timestamp: Date.now()
+    })
+
+    // 清空输入
+    prompt.value = ''
+    referenceImage.value = null
+
+  } catch (error) {
+    console.error('生成失败:', error)
+  }
 }
 </script>
 
