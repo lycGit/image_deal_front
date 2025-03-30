@@ -109,12 +109,62 @@ const handleFile = (file) => {
   reader.readAsDataURL(file)
 }
 
-const startProcess = () => {
-  // TODO: 实现抠图处理逻辑
+const startProcess = async () => {
+  if (!originalImage.value) {
+    alert('请先上传图片')
+    return
+  }
+
+  try {
+    // 创建 FormData 对象
+    const formData = new FormData()
+    
+    // 将 base64 图片转换为 Blob
+    const base64Data = originalImage.value.split(',')[1]
+    const blob = await fetch(`data:image/jpeg;base64,${base64Data}`).then(res => res.blob())
+    formData.append('file', blob, 'image.jpg')
+    
+    // 添加其他参数
+    formData.append('category', 'AI_MATTING')
+    formData.append('description', '抠图处理')
+
+    const response = await fetch('http://localhost:8091/api/files/upload', {
+      method: 'POST',
+      body: formData
+    })
+
+    if (!response.ok) {
+      throw new Error('上传失败')
+    }
+
+    const result = await response.json()
+    console.log('处理成功:', result)
+    
+    // 显示处理后的图片
+    resultImage.value = result.imageUrl // 假设返回的数据中包含处理后的图片URL
+    
+    // 添加到处理记录
+    processedImages.value.unshift({
+      id: Date.now(),
+      url: result.imageUrl
+    })
+
+  } catch (error) {
+    console.error('处理失败:', error)
+    alert('处理失败，请重试')
+  }
 }
 
 const downloadResult = () => {
-  // TODO: 实现下载逻辑
+  if (!resultImage.value) return
+  
+  // 创建一个临时的a标签来下载图片
+  const link = document.createElement('a')
+  link.href = resultImage.value
+  link.download = `抠图结果_${Date.now()}.png`
+  document.body.appendChild(link)
+  link.click()
+  document.body.removeChild(link)
 }
 </script>
 
