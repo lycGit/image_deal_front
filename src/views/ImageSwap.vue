@@ -97,7 +97,7 @@
       <div class="disclaimer">本功能仅供学习娱乐，严禁上传非法照片和用于非法用途！</div>
 
       <!-- 生成按钮 -->
-      <button class="generate-button">
+      <button class="generate-button" @click="handleGenerate">
         开始AI换脸
       </button>
     </div>
@@ -166,11 +166,15 @@ const resolutions = [
 ]
 
 const triggerTemplateUpload = () => {
-  templateInput.value.click()
+  if (templateInput.value) {
+    templateInput.value.click()
+  }
 }
 
 const triggerFaceUpload = () => {
-  faceInput.value.click()
+  if (faceInput.value) {
+    faceInput.value.click()
+  }
 }
 
 const handleTemplateUpload = (event) => {
@@ -192,6 +196,55 @@ const handleFaceUpload = (event) => {
       faceImages.value = [e.target.result]
     }
     reader.readAsDataURL(file)
+  }
+}
+
+const resultImage = ref(null) // 添加结果图片的响应式变量
+
+// 添加生成按钮的处理函数
+const handleGenerate = async () => {
+  if (!templateImages.value[0] || !faceImages.value[0]) {
+    alert('请先上传模板图和人脸图')
+    return
+  }
+
+  try {
+    // 创建 FormData 对象
+    const formData = new FormData()
+    
+    // 将 base64 图片转换为 Blob 并添加到 FormData
+    const templateBlob = await fetch(templateImages.value[0]).then(res => res.blob())
+    const faceBlob = await fetch(faceImages.value[0]).then(res => res.blob())
+    
+    formData.append('file1', templateBlob, 'template.jpg')
+    formData.append('file2', faceBlob, 'face.jpg')
+    
+    // 添加其他参数
+    formData.append('category', 'FACE_SWAP')
+    formData.append('description', '人脸替换')
+    formData.append('tags', JSON.stringify({
+      resolution: selectedResolution.value,
+      faceIndex: selectedFaceIndex.value
+    }))
+
+    const response = await fetch('http://localhost:8091/api/files/upload2image', {
+      method: 'POST',
+      body: formData
+    })
+
+    if (!response.ok) {
+      throw new Error('换脸失败')
+    }
+
+    const result = await response.json()
+    console.log('换脸成功:', result)
+    
+    // 更新结果图片
+    resultImage.value = result.imageUrl
+
+  } catch (error) {
+    console.error('换脸失败:', error)
+    alert('换脸失败，请重试')
   }
 }
 </script>
@@ -493,5 +546,11 @@ const handleFaceUpload = (event) => {
   color: #8e9297;
   padding: 16px 0;
   border-top: 1px solid #2f3136;
+}
+
+/* 添加占位文本样式 */
+.placeholder-text {
+  color: #8e9297;
+  font-size: 14px;
 }
 </style>
