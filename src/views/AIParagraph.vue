@@ -128,7 +128,7 @@ const startProcess = async () => {
     formData.append('category', 'AI_MATTING')
     formData.append('description', '抠图处理')
 
-    const response = await fetch('http://localhost:8091/api/files/upload', {
+    const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/files/upload`, {
       method: 'POST',
       body: formData
     })
