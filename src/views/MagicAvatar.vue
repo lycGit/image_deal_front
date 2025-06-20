@@ -80,12 +80,15 @@
 
 <script setup>
 import { ref } from 'vue'
+import { getCurrentInstance } from 'vue';
 
 const uploadedImage = ref(null)
 const fileInput = ref(null)
 const similarity = ref(0.5)
 const prompt = ref('')
 const selectedStyle = ref('')
+const instance = getCurrentInstance();
+const baseUrl = instance?.appContext.config.globalProperties.$BASE_URL_8091 
 
 const quickPrompts = [
   '换一批',
@@ -163,7 +166,7 @@ const handleGenerate = async () => {
       similarity: similarity.value
     }))
 
-    const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/files/upload`, {
+    const response = await fetch(`${baseUrl}/api/files/upload`, {
       method: 'POST',
       body: formData
     })

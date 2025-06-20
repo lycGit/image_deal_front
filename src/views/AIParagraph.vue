@@ -76,6 +76,7 @@
 
 <script setup>
 import { ref, computed } from 'vue'
+import { getCurrentInstance } from 'vue';
 
 const fileInput = ref(null)
 const originalImage = ref(null)
@@ -83,6 +84,8 @@ const resultImage = ref(null)
 const processedImages = ref([])
 
 const canProcess = computed(() => !!originalImage.value)
+const instance = getCurrentInstance();
+const baseUrl = instance?.appContext.config.globalProperties.$BASE_URL_8091 
 
 const triggerUpload = () => {
   fileInput.value.click()
@@ -127,8 +130,8 @@ const startProcess = async () => {
     // 添加其他参数
     formData.append('category', 'AI_MATTING')
     formData.append('description', '抠图处理')
-
-    const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/files/upload`, {
+    const response = await fetch(`${baseUrl}/api/files/upload`, {
+      // const response = await fetch(`http://120.27.130.190:8091/api/files/upload`, {
       method: 'POST',
       body: formData
     })

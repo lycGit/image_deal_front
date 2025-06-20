@@ -145,6 +145,7 @@
 
 <script setup>
 import { ref } from 'vue'
+import { getCurrentInstance } from 'vue';
 
 const currentTab = ref('single')
 const templateInput = ref(null)
@@ -153,6 +154,8 @@ const templateImages = ref([])
 const faceImages = ref([])
 const selectedResolution = ref('normal')
 const selectedFaceIndex = ref('all')
+const instance = getCurrentInstance();
+const baseUrl = instance?.appContext.config.globalProperties.$BASE_URL_8091 
 
 const tabs = [
   { id: 'single', name: '图片换脸' },
@@ -227,7 +230,7 @@ const handleGenerate = async () => {
       faceIndex: selectedFaceIndex.value
     }))
 
-    const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/files/upload2image`, {
+    const response = await fetch(`${baseUrl}/api/files/upload2image`, {
       method: 'POST',
       body: formData
     })
