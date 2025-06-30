@@ -84,11 +84,14 @@
 
 <script setup>
 import { ref } from 'vue'
+import { getCurrentInstance } from 'vue';
 
 // 响应式状态
 const prompt = ref('')
 const generatedImages = ref([])
 const currentMode = ref('text')
+const instance = getCurrentInstance();
+const baseUrl = instance?.appContext.config.globalProperties.$BASE_URL_8091 
 
 // 方法
 const switchMode = (mode) => {
@@ -105,11 +108,11 @@ const formatTime = (timestamp) => {
 }
 
 const handleSubmit = async () => {
-  console.log("prompt:--", prompt)
+  console.log("prompt33:--", prompt)
   if (!prompt.value.trim()) return
   
   try {
-    const response = await fetch(`http://localhost:8091/api/createImage/${encodeURIComponent(prompt.value)}`, {
+    const response = await fetch(`${baseUrl}/api/createImage/${encodeURIComponent(prompt.value)}`, {
       method: 'GET',
       headers: {
         'Accept': 'application/json'
