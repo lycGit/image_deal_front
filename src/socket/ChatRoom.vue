@@ -35,7 +35,7 @@ export default {
     const inputMessage = ref('')
 
     const connect = () => {
-      ws.value = new WebSocket('ws://127.0.0.1:8092/webSocket')
+      ws.value = new WebSocket('ws://127.0.0.1:8092/webSocket/lyc2')
       
       ws.value.onopen = () => {
         isConnected.value = true
