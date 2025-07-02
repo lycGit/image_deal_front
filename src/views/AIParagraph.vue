@@ -75,8 +75,9 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { getCurrentInstance } from 'vue';
+import eventBus from '../eventBus'
 
 const fileInput = ref(null)
 const originalImage = ref(null)
@@ -90,6 +91,21 @@ const baseUrl = instance?.appContext.config.globalProperties.$BASE_URL_8091
 const triggerUpload = () => {
   fileInput.value.click()
 }
+
+const handleMessage = (data) => { 
+  console.log('收到 WebSocket 消息:', data) 
+  // 在这里处理收到的消息
+}
+
+onMounted(() => { 
+  console.log(' WebSocket onMounted') 
+  eventBus.on('websocket-message', handleMessage) 
+})
+
+onUnmounted(() => { 
+  console.log(' WebSocket onUnmounted') 
+  eventBus.off('websocket-message', handleMessage) 
+})
 
 const handleFileChange = (event) => {
   const file = event.target.files[0]
