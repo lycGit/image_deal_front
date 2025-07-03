@@ -93,8 +93,16 @@ const triggerUpload = () => {
 }
 
 const handleMessage = (data) => { 
-  console.log('收到 WebSocket 消息:', data) 
-  // 在这里处理收到的消息
+  console.log('收到 WebSocket 消息:', data)
+  try {
+  //  resultImage.value = "http://120.27.130.190:8091/api/files/download/12e927bc-7b6a-47c4-92a4-44d43c960bbf_tmptj_v5o71.png" 
+    const parsedData = JSON.parse(data)
+    if (parsedData.imageUrl) {
+      resultImage.value = parsedData.imageUrl
+    }
+  } catch (error) {
+    console.error('解析消息失败，数据不是有效的 JSON 字符串:', error)
+  }
 }
 
 onMounted(() => { 
