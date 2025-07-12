@@ -83,8 +83,9 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref , onMounted, onUnmounted } from 'vue'
 import { getCurrentInstance } from 'vue';
+import eventBus from '../eventBus'
 
 // 响应式状态
 const prompt = ref('')
@@ -126,12 +127,12 @@ const handleSubmit = async () => {
 
     const data = await response.json()
     console.log("网络请求成功", data)
-    generatedImages.value.push({
-      url: data.imageUrl,        // 假设后端返回的图片URL字段为imageUrl
-      description: data.description, // 假设后端返回的描述字段为description
-      timestamp: Date.now(),
-      prompt: prompt.value
-    })
+    // generatedImages.value.push({
+    //   url: data.imageUrl,        // 假设后端返回的图片URL字段为imageUrl
+    //   description: data.description, // 假设后端返回的描述字段为description
+    //   timestamp: Date.now(),
+    //   prompt: prompt.value
+    // })
 
     prompt.value = '' // 清空输入框
   } catch (error) {
@@ -139,6 +140,36 @@ const handleSubmit = async () => {
     // 这里可以添加错误提示
   }
 }
+
+const handleMessage = (data) => { 
+  console.log('MJDrawing 收到 WebSocket 消息:', data)
+  try {
+  //  resultImage.value = "http://120.27.130.190:8091/api/files/download/12e927bc-7b6a-47c4-92a4-44d43c960bbf_tmptj_v5o71.png" 
+    // const parsedData = JSON.parse(data)
+    // if (parsedData.imageUrl) {
+      generatedImages.value.push({
+      // url: data.imageUrl,        // 假设后端返回的图片URL字段为imageUrl
+      url:  "http://120.27.130.190:8091/api/files/download/12e927bc-7b6a-47c4-92a4-44d43c960bbf_tmptj_v5o71.png" ,     
+      description: data.description, // 假设后端返回的描述字段为description
+      timestamp: Date.now(),
+      prompt: prompt.value
+    })
+    // }
+  } catch (error) {
+    console.error('解析消息失败，数据不是有效的 JSON 字符串:', error)
+  }
+}
+
+onMounted(() => { 
+  console.log('MJDrawing onMounted') 
+  eventBus.on('websocket-message', handleMessage) 
+})
+
+onUnmounted(() => { 
+  console.log(' MJDrawing onUnmounted') 
+  eventBus.off('websocket-message', handleMessage) 
+})
+
 </script>
 
 <style scoped>

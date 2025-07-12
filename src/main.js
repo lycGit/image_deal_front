@@ -16,7 +16,8 @@ let pingInterval = null;
 const PING_INTERVAL = 30000; // 30 秒发送一次 ping
 
 const connectWebSocket = () => {
-  ws = new WebSocket('ws://127.0.0.1:8092/webSocket/lyc2');
+  // ws = new WebSocket('ws://127.0.0.1:8092/webSocket/lyc2');
+  ws = new WebSocket('ws://120.27.130.190:8092/webSocket/lyc2');
 
   ws.onopen = () => {
     console.log('WebSocket 连接成功');
@@ -31,6 +32,7 @@ const connectWebSocket = () => {
 
   ws.onmessage = (event) => {
     if (event.data["msg"] === 'pong') {
+      eventBus.emit('websocket-message', event.data);
       console.log('收到 pong 响应');
     } else {
       eventBus.emit('websocket-message', event.data);
