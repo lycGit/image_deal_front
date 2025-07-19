@@ -110,7 +110,11 @@ const formatTime = (timestamp) => {
 
 const handleSubmit = async () => {
   console.log("prompt33:--", prompt)
+
   if (!prompt.value.trim()) return
+
+    const message = JSON.stringify({'msg': prompt.value.trim(), 'userId': 'lyc2', 'targetUserId': 'user_py_llm', 'action': 'flux-midjourney-mix2-lora'});
+    eventBus.emit('websocket-MJDrawing', message);
   
   try {
     const response = await fetch(`${baseUrl}/api/createImage/${encodeURIComponent(prompt.value)}`, {
@@ -127,6 +131,7 @@ const handleSubmit = async () => {
 
     const data = await response.json()
     console.log("网络请求成功", data)
+
     // generatedImages.value.push({
     //   url: data.imageUrl,        // 假设后端返回的图片URL字段为imageUrl
     //   description: data.description, // 假设后端返回的描述字段为description

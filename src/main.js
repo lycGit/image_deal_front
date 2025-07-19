@@ -52,6 +52,18 @@ const connectWebSocket = () => {
   };
 };
 
+// 注册 eventBus 监听
+const handleMJDrawingMessage = (data) => {
+  console.log('main.js 收到 WebSocket 消息:', data);
+  ws.send(data);
+  // 这里可以添加更多的消息处理逻辑
+};
+
+// 添加监听器
+if (eventBus.on) {
+  eventBus.on('websocket-MJDrawing', handleMJDrawingMessage);
+}
+
 // 启动时连接 WebSocket
 connectWebSocket();
 
