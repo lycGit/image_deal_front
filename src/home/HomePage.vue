@@ -151,7 +151,7 @@
       <!-- Top Bar -->
       <div class="top-bar">
         <div class="right-buttons">
-          <button class="top-button">案例</button>
+          <button class="top-button" @click="openModal">输入口令</button>
           <button class="top-button">我的作品</button>
           <button class="top-button">收藏</button>
         </div>
@@ -160,11 +160,77 @@
       <!-- Router View -->
       <router-view></router-view>
     </div>
+    <!-- 口令输入弹窗 -->
+    <div class="password-modal" v-if="showPasswordModal">
+      <div class="modal-overlay" @click="closeModal"></div>
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>请输入口令</h3>
+          <button class="close-btn" @click="closeModal">&times;</button>
+        </div>
+        <div class="modal-body">
+          <input
+            type="password"
+            v-model="password"
+            placeholder="请输入口令"
+            class="password-input"
+          />
+          <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
+        </div>
+        <div class="modal-footer">
+          <button class="cancel-btn" @click="closeModal">取消</button>
+          <button class="confirm-btn" @click="verifyPassword">确认</button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup>
-// 移除未使用的导入和变量
+import { ref, onMounted } from 'vue';
+
+// 弹窗状态和口令相关变量
+const showPasswordModal = ref(false);
+const password = ref('');
+const errorMessage = ref('');
+const isAuthorized = ref(false);
+
+// 检查是否已经授权
+onMounted(() => {
+  const authorized = localStorage.getItem('isAuthorized');
+  if (authorized === 'true') {
+    isAuthorized.value = true;
+  }
+});
+
+// 打开弹窗
+const openModal = () => {
+  showPasswordModal.value = true;
+  password.value = '';
+  errorMessage.value = '';
+};
+
+// 关闭弹窗
+const closeModal = () => {
+  showPasswordModal.value = false;
+};
+
+// 验证口令
+const verifyPassword = () => {
+  // 这里可以设置正确的口令，这里示例设为 '123456'
+  if (password.value === '123456') {
+    // 验证成功
+    errorMessage.value = '';
+    isAuthorized.value = true;
+    localStorage.setItem('isAuthorized', 'true');
+    closeModal();
+    // 可以在这里添加授权成功后的逻辑
+    console.log('授权成功');
+  } else {
+    // 验证失败
+    errorMessage.value = '口令错误，请重新输入';
+  }
+};
 </script>
 
 <style scoped>
@@ -281,5 +347,95 @@
 .top-button:hover {
   background-color: rgba(255, 255, 255, 0.1);
   border-radius: 6px;
+}
+
+/* 弹窗样式 */
+.password-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+  position: relative;
+  background-color: #2a2c34;
+  border-radius: 8px;
+  width: 400px;
+  padding: 20px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.close-btn {
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.modal-body {
+  margin-bottom: 20px;
+}
+
+.password-input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #444;
+  border-radius: 4px;
+  background-color: #1f2128;
+  color: #ffffff;
+  margin-bottom: 10px;
+}
+
+.error-message {
+  color: #ff4d4f;
+  font-size: 14px;
+  margin: 0;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.cancel-btn,
+.confirm-btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.cancel-btn {
+  background-color: #444;
+  color: #ffffff;
+}
+
+.confirm-btn {
+  background-color: #2d65f2;
+  color: #ffffff;
 }
 </style>
