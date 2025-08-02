@@ -150,13 +150,13 @@ const handleMessage = (data) => {
   console.log('MJDrawing 收到 WebSocket 消息:', data)
   try {
       // 解析 JSON 字符串为对象
-    const parsedData = JSON.parse(data)
-    console.log('MJDrawing 收到 imageUrl:', parsedData.imageUrl)
+    // const parsedData = JSON.parse(data)
+    console.log('MJDrawing 收到 imageUrl:', data.imageUrl)
   //  resultImage.value = "http://120.27.130.190:8091/api/files/download/12e927bc-7b6a-47c4-92a4-44d43c960bbf_tmptj_v5o71.png" 
     // const parsedData = JSON.parse(data)
     // if (parsedData.imageUrl) {
       generatedImages.value.push({
-      url: parsedData.imageUrl,        // 假设后端返回的图片URL字段为imageUrl
+      url: data.imageUrl,        // 假设后端返回的图片URL字段为imageUrl
       // url:  "http://120.27.130.190:8091/api/files/download/12e927bc-7b6a-47c4-92a4-44d43c960bbf_tmptj_v5o71.png" ,     
       description: data.description, // 假设后端返回的描述字段为description
       timestamp: Date.now(),
