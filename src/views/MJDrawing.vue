@@ -63,7 +63,7 @@
             type="text" 
             v-model="prompt"
             placeholder="请输入MJ提示词,支持中文。当前为快速模式，生成8算力" 
-            @keyup.shift.enter="handleEnter"
+            @keyup.enter="handleEnter"
           />
           <div class="input-actions">
             <button class="action-icon">
@@ -84,15 +84,15 @@
 
 <script setup>
 import { ref , onMounted, onUnmounted } from 'vue'
-import { getCurrentInstance } from 'vue';
+// import { getCurrentInstance } from 'vue';
 import eventBus from '../eventBus'
 
 // 响应式状态
 const prompt = ref('')
 const generatedImages = ref([])
 const currentMode = ref('text')
-const instance = getCurrentInstance();
-const baseUrl = instance?.appContext.config.globalProperties.$BASE_URL_8091 
+// const instance = getCurrentInstance();
+// const baseUrl = instance?.appContext.config.globalProperties.$BASE_URL_8091 
 
 // 方法
 const switchMode = (mode) => {
@@ -111,39 +111,11 @@ const formatTime = (timestamp) => {
 const handleSubmit = async () => {
   console.log("prompt33:--", prompt)
 
-  if (!prompt.value.trim()) return
+    if (!prompt.value.trim()) return
 
     const message = JSON.stringify({'msg': prompt.value.trim(), 'userId': 'lyc2', 'targetUserId': 'user_py_llm', 'action': 'flux-midjourney-mix2-lora'});
     eventBus.emit('websocket-MJDrawing', message);
-  
-  try {
-    const response = await fetch(`${baseUrl}/api/createImage/${encodeURIComponent(prompt.value)}`, {
-      method: 'GET',
-      headers: {
-        'Accept': 'application/json'
-      }
-    })
-
-    if (!response.ok) {
-      console.log("网络请求失败")
-      throw new Error('网络请求失败')
-    }
-
-    const data = await response.json()
-    console.log("网络请求成功", data)
-
-    // generatedImages.value.push({
-    //   url: data.imageUrl,        // 假设后端返回的图片URL字段为imageUrl
-    //   description: data.description, // 假设后端返回的描述字段为description
-    //   timestamp: Date.now(),
-    //   prompt: prompt.value
-    // })
-
     prompt.value = '' // 清空输入框
-  } catch (error) {
-    console.error('生成图片失败:', error)
-    // 这里可以添加错误提示
-  }
 }
 
 const handleMessage = (data) => { 
