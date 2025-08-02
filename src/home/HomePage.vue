@@ -188,13 +188,15 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
-
+// import { getCurrentInstance } from 'vue';
 // 弹窗状态和口令相关变量
 const showPasswordModal = ref(false);
 const password = ref('');
 const errorMessage = ref('');
 const isAuthorized = ref(false);
-
+// const instance = getCurrentInstance();
+// const baseUrl = instance?.appContext.config.globalProperties.$BASE_URL_8091 
+const baseUrl = "http://localhost:8091";
 // 检查是否已经授权
 onMounted(() => {
   const authorized = localStorage.getItem('isAuthorized');
@@ -216,18 +218,37 @@ const closeModal = () => {
 };
 
 // 验证口令
-const verifyPassword = () => {
-  // 这里可以设置正确的口令，这里示例设为 '123456'
-  if (password.value === '123456') {
-    // 验证成功
-    errorMessage.value = '';
-    isAuthorized.value = true;
-    localStorage.setItem('isAuthorized', 'true');
-    closeModal();
-    // 可以在这里添加授权成功后的逻辑
-    console.log('授权成功');
-  } else {
-    // 验证失败
+const verifyPassword = async () => {
+  try {
+    const response = await fetch(`${baseUrl}/api/auth/${encodeURIComponent(password.value)}`, {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json'
+      }
+    })
+
+    if (!response.ok) {
+      console.log("网络请求失败")
+      throw new Error('网络请求失败')
+    }
+
+    const data = await response.json()
+    if (data.success) {
+      // 验证成功
+      errorMessage.value = '';
+      isAuthorized.value = data.success;
+      localStorage.setItem('isAuthorized', 'true');
+      closeModal();
+      // 可以在这里添加授权成功后的逻辑
+      console.log('授权成功');
+      prompt.value = '' // 清空输入框
+    } else {
+       // 验证失败
+       errorMessage.value = '口令错误，请重新输入';
+    }
+
+  } catch (error) {
+  // 验证失败
     errorMessage.value = '口令错误，请重新输入';
   }
 };
