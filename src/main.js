@@ -32,7 +32,7 @@ const connectWebSocket = () => {
 
   ws.onmessage = (event) => {
     if (event.data["msg"] === 'pong') {
-      eventBus.emit('websocket-message', event.data);
+      // eventBus.emit('websocket-message', event.data);
       console.log('收到 pong 响应');
     } else {
       eventBus.emit('websocket-message', event.data);
