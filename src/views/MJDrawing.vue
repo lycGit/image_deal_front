@@ -39,6 +39,11 @@
           <p>输入提示词开始创作</p>
         </div>
       </div>
+          <PasswordModal
+            :show-modal="showPasswordModal"
+            @close="closePasswordModal"
+            @success="handleAuthorizeSuccess"
+          />
     </div>
 
     <!-- 固定在底部的输入框 -->
@@ -82,10 +87,11 @@
   </div>
 </template>
 
+// 在script部分导入PasswordModal组件
 <script setup>
 import { ref , onMounted, onUnmounted } from 'vue'
-// import { getCurrentInstance } from 'vue';
 import eventBus from '../eventBus'
+import PasswordModal from '../components/PasswordModal.vue'; // 添加这行导入
 
 // 响应式状态
 const prompt = ref('')
@@ -108,14 +114,22 @@ const formatTime = (timestamp) => {
   return `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日 ${date.getHours()}:${String(date.getMinutes()).padStart(2, '0')}`
 }
 
+// 修改handleSubmit函数
 const handleSubmit = async () => {
   console.log("prompt33:--", prompt)
 
-    if (!prompt.value.trim()) return
+  // 先检查是否已授权
+  const authorized = localStorage.getItem('isAuthorized');
+  if (authorized !== 'true') {
+    showPasswordModal.value = true;
+    return; // 未授权时显示弹窗并终止函数执行
+  }
 
-    const message = JSON.stringify({'msg': prompt.value.trim(), 'userId': 'lyc2', 'targetUserId': 'user_py_llm', 'action': 'flux-midjourney-mix2-lora'});
-    eventBus.emit('websocket-MJDrawing', message);
-    prompt.value = '' // 清空输入框
+  if (!prompt.value.trim()) return
+
+  const message = JSON.stringify({'msg': prompt.value.trim(), 'userId': 'lyc2', 'targetUserId': 'user_py_llm', 'action': 'flux-midjourney-mix2-lora'});
+  eventBus.emit('websocket-MJDrawing', message);
+  prompt.value = '' // 清空输入框
 }
 
 const handleMessage = (data) => { 
@@ -149,6 +163,21 @@ onUnmounted(() => {
   console.log(' MJDrawing onUnmounted') 
   eventBus.off('websocket-message', handleMessage) 
 })
+
+const showPasswordModal = ref(false);
+
+// const openPasswordModal = () => {
+//   showPasswordModal.value = true;
+// };
+
+const closePasswordModal = () => {
+  showPasswordModal.value = false;
+};
+
+const handleAuthorizeSuccess = () => {
+  // 授权成功后的操作
+  console.log('授权成功，可以执行需要权限的操作了');
+};
 
 </script>
 

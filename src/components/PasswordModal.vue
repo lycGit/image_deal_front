@@ -72,10 +72,12 @@ const verifyPassword = async () => {
       emit('success');
       closeModal();
     } else {
+      localStorage.setItem('isAuthorized', 'false');
       // 验证失败
       errorMessage.value = '口令错误，请重新输入';
     }
   } catch (error) {
+    localStorage.setItem('isAuthorized', 'false');
     // 验证失败
     errorMessage.value = '口令错误，请重新输入';
   }
