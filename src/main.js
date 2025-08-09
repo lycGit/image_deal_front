@@ -36,6 +36,7 @@ const connectWebSocket = () => {
       // eventBus.emit('websocket-message', event.data);
       console.log('收到 pong 响应');
     } else {
+      console.log('收到 parsedData 响应',parsedData);
       eventBus.emit('websocket-message', parsedData);
     }
   };
