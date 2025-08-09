@@ -244,7 +244,7 @@ const handleGenerate = async () => {
     const result = await response.json()
     console.log('换脸成功:', result)
 
-    const message = JSON.stringify({'msg': combineUrls(result.imageUrl1, result.imageUrl1), 'userId': 'lyc2', 'targetUserId': 'user_py_llm', 'action': 'IPAdapterFaceIDPortrait'});
+    const message = JSON.stringify({'msg': combineUrls(result.imageUrl1, result.imageUrl2), 'userId': 'lyc2', 'targetUserId': 'user_py_llm', 'action': 'IPAdapterFaceIDPortrait'});
     eventBus.emit('websocket-ImageSwap', message);
     // 更新结果图片
     resultImage.value = result.imageUrl1
