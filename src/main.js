@@ -63,6 +63,7 @@ const handleMJDrawingMessage = (data) => {
 // 添加监听器
 if (eventBus.on) {
   eventBus.on('websocket-MJDrawing', handleMJDrawingMessage);
+  eventBus.on('websocket-ImageSwap', handleMJDrawingMessage);
 }
 
 // 启动时连接 WebSocket

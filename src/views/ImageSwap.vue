@@ -145,6 +145,7 @@
 
 <script setup>
 import { ref } from 'vue'
+import eventBus from '../eventBus'
 import { getCurrentInstance } from 'vue';
 
 const currentTab = ref('single')
@@ -206,6 +207,7 @@ const resultImage = ref(null) // 添加结果图片的响应式变量
 
 // 添加生成按钮的处理函数
 const handleGenerate = async () => {
+
   if (!templateImages.value[0] || !faceImages.value[0]) {
     alert('请先上传模板图和人脸图')
     return
@@ -241,15 +243,27 @@ const handleGenerate = async () => {
 
     const result = await response.json()
     console.log('换脸成功:', result)
-    
+
+    const message = JSON.stringify({'msg': combineUrls(result.imageUrl1, result.imageUrl1), 'userId': 'lyc2', 'targetUserId': 'user_py_llm', 'action': 'IPAdapterFaceIDPortrait'});
+    eventBus.emit('websocket-ImageSwap', message);
     // 更新结果图片
-    resultImage.value = result.imageUrl
+    resultImage.value = result.imageUrl1
 
   } catch (error) {
     console.error('换脸失败:', error)
     alert('换脸失败，请重试')
   }
 }
+
+function combineUrls(url1, url2) {
+  // 可以添加参数验证
+  if (!url1) return url2 || '';
+  if (!url2) return url1 || '';
+
+  // 拼接两个URL，中间用分号分隔
+  return `${url1};${url2}`;
+}
+
 </script>
 
 <style scoped>
