@@ -144,7 +144,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref ,onMounted, onUnmounted} from 'vue'
 import eventBus from '../eventBus'
 import { getCurrentInstance } from 'vue';
 
@@ -246,8 +246,8 @@ const handleGenerate = async () => {
 
     const message = JSON.stringify({'msg': combineUrls(result.imageUrl1, result.imageUrl2), 'userId': 'lyc2', 'targetUserId': 'user_py_llm', 'action': 'IPAdapterFaceIDPortrait'});
     eventBus.emit('websocket-ImageSwap', message);
-    // 更新结果图片
-    resultImage.value = result.imageUrl1
+    // // 更新结果图片
+    // resultImage.value = result.imageUrl1
 
   } catch (error) {
     console.error('换脸失败:', error)
@@ -263,6 +263,27 @@ function combineUrls(url1, url2) {
   // 拼接两个URL，中间用分号分隔
   return `${url1};${url2}`;
 }
+
+const handleMessage = (data) => { 
+  console.log('收到 WebSocket 消息:', data)
+  try {
+    if (data.imageUrl) {
+      resultImage.value = data.imageUrl
+    }
+  } catch (error) {
+    console.error('解析消息失败，数据不是有效的 JSON 字符串:', error)
+  }
+}
+
+onMounted(() => { 
+  console.log(' WebSocket onMounted') 
+  eventBus.on('websocket-message', handleMessage) 
+})
+
+onUnmounted(() => { 
+  console.log(' WebSocket onUnmounted') 
+  eventBus.off('websocket-message', handleMessage) 
+})
 
 </script>
 
