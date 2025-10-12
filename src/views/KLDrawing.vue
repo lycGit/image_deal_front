@@ -88,12 +88,16 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed ,onMounted, onUnmounted} from 'vue'
+import { getCurrentInstance } from 'vue';
+import eventBus from '../eventBus'
 
 const prompt = ref('')
 const referenceImage = ref(null)
 const fileInput = ref(null)
 const selectedRatio = ref('1:1')
+const instance = getCurrentInstance();
+const baseUrl = instance?.appContext.config.globalProperties.$BASE_URL_8091 
 
 const ratios = [
   { label: '1:1', value: '1:1' },
@@ -159,7 +163,7 @@ const handleGenerate = async () => {
     formData.append('category', 'KL_DRAWING')
     formData.append('tags', selectedRatio.value)
 
-    const response = await fetch('http://localhost:8091/api/files/upload', {
+    const response = await fetch(`${baseUrl}/api/files/upload`, {
       method: 'POST',
       body: formData
     })
@@ -168,24 +172,54 @@ const handleGenerate = async () => {
       throw new Error('网络请求失败')
     }
 
-    const result = await response.text()
+    // const result = await response.text()
+    const result = await response.json()
     console.log('上传成功:', result)
+    console.log('上传图片地址:', uploadedImageUrl)
+    const message = JSON.stringify({'msg': prompt.value, 'imageUrl': result.imageUrl1,  'userId': 'lyc2', 'targetUserId': 'user_py_llm', 'action': 'image2image'});
+    eventBus.emit('websocket-Image2Image', message);
 
     // 添加到生成记录
-    generatedItems.value.unshift({
-      url: uploadedImageUrl || '/placeholder-image.png', // 如果没有上传图片则使用占位图
-      description: prompt.value,
-      timestamp: Date.now()
-    })
+    // generatedItems.value.unshift({
+    //   url: uploadedImageUrl || '/placeholder-image.png', // 如果没有上传图片则使用占位图
+    //   description: prompt.value,
+    //   timestamp: Date.now()
+    // })
 
     // 清空输入
-    prompt.value = ''
-    referenceImage.value = null
+    // prompt.value = ''
+    // referenceImage.value = null
 
   } catch (error) {
     console.error('生成失败:', error)
   }
 }
+
+const handleMessage = (data) => { 
+  console.log('收到 WebSocket 消息:', data)
+  try {
+    if (data.imageUrl) {
+      // 添加到生成记录
+      generatedItems.value.unshift({
+        url: data.imageUrl || '/placeholder-image.png', // 如果没有上传图片则使用占位图
+        description: prompt.value,
+        timestamp: Date.now()
+      })
+    }
+  } catch (error) {
+    console.error('解析消息失败，数据不是有效的 JSON 字符串:', error)
+  }
+}
+
+onMounted(() => { 
+  console.log(' WebSocket onMounted') 
+  eventBus.on('websocket-message', handleMessage) 
+})
+
+onUnmounted(() => { 
+  console.log(' WebSocket onUnmounted') 
+  eventBus.off('websocket-message', handleMessage) 
+})
 </script>
 
 <style scoped>

@@ -61,10 +61,24 @@ const handleMJDrawingMessage = (data) => {
   // 这里可以添加更多的消息处理逻辑
 };
 
+// 注册 eventBus 监听
+const handleImageSwapMessage = (data) => {
+  console.log('main.js 收到 WebSocket 消息:', data);
+  ws.send(data);
+  // 这里可以添加更多的消息处理逻辑
+};
+
+const handleImage2ImageMessage = (data) => {
+  console.log('main.js 收到 WebSocket 消息:', data);
+  ws.send(data);
+  // 这里可以添加更多的消息处理逻辑
+};
+
 // 添加监听器
 if (eventBus.on) {
   eventBus.on('websocket-MJDrawing', handleMJDrawingMessage);
-  eventBus.on('websocket-ImageSwap', handleMJDrawingMessage);
+  eventBus.on('websocket-ImageSwap', handleImageSwapMessage);
+  eventBus.on('websocket-Image2Image', handleImage2ImageMessage);
 }
 
 // 启动时连接 WebSocket
