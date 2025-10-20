@@ -30,18 +30,19 @@
       <!-- 上传图片区域 -->
       <div class="section">
         <div class="section-title">上传图片</div>
-        <div class="upload-area" @click="triggerUpload">
+        <div class="upload-area" @click="triggerUpload" @dragover.prevent @drop="handleDrop">
           <input 
             type="file" 
             ref="fileInput" 
             class="hidden" 
-            @change="handleUpload" 
+            @change="handleFileChange" 
             accept="image/*"
           />
-          <div class="upload-content">
+          <div v-if="!referenceImage" class="upload-content">
             <div class="plus-icon">+</div>
             <div class="upload-text">点击/拖拽图片,高宽不小于300px</div>
           </div>
+          <img v-else :src="referenceImage" class="reference-image" alt="参考图片" />
         </div>
       </div>
 
@@ -153,11 +154,12 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 
 const currentTab = ref('vidu')
 const currentSubTab = ref('text')
 const fileInput = ref(null)
+const referenceImage = ref(null)
 const imageUsage = ref('animation')
 const description = ref('')
 const duration = ref('4')
@@ -177,11 +179,24 @@ const triggerUpload = () => {
   fileInput.value.click()
 }
 
-const handleUpload = (event) => {
+const handleFileChange = (event) => {
   const file = event.target.files[0]
-  if (file) {
-    // 处理文件上传
+  if (file) handleFile(file)
+}
+
+const handleDrop = (event) => {
+  event.preventDefault()
+  const file = event.dataTransfer.files[0]
+  if (file) handleFile(file)
+}
+
+const handleFile = (file) => {
+  if (!file.type.startsWith('image/')) return
+  const reader = new FileReader()
+  reader.onload = (e) => {
+    referenceImage.value = e.target.result
   }
+  reader.readAsDataURL(file)
 }
 const videoUrl = ref(null)
 const videoPlayer = ref(null)
