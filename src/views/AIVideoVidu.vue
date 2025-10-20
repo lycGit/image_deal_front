@@ -42,7 +42,7 @@
             <div class="plus-icon">+</div>
             <div class="upload-text">点击/拖拽图片,高宽不小于300px</div>
           </div>
-          <img v-else :src="referenceImage" class="reference-image" alt="参考图片" />
+          <img v-else :src="referenceImage" :class="['reference-image', `image-fit-${imageFit}`]" alt="参考图片" />
         </div>
       </div>
 
@@ -163,6 +163,7 @@ const referenceImage = ref(null)
 const imageUsage = ref('animation')
 const description = ref('')
 const duration = ref('4')
+const imageFit = ref('contain') // 默认为contain模式
 
 const tabs = [
   { id: 'vidu', name: 'Vidu视频' },
@@ -303,6 +304,17 @@ const style = ref('realistic')
   color: #8e9297;
   font-size: 14px;
 }
+
+.reference-image {
+  max-width: 100%;
+  max-height: 100%;
+}
+
+/* 不同的图片适应模式 */
+.image-fit-contain {
+  object-fit: contain;
+}
+
 
 .select-box {
   width: 100%;
