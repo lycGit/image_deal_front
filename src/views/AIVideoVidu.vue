@@ -2,7 +2,7 @@
   <div class="view-container">
     <div class="left-panel">
       <!-- 顶部标签切换 -->
-      <div class="tab-group">
+      <!-- <div class="tab-group">
         <button 
           v-for="tab in tabs" 
           :key="tab.id"
@@ -12,7 +12,7 @@
         >
           {{ tab.name }}
         </button>
-      </div>
+      </div> -->
 
       <!-- 子标签切换 -->
       <div class="sub-tab-group">
@@ -108,11 +108,11 @@
             <i class="icon">⬇️</i>
           </button>
         </div>
-        <div class="right-actions">
+        <!-- <div class="right-actions">
           <button class="action-btn">案例</button>
           <button class="action-btn">我的作品</button>
           <button class="action-btn">收藏</button>
-        </div>
+        </div> -->
       </div>
 
       <!-- 视频预览区域 -->
@@ -131,15 +131,15 @@
       </div>
 
       <!-- 视频说明 -->
-      <div class="video-description">
+      <!-- <div class="video-description">
         <div class="description-icon">📝</div>
         <div class="description-text">
           Vidu是对标Sora新一代AI视频生成模型，具有高通真度、高一致性的特色，特别生成速度走行业领先，生成一段4s视频只需30秒，此外，Vidu还能生成影视级特效画面，如烟雾、炫光效果、CG特效等
         </div>
-      </div>
+      </div> -->
 
       <!-- 示例视频 -->
-      <div class="example-video">
+      <!-- <div class="example-video">
         <video class="video-thumbnail" poster="/path-to-poster">
           <source src="/path-to-video" type="video/mp4">
         </video>
@@ -147,7 +147,7 @@
         <button class="download-btn">
           <i class="icon">⬇️</i>
         </button>
-      </div>
+      </div> -->
     </div>
   </div>
 </template>
