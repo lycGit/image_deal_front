@@ -92,7 +92,10 @@
         </div>
 
         <!-- 生成按钮 -->
-        <button class="generate-button">开始生成</button>
+        <button 
+        class="generate-button"
+        @click="handleGenerate"
+        >开始生成</button>
       </template>
 
       <!-- 图生视频的内容 -->
@@ -154,7 +157,9 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed ,onMounted, onUnmounted} from 'vue'
+import { getCurrentInstance } from 'vue';
+import eventBus from '../eventBus'
 
 const currentTab = ref('vidu')
 const currentSubTab = ref('text')
@@ -164,6 +169,9 @@ const imageUsage = ref('animation')
 const description = ref('')
 const duration = ref('4')
 const imageFit = ref('contain') // 默认为contain模式
+const canGenerate = computed(() => description.value.trim().length > 0)
+const instance = getCurrentInstance();
+const baseUrl = instance?.appContext.config.globalProperties.$BASE_URL_8091 
 
 const tabs = [
   { id: 'vidu', name: 'Vidu视频' },
@@ -199,6 +207,68 @@ const handleFile = (file) => {
   }
   reader.readAsDataURL(file)
 }
+
+const handleGenerate = async () => {
+  if (!canGenerate.value) return
+  
+  try {
+    // 创建 FormData 对象
+    const formData = new FormData()
+    let uploadedImageUrl = null
+    
+    // 如果有参考图片，添加到 formData
+    if (referenceImage.value) {
+      const base64Data = referenceImage.value.split(',')[1]
+      const blob = await fetch(`data:image/jpeg;base64,${base64Data}`).then(res => res.blob())
+      formData.append('file', blob, 'reference.jpg')
+      uploadedImageUrl = URL.createObjectURL(blob)
+    }
+    
+    // 添加其他参数
+    formData.append('description', prompt.value)
+    formData.append('category', 'KL_DRAWING')
+    // formData.append('tags', selectedRatio.value)
+
+    const response = await fetch(`${baseUrl}/api/files/upload`, {
+      method: 'POST',
+      body: formData
+    })
+
+    if (!response.ok) {
+      throw new Error('网络请求失败')
+    }
+
+    const result = await response.json()
+    console.log('上传成功:', result)
+    console.log('上传图片地址:', uploadedImageUrl)
+    const message = JSON.stringify({'msg': prompt.value, 'imageUrl': result.imageUrl1,  'userId': 'lyc2', 'targetUserId': 'user_py_llm', 'action': 'image2video'});
+    eventBus.emit('websocket-Image2Image', message);
+
+  } catch (error) {
+    console.error('生成失败:', error)
+  }
+}
+
+const handleMessage = (data) => { 
+  console.log('收到 WebSocket 消息:', data)
+  try {
+    if (data.imageUrl) {
+      // 添加到生成记录
+    }
+  } catch (error) {
+    console.error('解析消息失败，数据不是有效的 JSON 字符串:', error)
+  }
+}
+
+onMounted(() => { 
+  console.log(' WebSocket onMounted') 
+  eventBus.on('websocket-message', handleMessage) 
+})
+
+onUnmounted(() => { 
+  console.log(' WebSocket onUnmounted') 
+  eventBus.off('websocket-message', handleMessage) 
+})
 const videoUrl = ref(null)
 const videoPlayer = ref(null)
 
