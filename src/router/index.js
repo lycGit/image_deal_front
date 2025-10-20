@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
+// import HomeView from '../views/HomeView.vue'
 import MJDrawing from '../views/MJDrawing.vue'
 import KLDrawing from '../views/KLDrawing.vue'
 import D3Drawing from '../views/D3Drawing.vue'
@@ -15,10 +15,15 @@ import AIVideoPrka from '../views/AIVideoPrka.vue'
 import ChatRoom from '@/socket/ChatRoom.vue'
 
 const routes = [
+  // {
+  //   path: '/',
+  //   name: 'home',
+  //   component: HomeView
+  // },
   {
     path: '/',
     name: 'home',
-    component: HomeView
+    component: MJDrawing
   },
   {
     path: '/mj-drawing',

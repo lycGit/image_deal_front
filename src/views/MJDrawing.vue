@@ -48,7 +48,7 @@
 
     <!-- 固定在底部的输入框 -->
     <div class="prompt-box-container">
-      <div class="mode-switch">
+      <!-- <div class="mode-switch">
         <button 
           class="mode-button active"
           @click="switchMode('text')"
@@ -61,7 +61,7 @@
         >
           图生图
         </button>
-      </div>
+      </div> -->
       <div class="prompt-box">
         <div class="prompt-input">
           <input 
@@ -96,14 +96,14 @@ import PasswordModal from '../components/PasswordModal.vue'; // 添加这行导�
 // 响应式状态
 const prompt = ref('')
 const generatedImages = ref([])
-const currentMode = ref('text')
+// const currentMode = ref('text')
 // const instance = getCurrentInstance();
 // const baseUrl = instance?.appContext.config.globalProperties.$BASE_URL_8091 
 
 // 方法
-const switchMode = (mode) => {
-  currentMode.value = mode
-}
+// const switchMode = (mode) => {
+//   currentMode.value = mode
+// }
 
 const handleEnter = () => {
   handleSubmit()

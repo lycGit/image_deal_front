@@ -3,14 +3,14 @@
     <!-- Sidebar -->
     <div class="sidebar">
       <div class="logo">
-        <img src="@/assets/logo.png" alt="泡咖AI" />
-        <span>泡咖AI</span>
+        <!-- <img src="@/assets/logo.png" alt="泡咖AI" /> -->
+        <span>Midjourney企业内部版</span>
         <div class="subtitle">一站式AI创作平台</div>
       </div>
 
       <!-- Navigation Menu -->
       <div class="nav-menu">
-        <router-link to="/" custom v-slot="{ navigate, isActive }">
+        <!-- <router-link to="/" custom v-slot="{ navigate, isActive }">
           <div 
             class="nav-item" 
             :class="{ active: isActive }"
@@ -19,7 +19,7 @@
             <i class="fas fa-home"></i>
             <span>首页</span>
           </div>
-        </router-link>
+        </router-link> -->
 
         <div class="nav-section">
           <div class="nav-header">
@@ -40,30 +40,30 @@
               @click="navigate"
             >KL绘画</div>
           </router-link>
-          <router-link to="/d3-drawing" custom v-slot="{ navigate, isActive }">
+          <!-- <router-link to="/d3-drawing" custom v-slot="{ navigate, isActive }">
             <div 
               class="nav-subitem" 
               :class="{ active: isActive }"
               @click="navigate"
             >D3绘画</div>
-          </router-link>
-          <router-link to="/magic-avatar" custom v-slot="{ navigate, isActive }">
+          </router-link> -->
+          <!-- <router-link to="/magic-avatar" custom v-slot="{ navigate, isActive }">
             <div 
               class="nav-subitem" 
               :class="{ active: isActive }"
               @click="navigate"
             >魔法头像</div>
-          </router-link>
-          <router-link to="/ai-paragraph" custom v-slot="{ navigate, isActive }">
+          </router-link> -->
+          <!-- <router-link to="/ai-paragraph" custom v-slot="{ navigate, isActive }">
             <div 
               class="nav-subitem" 
               :class="{ active: isActive }"
               @click="navigate"
             >AI抠图</div>
-          </router-link>
+          </router-link> -->
         </div>
 
-        <div class="nav-section">
+        <!-- <div class="nav-section">
           <div class="nav-header">
             <i class="fas fa-exchange-alt"></i>
             <span>AI换脸换装</span>
@@ -96,7 +96,7 @@
               @click="navigate"
             >AI换装试衣</div>
           </router-link>
-        </div>
+        </div> -->
 
         <div class="nav-section">
           <div class="nav-header">
@@ -110,27 +110,27 @@
               @click="navigate"
             >AI视频(Vidu)</div>
           </router-link>
-          <router-link to="/ai-video-kl" custom v-slot="{ navigate, isActive }">
+          <!-- <router-link to="/ai-video-kl" custom v-slot="{ navigate, isActive }">
             <div 
               class="nav-subitem" 
               :class="{ active: isActive }"
               @click="navigate"
             >AI视频(KL)</div>
-          </router-link>
-          <router-link to="/ai-video-prka" custom v-slot="{ navigate, isActive }">
+          </router-link> -->
+          <!-- <router-link to="/ai-video-prka" custom v-slot="{ navigate, isActive }">
             <div 
               class="nav-subitem" 
               :class="{ active: isActive }"
               @click="navigate"
             >AI视频(Prka)</div>
-          </router-link>
-          <router-link to="/chat-room" custom v-slot="{ navigate, isActive }">
+          </router-link> -->
+          <!-- <router-link to="/chat-room" custom v-slot="{ navigate, isActive }">
             <div 
               class="nav-subitem" 
               :class="{ active: isActive }"
               @click="navigate"
             >socket聊天室</div>
-          </router-link>
+          </router-link> -->
         </div>
       </div>
 
@@ -152,8 +152,8 @@
       <div class="top-bar">
         <div class="right-buttons">
           <button class="top-button" @click="openModal">输入口令</button>
-          <button class="top-button">我的作品</button>
-          <button class="top-button">收藏</button>
+          <!-- <button class="top-button">我的作品</button>
+          <button class="top-button">收藏</button> -->
         </div>
       </div>
 
@@ -220,8 +220,10 @@ const handleAuthorizeSuccess = () => {
 
 .logo {
   display: flex;
-  align-items: center;
+  align-items: left;
   margin-bottom: 30px;
+  flex-direction: column;
+  
 }
 
 .logo img {
