@@ -120,19 +120,14 @@
       </div>
 
       <!-- 视频预览区域 -->
-      <div class="video-preview">
-        <video
-          v-if="videoUrl"
-          ref="videoPlayer"
-          class="video-player"
-          controls
-          :src="videoUrl"
-        ></video>
-        <div v-else class="video-placeholder">
-          <div class="placeholder-text">>Hello,Vidu!</div>
-          <div class="time-indicator">01:31</div>
-        </div>
-      </div>
+      <div class="video-preview"> 
+         <video 
+           ref="videoPlayer" 
+           class="video-player" 
+           controls 
+           :src="videoUrl" 
+         ></video> 
+       </div>
 
       <!-- 视频说明 -->
       <!-- <div class="video-description">
@@ -157,7 +152,7 @@
 </template>
 
 <script setup>
-import { ref, computed ,onMounted, onUnmounted} from 'vue'
+import { ref, computed, nextTick, onMounted, onUnmounted} from 'vue'
 import { getCurrentInstance } from 'vue';
 import eventBus from '../eventBus'
 
@@ -250,15 +245,44 @@ const handleGenerate = async () => {
 }
 
 const handleMessage = (data) => { 
-  console.log('收到 WebSocket 消息:', data)
-  try {
-  if (data.videoUrl) {
-      // 添加到生成记录
-      videoUrl.value = data.videoUrl.value
-    }} catch (error) {
-    console.error('解析消息失败，数据不是有效的 JSON 字符串:', error)
-  }
-}
+  console.log('收到 WebSocket 消息:', JSON.stringify(data)) 
+  try { 
+    // 调试数据结构
+    console.log('数据结构详情 - data类型:', typeof data);
+    console.log('data.videoUrl值:', data.videoUrl);
+    
+    // 尝试多种可能的数据访问方式
+    if (data.videoUrl) {
+      if (typeof data.videoUrl === 'object' && data.videoUrl.value) {
+        // 情况1: data.videoUrl是对象且有value属性
+        videoUrl.value = data.videoUrl.value;
+        console.log('情况1 - 收到 videoUrl:', videoUrl.value);
+      } else if (typeof data.videoUrl === 'string') {
+        // 情况2: data.videoUrl直接是字符串
+        videoUrl.value = data.videoUrl;
+        console.log('情况2 - 收到 videoUrl:', videoUrl.value);
+      } else {
+        // 情况3: 尝试其他可能的格式
+        videoUrl.value = String(data.videoUrl || '');
+        console.log('情况3 - 收到 videoUrl:', videoUrl.value);
+      }
+      
+      // 只有当videoUrl有有效值时才尝试播放
+      if (videoUrl.value) {
+        // 等待DOM更新后自动播放视频
+        nextTick(() => {
+          if (videoPlayer.value) {
+            videoPlayer.value.play().catch(err => {
+              console.warn('视频自动播放被浏览器阻止:', err)
+            })
+          }
+        })
+      }
+    }
+  } catch (error) { 
+    console.error('处理消息失败:', error) 
+  } 
+ }
 
 onMounted(() => { 
   console.log(' WebSocket onMounted') 
