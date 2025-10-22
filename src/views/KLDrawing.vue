@@ -30,7 +30,7 @@
       </div>
     
       <!-- 参数设置区域 -->
-      <div class="section">
+      <!-- <div class="section">
         <div class="section-title">参数设置</div>
         <div class="ratio-grid">
           <button 
@@ -43,7 +43,7 @@
             {{ ratio.label }}
           </button>
         </div>
-      </div>
+      </div> -->
     
       <!-- 生成按钮 -->
       <button 

@@ -225,7 +225,7 @@ const handleGenerate = async () => {
     }
     
     // 添加其他参数
-    formData.append('description', prompt.value)
+    formData.append('description', description.value)
     formData.append('category', 'KL_DRAWING')
     // formData.append('tags', selectedRatio.value)
 
@@ -240,8 +240,8 @@ const handleGenerate = async () => {
 
     const result = await response.json()
     console.log('上传成功:', result)
-    console.log('上传图片地址:', uploadedImageUrl)
-    const message = JSON.stringify({'msg': prompt.value, 'imageUrl': result.imageUrl1,  'userId': 'lyc2', 'targetUserId': 'user_py_llm', 'action': 'image2video'});
+    const message = JSON.stringify({'msg': description.value, 'imageUrl': result.imageUrl1,  'userId': 'lyc2', 'targetUserId': 'user_py_llm', 'action': 'image2video'});
+    console.log('Image2Image websocket message:', message)
     eventBus.emit('websocket-Image2Image', message);
 
   } catch (error) {
