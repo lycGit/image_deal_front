@@ -242,7 +242,7 @@ const handleGenerate = async () => {
     console.log('上传成功:', result)
     const message = JSON.stringify({'msg': description.value, 'imageUrl': result.imageUrl1,  'userId': 'lyc2', 'targetUserId': 'user_py_llm', 'action': 'image2video'});
     console.log('Image2Image websocket message:', message)
-    eventBus.emit('websocket-Image2Image', message);
+    eventBus.emit('websocket-Image2Video', message);
 
   } catch (error) {
     console.error('生成失败:', error)
@@ -252,10 +252,10 @@ const handleGenerate = async () => {
 const handleMessage = (data) => { 
   console.log('收到 WebSocket 消息:', data)
   try {
-    if (data.imageUrl) {
+  if (data.videoUrl) {
       // 添加到生成记录
-    }
-  } catch (error) {
+      videoUrl.value = data.videoUrl.value
+    }} catch (error) {
     console.error('解析消息失败，数据不是有效的 JSON 字符串:', error)
   }
 }
