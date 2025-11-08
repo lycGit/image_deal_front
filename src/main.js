@@ -62,7 +62,7 @@ const connectWebSocket = () => {
           if (isCheckingPyLlmOnline) {
             console.error('未收到user_py_llm的回复，可能不在线');
             alert('目标用户user_py_llm不在线，请稍后再试');
-            isCheckingPyLlmOnline = false;
+            // isCheckingPyLlmOnline = false;
             // 可以在这里添加终止连接或其他逻辑
             // ws.close();
           }
