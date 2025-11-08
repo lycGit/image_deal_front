@@ -30,13 +30,47 @@ const connectWebSocket = () => {
     }, PING_INTERVAL);
   };
 
+  // 添加变量用于跟踪user_py_llm的在线状态检查
+  let pyLlmCheckTimeout = null;
+  let isCheckingPyLlmOnline = false;
+  
   ws.onmessage = (event) => {
     const parsedData = JSON.parse(event.data)
-    if (parsedData["msg"] === 'pong') {
+    
+    // 先检查是否收到来自user_py_llm的回复
+    if (parsedData["msg"] === 'pong' && parsedData["userId"] === 'user_py_llm') {
+      console.log('收到user_py_llm的在线确认响应');
+      clearTimeout(pyLlmCheckTimeout);
+    }
+    // 然后处理其他pong响应
+    else if (parsedData["msg"] === 'pong') {
       // eventBus.emit('websocket-message', event.data);
       console.log('收到 pong 响应');
-    } else {
-      console.log('收到 parsedData 响应',parsedData);
+      
+      // 当收到pong消息后，发送目标为user_py_llm的ping消息
+      if (!isCheckingPyLlmOnline) {
+        isCheckingPyLlmOnline = true;
+        console.log('开始检查user_py_llm是否在线...');
+        
+        // 发送目标为user_py_llm的ping消息
+        var pyLlmMsg = '{"msg": "ping", "userId": "lyc2", "targetUserId": "user_py_llm", "action": "isLLMOnLine"}';
+        ws.send(pyLlmMsg);
+        console.log('已发送ping消息至user_py_llm');
+        
+        // 设置超时检查
+        pyLlmCheckTimeout = setTimeout(() => {
+          if (isCheckingPyLlmOnline) {
+            console.error('未收到user_py_llm的回复，可能不在线');
+            alert('目标用户user_py_llm不在线，请稍后再试');
+            isCheckingPyLlmOnline = false;
+            // 可以在这里添加终止连接或其他逻辑
+            // ws.close();
+          }
+        }, 5000); // 5秒超时
+      }
+    }
+    else {
+      console.log('收到 parsedData 响应', parsedData);
       eventBus.emit('websocket-message', parsedData);
     }
   };
