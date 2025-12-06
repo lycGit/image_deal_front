@@ -430,7 +430,7 @@ const style = ref('realistic')
 
 textarea {
   width: 100%;
-  height: 120px;
+  height: 240px;
   padding: 12px;
   background: #2f3136;
   border: 1px solid #40444b;
