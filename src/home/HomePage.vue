@@ -3,9 +3,11 @@
     <!-- Sidebar -->
     <div class="sidebar">
       <div class="logo">
-        <!-- <img src="@/assets/logo.png" alt="泡咖AI" /> -->
-        <span>Midjourney企业内部版</span>
-        <div class="subtitle">一站式AI创作平台</div>
+        <img src="@/assets/downloaded-image.png" alt="泡咖AI" />
+        <div class="logo-text">
+          <span>Midjourney企业内部版</span>
+          <!-- <div class="subtitle">一站式AI创作平台</div> -->
+        </div>
       </div>
 
       <!-- Navigation Menu -->
@@ -220,16 +222,46 @@ const handleAuthorizeSuccess = () => {
 
 .logo {
   display: flex;
-  align-items: left;
+  align-items: center;
   margin-bottom: 30px;
+  flex-direction: row;
+  background-color: #1f2128; /* 恢复原有背景色 */
+  padding: 10px;
+  border-radius: 6px;
+}
+
+.logo-text {
+  display: flex;
   flex-direction: column;
-  
+  margin-left: 10px;
+  justify-content: center;
+  max-width: calc(100% - 64px); /* 确保文字部分有合适的宽度限制，减去图片宽度和间距 */
+}
+
+.logo-text span {
+  font-size: 16px;
+  font-weight: bold;
+  white-space: normal; /* 允许文字换行 */
+  word-wrap: break-word; /* 长单词自动换行 */
+}
+
+.subtitle {
+  font-size: 12px;
+  color: #8b8c91;
+  margin-top: 4px;
+  white-space: normal; /* 允许文字换行 */
+  word-wrap: break-word; /* 长单词自动换行 */
 }
 
 .logo img {
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   margin-right: 10px;
+  display: block;
+  object-fit: contain;
+  background-color: #ffffff; /* 添加白色背景以提高图片可见性 */
+  border-radius: 4px; /* 添加圆角使图片看起来更美观 */
+  padding: 2px; /* 添加轻微内边距 */
 }
 
 .subtitle {
