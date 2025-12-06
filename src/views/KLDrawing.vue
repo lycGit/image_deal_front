@@ -58,11 +58,11 @@
     <!-- 添加右侧展示区域 -->
     <div class="right-panel">
       <div class="top-bar">
-        <div class="status-text">没有更多了</div>
+        <!-- <div class="status-text">没有更多了</div> -->
         <div class="actions">
-          <button class="action-button">案例</button>
+          <!-- <button class="action-button">案例</button> -->
           <button class="action-button">我的作品</button>
-          <button class="action-button">收藏</button>
+          <button class="action-button">下载</button>
         </div>
       </div>
       
@@ -261,7 +261,7 @@ onUnmounted(() => {
 
 textarea {
   width: 100%;
-  height: 120px;
+  height: 240px;
   background-color: #2f3136;
   border: 1px solid #40444b;
   border-radius: 8px;
@@ -288,7 +288,7 @@ textarea:focus {
   background-color: #2f3136;
   border: 1px dashed #40444b;
   border-radius: 8px;
-  height: 80px;
+  min-height: 80px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -319,8 +319,7 @@ textarea:focus {
 
 .reference-image {
   width: 100%;
-  height: 100%;
-  object-fit: cover;
+  height: auto;
 }
 
 .ratio-grid {
