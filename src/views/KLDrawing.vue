@@ -289,11 +289,13 @@ textarea:focus {
   border: 1px dashed #40444b;
   border-radius: 8px;
   min-height: 80px;
+  max-height: 400px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   transition: all 0.3s;
+  overflow: hidden;
 }
 
 .upload-area:hover {

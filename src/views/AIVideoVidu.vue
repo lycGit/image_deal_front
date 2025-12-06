@@ -47,14 +47,14 @@
       </div>
 
       <!-- 图片用途选择 -->
-      <div class="section">
+      <!-- <div class="section">
         <div class="section-title">图片用途</div>
         <div class="select-box">
           <select v-model="imageUsage">
             <option value="animation">用作起始帧</option>
           </select>
         </div>
-      </div>
+      </div> -->
 
       <template v-if="currentSubTab === 'text'">
         <!-- 创意描述 -->
@@ -73,19 +73,19 @@
         <!-- 参数设置 -->
         <div class="section">
           <div class="section-title">参数设置</div>
-          <div class="param-item">
+          <!-- <div class="param-item">
             <span class="param-label">风格</span>
             <div class="select-box">
               <select v-model="style">
                 <option value="realistic">写实</option>
               </select>
             </div>
-          </div>
+          </div> -->
           <div class="param-item">
             <span class="param-label">时长</span>
             <div class="select-box">
               <select v-model="duration">
-                <option value="4">4s</option>
+                <option value="4">10s</option>
               </select>
             </div>
           </div>
@@ -176,7 +176,7 @@ const tabs = [
 
 const subTabs = [
   { id: 'text', name: '文生视频' },
-  { id: 'image', name: '图生视频' }
+  // { id: 'image', name: '图生视频' }
 ]
 
 const triggerUpload = () => {
