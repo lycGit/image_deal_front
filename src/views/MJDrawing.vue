@@ -35,7 +35,7 @@
       
         <!-- 空状态提示 -->
         <div class="empty-state" v-else>
-          <i class="fas fa-image empty-icon"></i>
+          <i class="fas fa-paint-brush empty-icon"></i>
           <p>输入提示词开始创作</p>
         </div>
       </div>
@@ -316,5 +316,18 @@ const handleAuthorizeSuccess = () => {
   height: 100%;
   object-fit: cover;
   display: block;
+}
+
+.empty-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #8e9297;
+  padding: 24px;
+}
+
+.empty-icon {
+  margin-right: 8px;
+  font-size: 18px;
 }
 </style>
