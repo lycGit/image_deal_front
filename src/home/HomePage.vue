@@ -137,14 +137,16 @@
       </div>
 
       <!-- VIP Button -->
-      <div class="vip-button">
+      <!-- <div class="vip-button">
         升级VIP会员
-      </div>
+      </div> -->
 
       <!-- User Info -->
       <div class="user-info">
-        <img src="@/assets/avatar.png" alt="User Avatar" />
-        <span>手机用户3896</span>
+        <div class="user-avatar">
+          <i class="fas fa-user"></i>
+        </div>
+        <span>超级VIP用户</span>
       </div>
     </div>
 
@@ -298,6 +300,10 @@ const handleAuthorizeSuccess = () => {
   margin-bottom: 10px;
 }
 
+.nav-header i {
+  margin-right: 8px;
+}
+
 .nav-subitem {
   padding-left: 20px;
   font-size: 14px;
@@ -319,11 +325,17 @@ const handleAuthorizeSuccess = () => {
   padding: 10px;
 }
 
-.user-info img {
+.user-avatar {
   width: 30px;
   height: 30px;
   border-radius: 50%;
+  background-color: #2a2c34;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   margin-right: 10px;
+  color: #8b8c91;
+  font-size: 16px;
 }
 
 .main-content {
