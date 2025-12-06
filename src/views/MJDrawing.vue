@@ -67,16 +67,16 @@
           <input 
             type="text" 
             v-model="prompt"
-            placeholder="请输入MJ提示词,支持中文。当前为快速模式，生成8算力" 
+            placeholder="请输入提示词,支持中文、英文" 
             @keyup.enter="handleEnter"
           />
           <div class="input-actions">
-            <button class="action-icon">
+            <!-- <button class="action-icon">
               <i class="fas fa-sliders-h"></i>
-            </button>
-            <button class="action-icon">
+            </button> -->
+            <!-- <button class="action-icon">
               <i class="fas fa-sync-alt"></i>
-            </button>
+            </button> -->
             <button class="send-button" @click="handleSubmit">
               绘画 <i class="fas fa-paper-plane"></i>
             </button>
