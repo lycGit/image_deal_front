@@ -277,37 +277,107 @@ const handleAuthorizeSuccess = () => {
 }
 
 .nav-item, .nav-subitem {
-  padding: 10px;
-  margin: 5px 0;
-  border-radius: 6px;
+  padding: 12px 16px;
+  margin: 4px 0;
+  border-radius: 8px;
   cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  position: relative;
+  overflow: hidden;
+  color: #a0a1a7;
+  font-size: 14px;
+  background: rgba(42, 44, 52, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .nav-item:hover, .nav-subitem:hover {
-  background-color: #2a2c34;
+  background-color: rgba(45, 101, 242, 0.15);
+  color: #ffffff;
+  transform: translateX(4px);
 }
 
 .nav-item.active, .nav-subitem.active {
-  background-color: #2d65f2;
+  background-color: rgba(45, 101, 242, 0.2);
+  color: #2d65f2;
+  font-weight: 500;
+  box-shadow: 0 0 0 1px rgba(45, 101, 242, 0.3);
+}
+
+.nav-item.active::before, .nav-subitem.active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: linear-gradient(180deg, #4776E6 0%, #8E54E9 100%);
+  border-radius: 0 3px 3px 0;
 }
 
 .nav-section {
-  margin: 15px 0;
+  margin: 24px 0;
+  padding: 0 4px;
 }
 
 .nav-header {
-  font-weight: bold;
-  margin-bottom: 10px;
+  font-weight: 800;
+  margin-bottom: 12px;
+  margin-top: 16px;
+  padding: 10px 16px;
+  color: #ffffff;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 6px;
+  background: rgba(69, 118, 230, 0.25);
+  border: 1px solid rgba(69, 118, 230, 0.3);
+  box-shadow: none;
+  transition: none;
+  cursor: default;
+}
+
+.nav-header:hover {
+  background: rgba(42, 44, 52, 0.8);
+  box-shadow: none;
+  transform: none;
 }
 
 .nav-header i {
-  margin-right: 8px;
+  font-size: 16px;
+  opacity: 1;
+  color: #4776E6;
 }
 
 .nav-subitem {
-  padding-left: 20px;
-  font-size: 14px;
+  padding-left: 40px;
   color: #8b8c91;
+  border-left: 2px solid transparent;
+  font-size: 13px;
+}
+
+.nav-subitem:hover {
+  border-left-color: rgba(45, 101, 242, 0.5);
+}
+
+/* 添加图标样式 */
+.nav-item i, .nav-subitem i {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  opacity: 0.7;
+  color: #a0a1a7;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+  transition: all 0.3s ease;
 }
 
 .vip-button {
