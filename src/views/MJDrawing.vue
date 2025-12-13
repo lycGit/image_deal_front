@@ -8,7 +8,7 @@
           <div class="message-group" v-for="(image, index) in generatedImages" :key="index">
             <div class="message-header">
               <div class="bot-info">
-                <img src="/bot-avatar.png" alt="Bot Avatar" class="bot-avatar" />
+                <img src="@/assets/downloaded-image.png"  alt="Bot Avatar" class="bot-avatar" />
                 <span class="bot-name">Midjourney Bot</span>
                 <span class="message-time">{{ formatTime(image.timestamp) }}</span>
               </div>
@@ -17,6 +17,8 @@
             <div class="image-grid">
               <div class="image-item">
                 <img :src="image.url" :alt="'生成图片 ' + (index + 1)" />
+                <!-- <img src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fcbu01.alicdn.com%2Fimg%2Fibank%2FO1CN01JIwhKu1Bs319GOBwE_%21%210-0-cib.jpg&refer=http%3A%2F%2Fcbu01.alicdn.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1768186848&t=d9a63a0a1b717aeb22faa3150adcaa7b" :alt="'生成图片 ' + (index + 1)" /> -->
+                
                 <div class="image-actions">
                   <button class="action-button">
                     <i class="fas fa-download"></i>
@@ -279,6 +281,9 @@ const handleAuthorizeSuccess = () => {
   width: 24px;
   height: 24px;
   border-radius: 50%;
+  background-color: #ffffff;
+  object-fit: contain;
+  padding: 2px;
 }
 
 .bot-name {

@@ -155,7 +155,7 @@
       <!-- Top Bar -->
       <div class="top-bar">
         <div class="right-buttons">
-          <button class="top-button" @click="openModal">输入兑换码</button>
+          <button class="top-button redeem-button" @click="openModal">输入兑换码</button>
           <!-- <button class="top-button">我的作品</button>
           <button class="top-button">收藏</button> -->
         </div>
@@ -362,6 +362,16 @@ const handleAuthorizeSuccess = () => {
 .top-button:hover {
   background-color: rgba(255, 255, 255, 0.1);
   border-radius: 6px;
+}
+
+.redeem-button {
+  background: linear-gradient(90deg, #4776E6 0%, #8E54E9 100%);
+  border-radius: 6px;
+}
+
+.redeem-button:hover {
+  opacity: 0.9;
+  background: linear-gradient(90deg, #4776E6 0%, #8E54E9 100%);
 }
 
 /* 弹窗样式 */
