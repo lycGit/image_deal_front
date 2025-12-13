@@ -5,7 +5,7 @@
       <!-- 生成的图片展示区域 -->
       <div class="scrollable-content">
         <div class="image-display" v-if="generatedImages.length > 0">
-          <div class="message-group" v-for="(image, index) in generatedImages" :key="index">
+          <div class="message-group" v-for="(image, index) in generatedImages" :key="image.id || index">
             <div class="message-header">
               <div class="bot-info">
                 <img src="@/assets/downloaded-image.png"  alt="Bot Avatar" class="bot-avatar" />
@@ -16,10 +16,15 @@
             </div>
             <div class="image-grid">
               <div class="image-item">
-                <img :src="image.url" :alt="'生成图片 ' + (index + 1)" />
+                <!-- 图片加载中显示占位符 -->
+                <img v-if="image.url" :src="image.url" :alt="'生成图片 ' + (index + 1)" />
+                <div v-else class="image-loading">
+                  <i class="fas fa-spinner fa-spin"></i>
+                  <span>图片生成中...</span>
+                </div>
                 <!-- <img src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fcbu01.alicdn.com%2Fimg%2Fibank%2FO1CN01JIwhKu1Bs319GOBwE_%21%210-0-cib.jpg&refer=http%3A%2F%2Fcbu01.alicdn.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1768186848&t=d9a63a0a1b717aeb22faa3150adcaa7b" :alt="'生成图片 ' + (index + 1)" /> -->
                 
-                <div class="image-actions">
+                <div class="image-actions" v-if="image.url">
                   <button class="action-button">
                     <i class="fas fa-download"></i>
                   </button>
@@ -129,7 +134,20 @@ const handleSubmit = async () => {
 
   if (!prompt.value.trim()) return
 
-  const message = JSON.stringify({'msg': prompt.value.trim(), 'userId': 'lyc2', 'targetUserId': 'user_py_llm', 'action': 'flux-midjourney-mix2-lora'});
+  // 点击提交后立即将prompt添加到显示列表中
+  const currentPrompt = prompt.value.trim();
+  const tempImageId = Date.now(); // 使用时间戳作为临时ID
+  
+  // 添加临时图片记录，包含prompt但没有图片URL
+  generatedImages.value.push({
+    id: tempImageId,
+    url: null,
+    description: '',
+    timestamp: Date.now(),
+    prompt: currentPrompt
+  });
+
+  const message = JSON.stringify({'msg': currentPrompt, 'userId': 'lyc2', 'targetUserId': 'user_py_llm', 'action': 'flux-midjourney-mix2-lora', 'tempId': tempImageId});
   eventBus.emit('websocket-MJDrawing', message);
   prompt.value = '' // 清空输入框
 }
@@ -137,20 +155,28 @@ const handleSubmit = async () => {
 const handleMessage = (data) => { 
   console.log('MJDrawing 收到 WebSocket 消息:', data)
   try {
-      // 解析 JSON 字符串为对象
-    // const parsedData = JSON.parse(data)
     console.log('MJDrawing 收到 imageUrl:', data.imageUrl)
-  //  resultImage.value = "http://120.27.130.190:8091/api/files/download/12e927bc-7b6a-47c4-92a4-44d43c960bbf_tmptj_v5o71.png" 
-    // const parsedData = JSON.parse(data)
-    // if (parsedData.imageUrl) {
+    
+    // 查找临时图片记录
+    const tempImageIndex = generatedImages.value.findIndex(img => img.id === data.tempId);
+    
+    if (tempImageIndex !== -1) {
+      // 更新临时记录，添加图片URL
+      generatedImages.value[tempImageIndex] = {
+        ...generatedImages.value[tempImageIndex],
+        url: data.imageUrl,
+        description: data.description,
+      };
+    } else {
+      // 如果没有找到临时记录（可能是直接从后端推送的消息），则添加新记录
       generatedImages.value.push({
-      url: data.imageUrl,        // 假设后端返回的图片URL字段为imageUrl
-      // url:  "http://120.27.130.190:8091/api/files/download/12e927bc-7b6a-47c4-92a4-44d43c960bbf_tmptj_v5o71.png" ,     
-      description: data.description, // 假设后端返回的描述字段为description
-      timestamp: Date.now(),
-      prompt: prompt.value
-    })
-    // }
+        id: Date.now(),
+        url: data.imageUrl,
+        description: data.description,
+        timestamp: Date.now(),
+        prompt: data.prompt || '未知提示词'
+      });
+    }
   } catch (error) {
     console.error('解析消息失败，数据不是有效的 JSON 字符串:', error)
   }
@@ -321,6 +347,25 @@ const handleAuthorizeSuccess = () => {
   height: 100%;
   object-fit: cover;
   display: block;
+}
+
+/* 图片加载中样式 */
+.image-loading {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #2b2d31;
+  color: #8e9297;
+  font-size: 14px;
+}
+
+.image-loading i {
+  font-size: 24px;
+  margin-bottom: 8px;
+  color: #4776e6;
 }
 
 .empty-state {
