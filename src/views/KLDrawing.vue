@@ -61,7 +61,7 @@
         <!-- <div class="status-text">没有更多了</div> -->
         <div class="actions">
           <!-- <button class="action-button">案例</button> -->
-          <button class="action-button">我的作品</button>
+          <!-- <button class="action-button">我的作品</button> -->
           <button class="action-button">下载</button>
         </div>
       </div>
@@ -369,15 +369,37 @@ textarea:focus {
 }
 
 .hidden {
-  display: none;
-}
+    display: none;
+  }
 
-.right-panel {
-  flex: 1;
-  height: 100vh;
-  padding: 20px;
-  overflow-y: auto;
-}
+  /* 美化下载按钮样式 */
+  .action-button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    background: linear-gradient(90deg, #4776E6 0%, #8E54E9 100%);
+    color: #ffffff;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+
+  .action-button:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(71, 118, 230, 0.3);
+  }
+
+  .action-button:active {
+    transform: translateY(0);
+  }
+
+  .right-panel {
+    flex: 1;
+    height: 100vh;
+    padding: 20px;
+    overflow-y: auto;
+  }
 
 .gallery {
   display: flex;
