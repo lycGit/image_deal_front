@@ -33,14 +33,14 @@
               class="nav-subitem" 
               :class="{ active: isActive }"
               @click="navigate"
-            >MJ绘画</div>
+            >纯文本绘画</div>
           </router-link>
           <router-link to="/kl-drawing" custom v-slot="{ navigate, isActive }">
             <div 
               class="nav-subitem" 
               :class="{ active: isActive }"
               @click="navigate"
-            >KL绘画</div>
+            >图文绘画</div>
           </router-link>
           <!-- <router-link to="/d3-drawing" custom v-slot="{ navigate, isActive }">
             <div 
