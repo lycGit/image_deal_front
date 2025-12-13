@@ -225,11 +225,13 @@ const handleAuthorizeSuccess = () => {
 .logo {
   display: flex;
   align-items: center;
-  margin-bottom: 30px;
+  margin-bottom: 20px;
   flex-direction: row;
-  background-color: #1f2128; /* 恢复原有背景色 */
-  padding: 10px;
-  border-radius: 6px;
+  background: rgba(42, 44, 52, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 12px 16px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
 }
 
 .logo-text {
@@ -241,29 +243,30 @@ const handleAuthorizeSuccess = () => {
 }
 
 .logo-text span {
-  font-size: 16px;
-  font-weight: bold;
+  font-size: 14px;
+  font-weight: 500;
+  color: #ffffff;
   white-space: normal; /* 允许文字换行 */
   word-wrap: break-word; /* 长单词自动换行 */
 }
 
 .subtitle {
   font-size: 12px;
-  color: #8b8c91;
+  color: #a0a1a7;
   margin-top: 4px;
   white-space: normal; /* 允许文字换行 */
   word-wrap: break-word; /* 长单词自动换行 */
 }
 
 .logo img {
-  width: 44px;
-  height: 44px;
+  width: 40px;
+  height: 40px;
   margin-right: 10px;
   display: block;
   object-fit: contain;
-  background-color: #ffffff; /* 添加白色背景以提高图片可见性 */
-  border-radius: 4px; /* 添加圆角使图片看起来更美观 */
-  padding: 2px; /* 添加轻微内边距 */
+  background-color: #ffffff; /* 恢复原有白色背景 */
+  border-radius: 6px; /* 圆角与整体风格一致 */
+  padding: 4px; /* 适当内边距 */
 }
 
 .subtitle {
