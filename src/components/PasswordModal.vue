@@ -3,14 +3,14 @@
     <div class="modal-overlay" @click="closeModal"></div>
     <div class="modal-content">
       <div class="modal-header">
-        <h3>请输入口令</h3>
+        <h3>请输入兑换码</h3>
         <button class="close-btn" @click="closeModal">&times;</button>
       </div>
       <div class="modal-body">
         <input
           type="password"
           v-model="password"
-          placeholder="请输入口令"
+          placeholder="请输入兑换码"
           class="password-input"
         />
         <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
@@ -49,7 +49,7 @@ const closeModal = () => {
   emit('close');
 };
 
-// 验证口令
+// 验证兑换码
 const verifyPassword = async () => {
   try {
     const response = await fetch(`${baseUrl}/api/auth/${encodeURIComponent(password.value)}`, {
@@ -74,12 +74,12 @@ const verifyPassword = async () => {
     } else {
       localStorage.setItem('isAuthorized', 'false');
       // 验证失败
-      errorMessage.value = '口令错误，请重新输入';
+      errorMessage.value = '兑换码错误，请重新输入';
     }
   } catch (error) {
     localStorage.setItem('isAuthorized', 'false');
     // 验证失败
-    errorMessage.value = '口令错误，请重新输入';
+    errorMessage.value = '兑换码错误，请重新输入';
   }
 };
 </script>

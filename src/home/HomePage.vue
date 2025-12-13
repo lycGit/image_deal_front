@@ -155,7 +155,7 @@
       <!-- Top Bar -->
       <div class="top-bar">
         <div class="right-buttons">
-          <button class="top-button" @click="openModal">输入口令</button>
+          <button class="top-button" @click="openModal">输入兑换码</button>
           <!-- <button class="top-button">我的作品</button>
           <button class="top-button">收藏</button> -->
         </div>
