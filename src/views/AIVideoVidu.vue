@@ -108,7 +108,7 @@
     <div class="right-panel">
       <!-- 顶部操作栏 -->
       <div class="top-actions">
-        <button class="action-button">下载</button>
+        <button class="action-button" @click="handleDownload" :disabled="!videoUrl">下载</button>
         <!-- <div class="left-actions">
           <button class="action-btn">
             <i class="icon">⬇️</i>
@@ -306,6 +306,16 @@ onUnmounted(() => {
 })
 const videoUrl = ref(null)
 const videoPlayer = ref(null)
+
+// 下载视频函数
+const handleDownload = () => {
+  if (!videoUrl.value) return
+  
+  const link = document.createElement('a')
+  link.href = videoUrl.value
+  link.download = `ai-video-${Date.now()}.mp4`
+  link.click()
+}
 
 // 添加风格选择
 const style = ref('realistic')
@@ -628,4 +638,10 @@ textarea {
   transform: translateY(0);
 }
 
+.action-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
 </style>
