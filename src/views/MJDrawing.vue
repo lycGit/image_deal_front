@@ -174,7 +174,7 @@ const handleMessage = (data) => {
         url: data.imageUrl,
         description: data.description,
         timestamp: Date.now(),
-        prompt: data.prompt || '请输入提示词'
+        prompt: data.prompt || '提示词不能为空'
       });
     }
   } catch (error) {

@@ -285,6 +285,7 @@ textarea:focus {
 }
 
 .upload-area {
+  height: 200px;
   background-color: #2f3136;
   border: 1px dashed #40444b;
   border-radius: 8px;

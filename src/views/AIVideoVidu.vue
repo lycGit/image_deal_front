@@ -94,6 +94,7 @@
         <!-- 生成按钮 -->
         <button 
         class="generate-button"
+        :disabled="!canGenerate"
         @click="handleGenerate"
         >开始生成</button>
       </template>
@@ -469,6 +470,12 @@ textarea {
   color: #ffffff;
   font-size: 16px;
   cursor: pointer;
+  transition: opacity 0.3s;
+}
+
+.generate-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .hidden {
