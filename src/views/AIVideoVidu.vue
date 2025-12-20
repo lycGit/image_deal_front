@@ -29,7 +29,7 @@
 
       <!-- 上传图片区域 -->
       <div class="section">
-        <div class="section-title">上传图片</div>
+        <div class="section-title">上传图片（可选）</div>
         <div class="upload-area" @click="triggerUpload" @dragover.prevent @drop="handleDrop">
           <input 
             type="file" 
@@ -108,11 +108,12 @@
     <div class="right-panel">
       <!-- 顶部操作栏 -->
       <div class="top-actions">
-        <div class="left-actions">
+        <button class="action-button">下载</button>
+        <!-- <div class="left-actions">
           <button class="action-btn">
             <i class="icon">⬇️</i>
           </button>
-        </div>
+        </div> -->
         <!-- <div class="right-actions">
           <button class="action-btn">案例</button>
           <button class="action-btn">我的作品</button>
@@ -595,10 +596,36 @@ textarea {
   top: 8px;
   right: 8px;
   padding: 8px;
+  background: rgba(0, 0, 0, 0.5);
   border: none;
   border-radius: 4px;
-  background: rgba(0, 0, 0, 0.7);
   color: #ffffff;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
+
+/* 美化操作按钮样式 */
+.action-button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  background: linear-gradient(90deg, #4776E6 0%, #8E54E9 100%);
+  color: #ffffff;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.action-button:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(71, 118, 230, 0.3);
+}
+
+.action-button:active {
+  transform: translateY(0);
+}
+
 </style>
