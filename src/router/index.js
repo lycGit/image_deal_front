@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-// import HomeView from '../views/HomeView.vue'
+import HomePage from '../home/HomePage.vue'
 import MJDrawing from '../views/MJDrawing.vue'
 import KLDrawing from '../views/KLDrawing.vue'
 import D3Drawing from '../views/D3Drawing.vue'
@@ -15,80 +15,142 @@ import AIVideoPrka from '../views/AIVideoPrka.vue'
 import ChatRoom from '@/socket/ChatRoom.vue'
 
 const routes = [
-  // {
-  //   path: '/',
-  //   name: 'home',
-  //   component: HomeView
-  // },
   {
     path: '/',
     name: 'home',
-    component: MJDrawing
-  },
-  {
-    path: '/mj-drawing',
-    name: 'mjDrawing',
-    component: MJDrawing
-  },
-  {
-    path: '/kl-drawing',
-    name: 'klDrawing',
-    component: KLDrawing
-  },
-  {
-    path: '/d3-drawing',
-    name: 'd3Drawing',
-    component: D3Drawing
-  },
-  {
-    path: '/magic-avatar',
-    name: 'magicAvatar',
-    component: MagicAvatar
-  },
-  {
-    path: '/ai-paragraph',
-    name: 'aiParagraph',
-    component: AIParagraph
-  },
-  {
-    path: '/image-swap',
-    name: 'imageSwap',
-    component: ImageSwap
-  },
-  {
-    path: '/multi-swap',
-    name: 'multiSwap',
-    component: MultiSwap
-  },
-  {
-    path: '/video-swap',
-    name: 'videoSwap',
-    component: VideoSwap
-  },
-  {
-    path: '/ai-dressing',
-    name: 'aiDressing',
-    component: AIDressing
-  },
-  {
-    path: '/ai-video-vidu',
-    name: 'aiVideoVidu',
-    component: AIVideoVidu
-  },
-  {
-    path: '/ai-video-kl',
-    name: 'aiVideoKL',
-    component: AIVideoKL
-  },
-  {
-    path: '/ai-video-prka',
-    name: 'aiVideoPrka',
-    component: AIVideoPrka
-  },
-  {
-    path: '/chat-room',
-    name: 'chatRoom',
-    component: ChatRoom
+    component: HomePage,
+    meta: {
+      keepAlive: true,
+      componentName: 'HomePage'
+    },
+    children: [
+      {
+        path: '',
+        name: 'mjDrawing',
+        component: MJDrawing,
+        meta: {
+          keepAlive: true,
+          componentName: 'MJDrawing'
+        }
+      },
+      {
+        path: '/mj-drawing',
+        name: 'mjDrawing',
+        component: MJDrawing,
+        meta: {
+          keepAlive: true,
+          componentName: 'MJDrawing'
+        }
+      },
+      {
+        path: '/kl-drawing',
+        name: 'klDrawing',
+        component: KLDrawing,
+        meta: {
+          keepAlive: true,
+          componentName: 'KLDrawing'
+        }
+      },
+      {
+        path: '/d3-drawing',
+        name: 'd3Drawing',
+        component: D3Drawing,
+        meta: {
+          keepAlive: true,
+          componentName: 'D3Drawing'
+        }
+      },
+      {
+        path: '/magic-avatar',
+        name: 'magicAvatar',
+        component: MagicAvatar,
+        meta: {
+          keepAlive: true,
+          componentName: 'MagicAvatar'
+        }
+      },
+      {
+        path: '/ai-paragraph',
+        name: 'aiParagraph',
+        component: AIParagraph,
+        meta: {
+          keepAlive: true,
+          componentName: 'AIParagraph'
+        }
+      },
+      {
+        path: '/image-swap',
+        name: 'imageSwap',
+        component: ImageSwap,
+        meta: {
+          keepAlive: true,
+          componentName: 'ImageSwap'
+        }
+      },
+      {
+        path: '/multi-swap',
+        name: 'multiSwap',
+        component: MultiSwap,
+        meta: {
+          keepAlive: true,
+          componentName: 'MultiSwap'
+        }
+      },
+      {
+        path: '/video-swap',
+        name: 'videoSwap',
+        component: VideoSwap,
+        meta: {
+          keepAlive: true,
+          componentName: 'VideoSwap'
+        }
+      },
+      {
+        path: '/ai-dressing',
+        name: 'aiDressing',
+        component: AIDressing,
+        meta: {
+          keepAlive: true,
+          componentName: 'AIDressing'
+        }
+      },
+      {
+        path: '/ai-video-vidu',
+        name: 'aiVideoVidu',
+        component: AIVideoVidu,
+        meta: {
+          keepAlive: true,
+          componentName: 'AIVideoVidu'
+        }
+      },
+      {
+        path: '/ai-video-kl',
+        name: 'aiVideoKL',
+        component: AIVideoKL,
+        meta: {
+          keepAlive: true,
+          componentName: 'AIVideoKL'
+        }
+      },
+      {
+        path: '/ai-video-prka',
+        name: 'aiVideoPrka',
+        component: AIVideoPrka,
+        meta: {
+          keepAlive: true,
+          componentName: 'AIVideoPrka'
+        }
+      },
+      {
+        path: '/chat-room',
+        name: 'chatRoom',
+        component: ChatRoom,
+        meta: {
+          keepAlive: true,
+          componentName: 'ChatRoom'
+        }
+      }
+    ]
   }
 ]
 

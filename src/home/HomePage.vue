@@ -162,7 +162,11 @@
       </div>
 
       <!-- Router View -->
-      <router-view></router-view>
+      <router-view v-slot="{ Component }">
+        <keep-alive :include="cachedComponents" :max="10">
+          <component :is="Component" />
+        </keep-alive>
+      </router-view>
     </div>
     <!-- 引入公共组件 -->
     <PasswordModal
@@ -176,6 +180,9 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import PasswordModal from '../components/PasswordModal.vue';
+
+// 需要缓存的组件名数组
+const cachedComponents = ref(['MJDrawing', 'KLDrawing', 'D3Drawing', 'MagicAvatar', 'AIParagraph', 'ImageSwap', 'MultiSwap', 'VideoSwap', 'AIDressing', 'AIVideoVidu', 'AIVideoKL', 'AIVideoPrka', 'ChatRoom']);
 
 // 弹窗状态
 const showPasswordModal = ref(false);

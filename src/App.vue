@@ -1,9 +1,16 @@
 <template>
-  <HomePage />
+  <router-view v-slot="{ Component }">
+    <keep-alive :include="cachedComponents" :max="10">
+      <component :is="Component" />
+    </keep-alive>
+  </router-view>
 </template>
 
 <script setup>
-import HomePage from './home/HomePage.vue'
+import { ref } from 'vue'
+
+// 需要缓存的组件名数组
+const cachedComponents = ref(['HomePage', 'MJDrawing', 'KLDrawing', 'D3Drawing', 'MagicAvatar', 'AIParagraph', 'ImageSwap', 'MultiSwap', 'VideoSwap', 'AIDressing', 'AIVideoVidu', 'AIVideoKL', 'AIVideoPrka', 'ChatRoom'])
 </script>
 
 <style>
