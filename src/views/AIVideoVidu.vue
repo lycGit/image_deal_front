@@ -94,7 +94,7 @@
         <!-- 生成按钮 -->
         <button 
         class="generate-button"
-        :disabled="!canGenerate"
+        :disabled="!canGenerate || isGenerating"
         @click="handleGenerate"
         >开始生成</button>
       </template>
@@ -166,9 +166,10 @@ const description = ref('')
 const duration = ref('4')
 const imageFit = ref('contain') // 默认为contain模式
 const canGenerate = computed(() => description.value.trim().length > 0)
+// 添加加载状态变量
+const isGenerating = ref(false)
 const instance = getCurrentInstance();
-const baseUrl = instance?.appContext.config.globalProperties.$BASE_URL_8091 
-
+const baseUrl = instance?.appContext.config.globalProperties.$BASE_URL_8091
 const tabs = [
   { id: 'vidu', name: 'Vidu视频' },
   { id: 'kl', name: 'KL视频' },
@@ -207,6 +208,9 @@ const handleFile = (file) => {
 const handleGenerate = async () => {
   if (!canGenerate.value) return
   
+  // 开始生成时禁用按钮
+  isGenerating.value = true
+  
   try {
     // 创建 FormData 对象
     const formData = new FormData()
@@ -242,6 +246,8 @@ const handleGenerate = async () => {
 
   } catch (error) {
     console.error('生成失败:', error)
+    // 发生错误时也需要启用按钮
+    isGenerating.value = false
   }
 }
 
@@ -251,7 +257,7 @@ const handleMessage = (data) => {
     // 调试数据结构
     console.log('数据结构详情 - data类型:', typeof data);
     console.log('data.videoUrl值:', data.videoUrl);
-    
+    isGenerating.value = false
     // 尝试多种可能的数据访问方式
     if (data.videoUrl) {
       if (typeof data.videoUrl === 'object' && data.videoUrl.value) {
@@ -282,6 +288,9 @@ const handleMessage = (data) => {
     }
   } catch (error) { 
     console.error('处理消息失败:', error) 
+    // 发生错误时也需要启用按钮
+    isGenerating.value = false
+
   } 
  }
 
