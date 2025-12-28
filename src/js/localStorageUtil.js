@@ -97,3 +97,73 @@ export const updateExchangeCodeInfo = (newInfo) => {
     console.error('更新兑换码信息失败:', error);
   }
 };
+
+/**
+ * 设置兑换码信息中的特定字段值
+ * @param {string} fieldName - 要设置的字段名
+ * @param {any} value - 要设置的字段值
+ * @returns {boolean} 设置成功返回true，失败返回false
+ */
+export const setExchangeCodeField = (fieldName, value) => {
+  try {
+    const currentInfo = getExchangeCodeInfo() || {};
+    const updatedInfo = { ...currentInfo, [fieldName]: value };
+    localStorage.setItem(EXCHANGE_CODE_INFO_KEY, JSON.stringify(updatedInfo));
+    return true;
+  } catch (error) {
+    console.error(`设置兑换码字段${fieldName}失败:`, error);
+    return false;
+  }
+};
+
+/**
+ * 设置剩余点数
+ * @param {number} value - 要设置的剩余点数
+ * @returns {boolean} 设置成功返回true，失败返回false
+ */
+export const setRemainingPoints = (value) => {
+  return setExchangeCodeField('remainingPoints', value);
+};
+
+/**
+ * 消耗积分
+ * @param {number} points - 要消耗的积分值
+ * @returns {Promise<Object>} 积分消耗结果
+ */
+export const consumePoints = async (points) => {
+  try {
+    const code = getExchangeCode();
+    if (!code) {
+      throw new Error('兑换码不存在');
+    }
+    
+    const response = await fetch('http://127.0.0.1:8091/api/exchange-code/consume', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ code, points })
+    });
+    
+    if (!response.ok) {
+      throw new Error('积分消耗失败');
+    }
+    
+    const result = await response.json();
+    console.log('积分消耗成功:', result);
+    
+    // 更新本地存储的剩余积分
+    if (result.remainingPoints !== undefined) {
+      setRemainingPoints(result.remainingPoints);
+    } else {
+      // 如果API没有返回剩余积分，则手动计算
+      const currentRemainingPoints = getRemainingPoints() || 0;
+      setRemainingPoints(currentRemainingPoints - points);
+    }
+    
+    return result;
+  } catch (error) {
+    console.error('积分消耗失败:', error);
+    throw error;
+  }
+};

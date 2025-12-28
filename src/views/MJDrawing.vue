@@ -99,7 +99,8 @@
 import { ref , onMounted, onUnmounted } from 'vue'
 import eventBus from '../eventBus'
 import PasswordModal from '../components/PasswordModal.vue'; // 添加这行导入
-import { getRemainingPoints } from '../js/localStorageUtil'; // 导入获取剩余积分的方法
+import { getRemainingPoints, getExchangeCode, setRemainingPoints, consumePoints } from '../js/localStorageUtil'; // 导入获取剩余积分、兑换码、设置剩余积分和消耗积分的方法
+import { getConfigValue } from '../js/configUtil'; // 导入获取配置值的方法
 
 // 响应式状态
 const prompt = ref('')
@@ -122,18 +123,23 @@ const formatTime = (timestamp) => {
   return `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日 ${date.getHours()}:${String(date.getMinutes()).padStart(2, '0')}`
 }
 
-// 修改handleSubmit函数
+// 发送绘画请求
 const handleSubmit = async () => {
   console.log("prompt33:--", prompt)
-
+  if (!prompt.value.trim()) return
   // 检查剩余积分
   const remainingPoints = getRemainingPoints();
-  if (!remainingPoints || remainingPoints < 5) {
-    alert('积分余额不足，需要至少5积分才能生成图片, 请输入兑换码充值积分');
+  // 从配置中获取TEXT_TO_IMAGE的积分消耗值
+  const textToImagePoints = Number(getConfigValue('TEXT_TO_IMAGE')) || 5; // 默认值为5
+  if (!remainingPoints || remainingPoints < textToImagePoints) {
+    alert('积分余额不足，需要至少' + textToImagePoints + '积分才能生成图片, 请输入兑换码充值积分');
     return; // 积分不足时终止函数执行
   }
-
-  if (!prompt.value.trim()) return
+  console.log("remainingPoints--",textToImagePoints);
+  // 消耗积分
+  const points = textToImagePoints; // 消耗的积分值，现在从配置中获取
+  // 不阻塞用户使用
+  consumePoints(points);
 
   // 点击提交后立即将prompt添加到显示列表中
   const currentPrompt = prompt.value.trim();
@@ -151,7 +157,7 @@ const handleSubmit = async () => {
   const message = JSON.stringify({'msg': currentPrompt, 'userId': 'lyc2', 'targetUserId': 'user_py_llm', 'action': 'flux-midjourney-mix2-lora', 'tempId': tempImageId});
   eventBus.emit('websocket-MJDrawing', message);
   prompt.value = '' // 清空输入框
-}
+};
 
 const handleMessage = (data) => { 
   console.log('MJDrawing 收到 WebSocket 消息:', data)

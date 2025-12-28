@@ -88,10 +88,10 @@
 </template>
 
 <script setup>
-import { ref, computed ,onMounted, onUnmounted} from 'vue'
-import { getCurrentInstance } from 'vue';
+import { ref, computed, onMounted, onUnmounted, getCurrentInstance } from 'vue'
 import eventBus from '../eventBus'
-import { getRemainingPoints } from '../js/localStorageUtil'; // 导入获取剩余积分的方法
+import { getRemainingPoints, consumePoints } from '../js/localStorageUtil'; // 导入获取剩余积分和消耗积分的方法
+import { getConfigValue } from '../js/configUtil'; // 导入获取配置值的方法
 
 const prompt = ref('')
 const referenceImage = ref(null)
@@ -144,15 +144,22 @@ const handleFile = (file) => {
 const generatedItems = ref([])
 
 const handleGenerate = async () => {
-  if (!canGenerate.value) return
+  if (!canGenerate.value) return  
   
   // 检查剩余积分
   const remainingPoints = getRemainingPoints();
-  if (!remainingPoints || remainingPoints < 5) {
-    alert('积分余额不足，需要至少5积分才能生成图片');
+  // 从配置中获取IMAGE_TO_IMAGE的积分消耗值
+  const imageToImagePoints = Number(getConfigValue('IMAGE_TO_IMAGE')) || 5; // 默认值为5
+  
+  if (!remainingPoints || remainingPoints < imageToImagePoints) {
+    alert('积分余额不足，需要至少' + imageToImagePoints + '积分才能生成图片');
     return; // 积分不足时终止函数执行
   }
   
+  // 消耗积分
+  const points = imageToImagePoints; // 消耗的积分值，现在从配置中获取
+  consumePoints(points);
+
   try {
     // 创建 FormData 对象
     const formData = new FormData()

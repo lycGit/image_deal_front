@@ -8,7 +8,6 @@
       </div>
       <div class="modal-body">
         <input
-          type="password"
           v-model="password"
           placeholder="请输入兑换码"
           class="password-input"

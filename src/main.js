@@ -4,6 +4,7 @@ import router from './router'
 import '../node_modules/@fortawesome/fontawesome-free/css/all.min.css'
 import config from './lib/config/config.js';
 import eventBus from './eventBus'
+import { getAllConfigs } from './js/configUtil'; // 导入获取配置的函数
 
 const app = createApp(App)
 app.use(router)
@@ -124,5 +125,7 @@ if (eventBus.on) {
 
 // 启动时连接 WebSocket
 connectWebSocket();
+
+getAllConfigs();
 
 app.mount('#app')
