@@ -52,7 +52,8 @@ const closeModal = () => {
 // 验证兑换码
 const verifyPassword = async () => {
   try {
-    const response = await fetch(`${baseUrl}/api/auth/${encodeURIComponent(password.value)}`, {
+    // 更新接口路径
+    const response = await fetch(`http://127.0.0.1:8091/api/exchange-code/info/${encodeURIComponent(password.value)}`, {
       method: 'GET',
       headers: {
         'Accept': 'application/json'
@@ -65,21 +66,28 @@ const verifyPassword = async () => {
     }
 
     const data = await response.json();
-    if (data.success) {
+    
+    // 验证成功（根据status字段判断，1表示有效）
+    if (data.status === 1) {
       // 验证成功
       errorMessage.value = '';
       localStorage.setItem('isAuthorized', 'true');
+      
+      // 将兑换码数据缓存在本地
+      localStorage.setItem('exchangeCodeInfo', JSON.stringify(data));
+      
       emit('success');
       closeModal();
     } else {
       localStorage.setItem('isAuthorized', 'false');
       // 验证失败
-      errorMessage.value = '兑换码错误，请重新输入';
+      errorMessage.value = '兑换码无效或已过期，请重新输入';
     }
   } catch (error) {
     localStorage.setItem('isAuthorized', 'false');
     // 验证失败
     errorMessage.value = '兑换码错误，请重新输入';
+    console.error('验证兑换码失败:', error);
   }
 };
 </script>

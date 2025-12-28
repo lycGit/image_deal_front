@@ -190,10 +190,7 @@ const isAuthorized = ref(false);
 
 // 检查是否已经授权
 onMounted(() => {
-  const authorized = localStorage.getItem('isAuthorized');
-  if (authorized === 'true') {
-    isAuthorized.value = true;
-  }
+
 });
 
 // 打开弹窗

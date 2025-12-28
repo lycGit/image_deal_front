@@ -99,6 +99,7 @@
 import { ref , onMounted, onUnmounted } from 'vue'
 import eventBus from '../eventBus'
 import PasswordModal from '../components/PasswordModal.vue'; // 添加这行导入
+import { getRemainingPoints } from '../js/localStorageUtil'; // 导入获取剩余积分的方法
 
 // 响应式状态
 const prompt = ref('')
@@ -125,11 +126,11 @@ const formatTime = (timestamp) => {
 const handleSubmit = async () => {
   console.log("prompt33:--", prompt)
 
-  // 先检查是否已授权
-  const authorized = localStorage.getItem('isAuthorized');
-  if (authorized !== 'true') {
-    showPasswordModal.value = true;
-    return; // 未授权时显示弹窗并终止函数执行
+  // 检查剩余积分
+  const remainingPoints = getRemainingPoints();
+  if (!remainingPoints || remainingPoints < 5) {
+    alert('积分余额不足，需要至少5积分才能生成图片, 请输入兑换码充值积分');
+    return; // 积分不足时终止函数执行
   }
 
   if (!prompt.value.trim()) return

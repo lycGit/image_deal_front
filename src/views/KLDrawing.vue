@@ -91,6 +91,7 @@
 import { ref, computed ,onMounted, onUnmounted} from 'vue'
 import { getCurrentInstance } from 'vue';
 import eventBus from '../eventBus'
+import { getRemainingPoints } from '../js/localStorageUtil'; // 导入获取剩余积分的方法
 
 const prompt = ref('')
 const referenceImage = ref(null)
@@ -144,6 +145,13 @@ const generatedItems = ref([])
 
 const handleGenerate = async () => {
   if (!canGenerate.value) return
+  
+  // 检查剩余积分
+  const remainingPoints = getRemainingPoints();
+  if (!remainingPoints || remainingPoints < 5) {
+    alert('积分余额不足，需要至少5积分才能生成图片');
+    return; // 积分不足时终止函数执行
+  }
   
   try {
     // 创建 FormData 对象
