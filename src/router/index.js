@@ -13,6 +13,7 @@ import AIVideoVidu from '../views/AIVideoVidu.vue'
 import AIVideoKL from '../views/AIVideoKL.vue'
 import AIVideoPrka from '../views/AIVideoPrka.vue'
 import ChatRoom from '@/socket/ChatRoom.vue'
+import ExchangeCodePage from '../views/ExchangeCodePage.vue' // 导入新页面组件
 
 const routes = [
   {
@@ -151,6 +152,15 @@ const routes = [
         }
       }
     ]
+  },
+  {
+    path: '/exchange-code',
+    name: 'exchangeCode',
+    component: ExchangeCodePage,
+    meta: {
+      keepAlive: false,
+      componentName: 'ExchangeCodePage'
+    }
   }
 ]
 
