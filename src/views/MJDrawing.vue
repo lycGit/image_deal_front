@@ -99,7 +99,7 @@
 import { ref , onMounted, onUnmounted } from 'vue'
 import eventBus from '../eventBus'
 import PasswordModal from '../components/PasswordModal.vue'; // 添加这行导入
-import { getRemainingPoints, getExchangeCode, setRemainingPoints, consumePoints } from '../js/localStorageUtil'; // 导入获取剩余积分、兑换码、设置剩余积分和消耗积分的方法
+import { getRemainingPoints, getExchangeCode, setRemainingPoints, consumePoints, getValidDays, getObtainedTime } from '../js/localStorageUtil'; // 导入获取剩余积分、兑换码、设置剩余积分和消耗积分的方法
 import { getConfigValue } from '../js/configUtil'; // 导入获取配置值的方法
 
 // 响应式状态
@@ -135,6 +135,30 @@ const handleSubmit = async () => {
     alert('积分余额不足，需要至少' + textToImagePoints + '积分才能生成图片, 请输入兑换码充值积分');
     return; // 积分不足时终止函数执行
   }
+  // 获取有效天数
+  const validDays = getValidDays();
+  // 获取获取时间
+  const obtainedTime = getObtainedTime();
+  // 检查有效天数
+  if (validDays && validDays > 0 && obtainedTime) {
+    // 将obtainedTime转换为Date对象
+    const obtainedDate = new Date(obtainedTime);
+    // 获取当前时间
+    const currentDate = new Date();
+    // 计算差值（毫秒）
+    const diffMilliseconds = currentDate - obtainedDate;
+    // 转换为天数（精确到秒）
+    const diffDays = diffMilliseconds / (1000 * 60 * 60 * 24);
+    // 如果差值大于有效天数，则提示过期
+    if (diffDays > validDays) {
+      alert('兑换码已过期，请重新购买');
+      return; // 兑换码已过期时终止函数执行
+    }
+  } else if (!validDays || validDays <= 0) {
+    alert('兑换码无效，请重新输入');
+    return; // 兑换码已过期时终止函数执行
+  }
+
   console.log("remainingPoints--",textToImagePoints);
   // 消耗积分
   const points = textToImagePoints; // 消耗的积分值，现在从配置中获取

@@ -70,20 +70,16 @@ const verifyPassword = async () => {
     if (data.status === 1) {
       // 验证成功
       errorMessage.value = '';
-      localStorage.setItem('isAuthorized', 'true');
-      
       // 将兑换码数据缓存在本地
       localStorage.setItem('exchangeCodeInfo', JSON.stringify(data));
       
       emit('success');
       closeModal();
     } else {
-      localStorage.setItem('isAuthorized', 'false');
       // 验证失败
       errorMessage.value = '兑换码无效或已过期，请重新输入';
     }
   } catch (error) {
-    localStorage.setItem('isAuthorized', 'false');
     // 验证失败
     errorMessage.value = '兑换码错误，请重新输入';
     console.error('验证兑换码失败:', error);

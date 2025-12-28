@@ -186,7 +186,6 @@ const cachedComponents = ref(['MJDrawing', 'KLDrawing', 'D3Drawing', 'MagicAvata
 
 // 弹窗状态
 const showPasswordModal = ref(false);
-const isAuthorized = ref(false);
 
 // 检查是否已经授权
 onMounted(() => {
@@ -205,7 +204,6 @@ const closeModal = () => {
 
 // 处理授权成功
 const handleAuthorizeSuccess = () => {
-  isAuthorized.value = true;
   console.log('授权成功');
 };
 </script>

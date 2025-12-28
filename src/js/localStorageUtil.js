@@ -66,6 +66,14 @@ export const getObtainedTime = () => {
 };
 
 /**
+ * 获取有效天数
+ * @returns {number|null} 有效天数
+ */
+export const getValidDays = () => {
+  return getExchangeCodeField('validDays');
+};
+
+/**
  * 获取完整的兑换码信息
  * @returns {Object|null} 完整的兑换码信息对象
  */
