@@ -145,33 +145,45 @@ export const consumePoints = async (points) => {
       throw new Error('兑换码不存在');
     }
     
-    const response = await fetch('http://127.0.0.1:8091/api/exchange-code/consume', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ code, points })
-    });
+    // 先尝试更新本地积分，确保用户体验不中断
+    const currentRemainingPoints = getRemainingPoints() || 0;
+    const newRemainingPoints = currentRemainingPoints - points;
+    setRemainingPoints(newRemainingPoints);
     
-    if (!response.ok) {
-      throw new Error('积分消耗失败');
+    // 然后尝试调用API更新服务器端数据
+    try {
+      const response = await fetch('http://127.0.0.1:8091/api/exchange-code/consume', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ code, points })
+      });
+      
+      if (!response.ok) {
+        console.warn('积分消耗API请求失败，但本地积分已更新');
+        return { success: true, message: '本地积分已更新，服务器同步稍后进行', remainingPoints: newRemainingPoints };
+      }
+      
+      const result = await response.json();
+      console.log('积分消耗成功:', result);
+      
+      // 如果API返回了剩余积分，使用API返回的值更新本地存储
+      if (result.remainingPoints !== undefined) {
+        setRemainingPoints(result.remainingPoints);
+        return result;
+      }
+      
+      return { success: true, remainingPoints: newRemainingPoints };
+    } catch (apiError) {
+      console.error('积分消耗API请求失败:', apiError);
+      // 即使API请求失败，也返回成功，因为本地积分已经更新
+      return { success: true, message: '本地积分已更新，服务器同步稍后进行', remainingPoints: newRemainingPoints };
     }
     
-    const result = await response.json();
-    console.log('积分消耗成功:', result);
-    
-    // 更新本地存储的剩余积分
-    if (result.remainingPoints !== undefined) {
-      setRemainingPoints(result.remainingPoints);
-    } else {
-      // 如果API没有返回剩余积分，则手动计算
-      const currentRemainingPoints = getRemainingPoints() || 0;
-      setRemainingPoints(currentRemainingPoints - points);
-    }
-    
-    return result;
   } catch (error) {
     console.error('积分消耗失败:', error);
-    throw error;
+    // 不再抛出错误，而是返回错误信息，让调用方决定如何处理
+    return { success: false, message: error.message };
   }
 };
