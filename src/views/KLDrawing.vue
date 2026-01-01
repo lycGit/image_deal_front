@@ -92,6 +92,7 @@ import { ref, computed, onMounted, onUnmounted, getCurrentInstance } from 'vue'
 import eventBus from '../eventBus'
 import { getRemainingPoints, consumePoints } from '../js/localStorageUtil'; // 导入获取剩余积分和消耗积分的方法
 import { getConfigValue } from '../js/configUtil'; // 导入获取配置值的方法
+import { getUserId } from '../js/userIdUtil'; // 导入用户ID工具
 
 const prompt = ref('')
 const referenceImage = ref(null)
@@ -99,6 +100,9 @@ const fileInput = ref(null)
 const selectedRatio = ref('1:1')
 const instance = getCurrentInstance();
 const baseUrl = instance?.appContext.config.globalProperties.$BASE_URL_8091 
+
+// 获取用户ID
+const userId = getUserId();
 
 const ratios = [
   { label: '1:1', value: '1:1' },
@@ -191,7 +195,7 @@ const handleGenerate = async () => {
     const result = await response.json()
     console.log('上传成功:', result)
     console.log('上传图片地址:', uploadedImageUrl)
-    const message = JSON.stringify({'msg': prompt.value, 'imageUrl': result.imageUrl1,  'userId': 'lyc2', 'targetUserId': 'user_py_llm', 'action': 'image2image'});
+    const message = JSON.stringify({'msg': prompt.value, 'imageUrl': result.imageUrl1,  'userId': userId, 'targetUserId': 'user_py_llm', 'action': 'image2image'});
     eventBus.emit('websocket-Image2Image', message);
 
     // 添加到生成记录

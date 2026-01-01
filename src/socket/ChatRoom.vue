@@ -26,6 +26,7 @@
 
 <script>
 import { ref, onUnmounted } from 'vue'
+import { getUserId } from '../js/userIdUtil'; // 导入用户ID工具
 
 export default {
   setup() {
@@ -33,9 +34,12 @@ export default {
     const isConnected = ref(false)
     const messages = ref([])
     const inputMessage = ref('')
+    
+    // 获取用户ID
+    const userId = getUserId();
 
     const connect = () => {
-      ws.value = new WebSocket('ws://127.0.0.1:8092/webSocket/lyc2')
+      ws.value = new WebSocket(`ws://127.0.0.1:8092/webSocket/${userId}`)
       
       ws.value.onopen = () => {
         isConnected.value = true

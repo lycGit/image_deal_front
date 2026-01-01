@@ -157,6 +157,7 @@
 import { ref, computed, nextTick, onMounted, onUnmounted} from 'vue'
 import { getCurrentInstance } from 'vue';
 import eventBus from '../eventBus'
+import { getUserId } from '../js/userIdUtil'; // 导入用户ID工具
 
 const currentTab = ref('vidu')
 const currentSubTab = ref('text')
@@ -171,6 +172,10 @@ const canGenerate = computed(() => description.value.trim().length > 0)
 const isGenerating = ref(false)
 const instance = getCurrentInstance();
 const baseUrl = instance?.appContext.config.globalProperties.$BASE_URL_8091
+
+// 获取用户ID
+const userId = getUserId();
+
 const tabs = [
   { id: 'vidu', name: 'Vidu视频' },
   { id: 'kl', name: 'KL视频' },
@@ -241,7 +246,7 @@ const handleGenerate = async () => {
 
     const result = await response.json()
     console.log('上传成功:', result)
-    const message = JSON.stringify({'msg': description.value, 'imageUrl': result.imageUrl1,  'userId': 'lyc2', 'targetUserId': 'user_py_llm', 'action': 'image2video'});
+    const message = JSON.stringify({'msg': description.value, 'imageUrl': result.imageUrl1,  'userId': userId, 'targetUserId': 'user_py_llm', 'action': 'image2video'});
     console.log('Image2Image websocket message:', message)
     eventBus.emit('websocket-Image2Video', message);
 

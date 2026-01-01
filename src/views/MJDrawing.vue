@@ -101,6 +101,7 @@ import eventBus from '../eventBus'
 import PasswordModal from '../components/PasswordModal.vue'; // 添加这行导入
 import { getRemainingPoints, getExchangeCode, setRemainingPoints, consumePoints, getValidDays, getObtainedTime } from '../js/localStorageUtil'; // 导入获取剩余积分、兑换码、设置剩余积分和消耗积分的方法
 import { getConfigValue } from '../js/configUtil'; // 导入获取配置值的方法
+import { getUserId } from '../js/userIdUtil'; // 导入用户ID工具
 
 // 响应式状态
 const prompt = ref('')
@@ -108,6 +109,9 @@ const generatedImages = ref([])
 // const currentMode = ref('text')
 // const instance = getCurrentInstance();
 // const baseUrl = instance?.appContext.config.globalProperties.$BASE_URL_8091 
+
+// 获取用户ID
+const userId = getUserId();
 
 // 方法
 // const switchMode = (mode) => {
@@ -178,7 +182,7 @@ const handleSubmit = async () => {
     prompt: currentPrompt
   });
 
-  const message = JSON.stringify({'msg': currentPrompt, 'userId': 'lyc2', 'targetUserId': 'user_py_llm', 'action': 'flux-midjourney-mix2-lora', 'tempId': tempImageId});
+  const message = JSON.stringify({'msg': currentPrompt, 'userId': userId, 'targetUserId': 'user_py_llm', 'action': 'flux-midjourney-mix2-lora', 'tempId': tempImageId});
   eventBus.emit('websocket-MJDrawing', message);
   prompt.value = '' // 清空输入框
 };

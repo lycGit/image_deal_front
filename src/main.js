@@ -5,11 +5,16 @@ import '../node_modules/@fortawesome/fontawesome-free/css/all.min.css'
 import config from './lib/config/config.js';
 import eventBus from './eventBus'
 import { getAllConfigs } from './js/configUtil'; // 导入获取配置的函数
+import { initUserId, getUserId } from './js/userIdUtil'; // 导入用户ID工具
 
 const app = createApp(App)
 app.use(router)
 app.config.productionTip = false
 app.use(config);
+
+// 初始化用户ID
+const USER_ID = initUserId();
+console.log('当前用户ID:', USER_ID);
 
 // WebSocket 相关逻辑
 let ws = null;
@@ -17,15 +22,15 @@ let pingInterval = null;
 const PING_INTERVAL = 30000; // 30 秒发送一次 ping
 
 const connectWebSocket = () => {
-  // ws = new WebSocket('ws://127.0.0.1:8092/webSocket/lyc2');
-  ws = new WebSocket('ws://120.27.130.190:8092/webSocket/lyc2');
+  // ws = new WebSocket('ws://127.0.0.1:8092/webSocket/' + USER_ID);
+  ws = new WebSocket('ws://120.27.130.190:8092/webSocket/' + USER_ID);
 
   ws.onopen = () => {
     console.log('WebSocket 连接成功');
     // 连接成功后开始定时发送 ping
     pingInterval = setInterval(() => {
       if (ws.readyState === WebSocket.OPEN) {
-        var msg = "{'msg': 'ping', 'userId': 'lyc2', 'targetUserId': 'lyc2'}"
+        var msg = `{'msg': 'ping', 'userId': '${USER_ID}', 'targetUserId': '${USER_ID}'}`
         ws.send(msg);
       }
     }, PING_INTERVAL);
@@ -54,7 +59,7 @@ const connectWebSocket = () => {
         console.log('开始检查user_py_llm是否在线...');
         
         // 发送目标为user_py_llm的ping消息
-        var pyLlmMsg = '{"msg": "ping", "userId": "lyc2", "targetUserId": "user_py_llm", "action": "isLLMOnLine"}';
+        var pyLlmMsg = `{"msg": "ping", "userId": "${USER_ID}", "targetUserId": "user_py_llm", "action": "isLLMOnLine"}`;
         ws.send(pyLlmMsg);
         console.log('已发送ping消息至user_py_llm');
         

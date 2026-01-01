@@ -147,6 +147,7 @@
 import { ref ,onMounted, onUnmounted} from 'vue'
 import eventBus from '../eventBus'
 import { getCurrentInstance } from 'vue';
+import { getUserId } from '../js/userIdUtil'; // 导入用户ID工具
 
 const currentTab = ref('single')
 const templateInput = ref(null)
@@ -157,6 +158,9 @@ const selectedResolution = ref('normal')
 const selectedFaceIndex = ref('all')
 const instance = getCurrentInstance();
 const baseUrl = instance?.appContext.config.globalProperties.$BASE_URL_8091 
+
+// 获取用户ID
+const userId = getUserId();
 
 const tabs = [
   { id: 'single', name: '图片换脸' },
@@ -244,7 +248,7 @@ const handleGenerate = async () => {
     const result = await response.json()
     console.log('换脸成功:', result)
 
-    const message = JSON.stringify({'msg': combineUrls(result.imageUrl1, result.imageUrl2), 'userId': 'lyc2', 'targetUserId': 'user_py_llm', 'action': 'IPAdapterFaceIDPortrait'});
+    const message = JSON.stringify({'msg': combineUrls(result.imageUrl1, result.imageUrl2), 'userId': userId, 'targetUserId': 'user_py_llm', 'action': 'IPAdapterFaceIDPortrait'});
     eventBus.emit('websocket-ImageSwap', message);
     // // 更新结果图片
     // resultImage.value = result.imageUrl1
