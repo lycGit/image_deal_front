@@ -75,10 +75,10 @@
           <div class="image-container">
             <div class="image-wrapper">
               <img :src="item.url" :alt="item.description" />
-              <div class="image-actions">
+              <!-- <div class="image-actions">
                 <button class="image-action">垫图</button>
                 <button class="image-action">生成视频</button>
-              </div>
+              </div> -->
             </div>
           </div>
         </div>

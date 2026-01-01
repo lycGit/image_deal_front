@@ -24,7 +24,7 @@
 
 // 取消注释props定义
 <script setup>
-import { ref, defineProps, defineEmits } from 'vue';
+import { ref, defineProps, defineEmits, getCurrentInstance } from 'vue';
 import config from '../lib/config/config.js';
 
 // 使用解构赋值明确指定我们需要的属性
@@ -35,13 +35,16 @@ const { showModal } = defineProps({
   }
 });
 
+const instance = getCurrentInstance();
+const baseUrl = instance?.appContext.config.globalProperties.$BASE_URL_8091 
+
 // 定义emits
 const emit = defineEmits(['close', 'success']);
 
 // 组件内部状态
 const password = ref('');
 const errorMessage = ref('');
-const baseUrl = config.install ? 'http://localhost:8091' : 'http://localhost:8091';
+
 
 // 关闭弹窗
 const closeModal = () => {
@@ -52,7 +55,7 @@ const closeModal = () => {
 const verifyPassword = async () => {
   try {
     // 更新接口路径
-    const response = await fetch(`http://127.0.0.1:8091/api/exchange-code/info/${encodeURIComponent(password.value)}`, {
+    const response = await fetch(`${baseUrl}/api/exchange-code/info/${encodeURIComponent(password.value)}`, {
       method: 'GET',
       headers: {
         'Accept': 'application/json'
@@ -66,8 +69,8 @@ const verifyPassword = async () => {
 
     const data = await response.json();
     
-    // 验证成功（根据status字段判断，1表示有效）
-    if (data.status === 1) {
+    // 验证成功（根据status字段判断，0: 未获取 1: 已获取 2: 已使用）
+    if (data.status !== 2) {
       // 验证成功
       errorMessage.value = '';
       // 将兑换码数据缓存在本地

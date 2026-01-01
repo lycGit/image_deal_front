@@ -72,6 +72,9 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 
+// 获取API基础URL
+const BASE_URL = import.meta.env.VUE_API_BASE_URL || 'http://120.27.130.190:8091';
+
 // 批次号输入框数据
 const batchNumbers = ref({
   day1: '',
@@ -123,7 +126,7 @@ const getExchangeCode = async (type) => {
   }
   
   try {
-    const response = await fetch(`http://127.0.0.1:8091/api/exchange-code/get/${batch}`);
+    const response = await fetch(`${BASE_URL}/api/exchange-code/get/${batch}`);
     
     if (!response.ok) {
       throw new Error('获取兑换码失败');

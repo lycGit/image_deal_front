@@ -2,6 +2,9 @@
  * 配置工具类，用于获取和管理应用配置
  */
 
+// 从环境变量中获取API基础URL
+const BASE_URL = process.env.VUE_API_BASE_URL || 'http://120.27.130.190:8091';
+
 // 配置信息的localStorage键名
 const APP_CONFIG_KEY = 'appConfig';
 
@@ -11,7 +14,7 @@ const APP_CONFIG_KEY = 'appConfig';
  */
 export const getAllConfigs = async () => {
   try {
-    const response = await fetch('http://127.0.0.1:8091/api/config/get-all');
+    const response = await fetch(`${BASE_URL}/api/config/get-all`);
     if (!response.ok) {
       throw new Error('获取配置信息失败');
     }

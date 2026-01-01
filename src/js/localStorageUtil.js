@@ -2,6 +2,9 @@
  * localStorage工具类，用于处理兑换码信息的存储和获取
  */
 
+// 从环境变量中获取API基础URL
+const BASE_URL = process.env.VUE_API_BASE_URL || 'http://120.27.130.190:8091';
+
 // 兑换码信息的localStorage键名
 const EXCHANGE_CODE_INFO_KEY = 'exchangeCodeInfo';
 
@@ -152,7 +155,7 @@ export const consumePoints = async (points) => {
     
     // 然后尝试调用API更新服务器端数据
     try {
-      const response = await fetch('http://127.0.0.1:8091/api/exchange-code/consume', {
+      const response = await fetch(`${BASE_URL}/api/exchange-code/consume`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
