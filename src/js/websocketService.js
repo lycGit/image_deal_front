@@ -5,7 +5,7 @@ class WebSocketService {
     }
 
     connect(messageCallback) {
-        this.ws = new WebSocket('http://localhost:8092/websocket')
+        this.ws = new WebSocket('ws://localhost:8092/websocket')
 
         this.ws.onopen = () => {
             this.connected = true
