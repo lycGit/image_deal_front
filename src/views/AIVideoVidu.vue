@@ -227,26 +227,30 @@ const handleGenerate = async () => {
       const base64Data = referenceImage.value.split(',')[1]
       const blob = await fetch(`data:image/jpeg;base64,${base64Data}`).then(res => res.blob())
       formData.append('file', blob, 'reference.jpg')
-      uploadedImageUrl = URL.createObjectURL(blob)
+      // uploadedImageUrl = URL.createObjectURL(blob)
+      // 添加其他参数
+      formData.append('description', description.value)
+      formData.append('category', 'KL_DRAWING')
+      // formData.append('tags', selectedRatio.value)
+
+      const response = await fetch(`${baseUrl}/api/files/upload`, {
+        method: 'POST',
+        body: formData
+      })
+
+      if (!response.ok) {
+        throw new Error('网络请求失败')
+      }
+
+      const result = await response.json()
+      console.log('上传成功:', result)
+      uploadedImageUrl = result.imageUrl1
     }
     
-    // 添加其他参数
-    formData.append('description', description.value)
-    formData.append('category', 'KL_DRAWING')
-    // formData.append('tags', selectedRatio.value)
 
-    const response = await fetch(`${baseUrl}/api/files/upload`, {
-      method: 'POST',
-      body: formData
-    })
-
-    if (!response.ok) {
-      throw new Error('网络请求失败')
-    }
-
-    const result = await response.json()
-    console.log('上传成功:', result)
-    const message = JSON.stringify({'msg': description.value, 'imageUrl': result.imageUrl1,  'userId': userId, 'targetUserId': 'user_py_llm', 'action': 'image2video'});
+    // 根据参考图是否存在决定action类型
+    const actionType = referenceImage.value ? 'image2video' : 'text2video'
+    const message = JSON.stringify({'msg': description.value, 'imageUrl': uploadedImageUrl,  'userId': userId, 'targetUserId': 'user_py_llm', 'action': actionType});
     console.log('Image2Image websocket message:', message)
     eventBus.emit('websocket-Image2Video', message);
 
