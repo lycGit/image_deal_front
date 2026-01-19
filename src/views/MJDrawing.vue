@@ -102,6 +102,7 @@ import PasswordModal from '../components/PasswordModal.vue'; // 添加这行导�
 import { getRemainingPoints, getExchangeCode, setRemainingPoints, consumePoints, getValidDays, getObtainedTime } from '../js/localStorageUtil'; // 导入获取剩余积分、兑换码、设置剩余积分和消耗积分的方法
 import { getConfigValue } from '../js/configUtil'; // 导入获取配置值的方法
 import { getUserId } from '../js/userIdUtil'; // 导入用户ID工具
+import { createDeepSeekApi } from '../js/deepseekApiUtil'; // 导入DeepSeek API工具类
 
 // 响应式状态
 const prompt = ref('')
@@ -131,6 +132,7 @@ const formatTime = (timestamp) => {
 const handleSubmit = async () => {
   console.log("prompt33:--", prompt)
   if (!prompt.value.trim()) return
+  
   // 检查剩余积分
   const remainingPoints = getRemainingPoints();
   // 从配置中获取TEXT_TO_IMAGE的积分消耗值
@@ -170,18 +172,55 @@ const handleSubmit = async () => {
   consumePoints(points);
 
   // 点击提交后立即将prompt添加到显示列表中
-  const currentPrompt = prompt.value.trim();
+  const originalPrompt = prompt.value.trim();
+  let currentPrompt = originalPrompt;
   const tempImageId = Date.now(); // 使用时间戳作为临时ID
   
-  // 添加临时图片记录，包含prompt但没有图片URL
+  // 添加临时图片记录，包含原始prompt但没有图片URL
   generatedImages.value.push({
     id: tempImageId,
     url: null,
     description: '',
     timestamp: Date.now(),
-    prompt: currentPrompt
+    prompt: originalPrompt // 显示原始提示词
   });
-
+  
+  // 调用DeepSeek API优化提示词
+  try {
+    // 从环境变量获取API密钥
+    const apiKey = 'sk-bea5f7598f4a4c7195fe0063779e6f64';
+    if (apiKey) {
+      const deepseekApi = createDeepSeekApi(apiKey);
+      
+      // 自定义请求选项
+      const options = {
+        model: 'deepseek-chat',
+        maxTokens: 1000,
+        temperature: 0.8
+      };
+      
+      // 发送提示词优化请求
+      const optimizationPrompt = `请将以下中文绘画提示词参考
+cute anime girl with massive fluffy fennec ears and a big fluffy tail
+blonde messy long hair blue eyes wearing a maid outfit with a long black
+ gold leaf pattern dress and a white apron mouth open placing a fancy
+ black forest cake with candles on top of a dinner table of an old dark
+ Victorian mansion lit by candlelight with a bright window to the foggy
+ forest and very expensive stuff everywhere there are paintings on the walls
+这个样式和结构优化为更专业、更详细的英文绘画提示词，适合AI图像生成：${originalPrompt}，
+同时只需要返回最佳的一个优化后的英文提示词结果就行，不要返回改写说明等对于生成图片无用的内容`;
+      const optimizedResult = await deepseekApi.chat(optimizationPrompt, options);
+      
+      console.log('DeepSeek API优化提示词结果:', optimizedResult);
+      // 更新为优化后的提示词
+      currentPrompt = optimizedResult;
+    }
+  } catch (error) {
+    console.error('提示词优化失败:', error);
+    // 优化失败不影响原有功能，继续使用原始提示词
+  }
+  
+  // 使用优化后的提示词发送websocket消息
   const message = JSON.stringify({'msg': currentPrompt, 'userId': userId, 'targetUserId': 'user_py_llm', 'action': 'text2image', 'tempId': tempImageId});
   eventBus.emit('websocket-MJDrawing', message);
   prompt.value = '' // 清空输入框
