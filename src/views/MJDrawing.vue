@@ -182,7 +182,7 @@ const handleSubmit = async () => {
     prompt: currentPrompt
   });
 
-  const message = JSON.stringify({'msg': currentPrompt, 'userId': userId, 'targetUserId': 'user_py_llm', 'action': 'flux-midjourney-mix2-lora', 'tempId': tempImageId});
+  const message = JSON.stringify({'msg': currentPrompt, 'userId': userId, 'targetUserId': 'user_py_llm', 'action': 'text2image', 'tempId': tempImageId});
   eventBus.emit('websocket-MJDrawing', message);
   prompt.value = '' // 清空输入框
 };
