@@ -232,7 +232,14 @@ const handleMessage = (data) => {
     console.log('MJDrawing 收到 imageUrl:', data.imageUrl)
     
     // 查找临时图片记录
-    const tempImageIndex = generatedImages.value.findIndex(img => img.id === data.tempId);
+    // 优先使用tempId查找
+    let tempImageIndex = generatedImages.value.findIndex(img => img.id === data.tempId);
+    
+    // 如果没有找到tempId，尝试通过其他方式匹配
+    if (tempImageIndex === -1) {
+      // 查找最近添加的无URL的图片记录
+      tempImageIndex = generatedImages.value.findLastIndex(img => !img.url);
+    }
     
     if (tempImageIndex !== -1) {
       // 更新临时记录，添加图片URL
@@ -241,8 +248,10 @@ const handleMessage = (data) => {
         url: data.imageUrl,
         description: data.description,
       };
+      console.log('已更新临时图片记录:', generatedImages.value[tempImageIndex]);
     } else {
       // 如果没有找到临时记录（可能是直接从后端推送的消息），则添加新记录
+      console.warn('未找到临时图片记录，创建新记录:', data);
       generatedImages.value.push({
         id: Date.now(),
         url: data.imageUrl,
