@@ -157,7 +157,7 @@ const handleGenerate = async () => {
   const imageToImagePoints = Number(getConfigValue('IMAGE_TO_IMAGE')) || 5; // 默认值为5
   
   if (!remainingPoints || remainingPoints < imageToImagePoints) {
-    showAlert('积分余额不足，需要至少' + imageToImagePoints + '积分才能生成图片');
+    showAlert('积分余额不足，需要至少' + imageToImagePoints + '积分才能生成图片, 请输入兑换码充值积分');
     return; // 积分不足时终止函数执行
   }
   

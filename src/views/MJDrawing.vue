@@ -25,14 +25,8 @@
                 <!-- <img src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fcbu01.alicdn.com%2Fimg%2Fibank%2FO1CN01JIwhKu1Bs319GOBwE_%21%210-0-cib.jpg&refer=http%3A%2F%2Fcbu01.alicdn.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1768186848&t=d9a63a0a1b717aeb22faa3150adcaa7b" :alt="'生成图片 ' + (index + 1)" /> -->
                 
                 <div class="image-actions" v-if="image.url">
-                  <button class="action-button">
+                  <button class="action-button" @click="downloadImage(image.url, 'generated-image-' + (index + 1))">
                     <i class="fas fa-download"></i>
-                  </button>
-                  <button class="action-button">
-                    <i class="fas fa-heart"></i>
-                  </button>
-                  <button class="action-button">
-                    <i class="fas fa-share"></i>
                   </button>
                 </div>
               </div>
@@ -293,6 +287,20 @@ const handleAuthorizeSuccess = () => {
   console.log('授权成功，可以执行需要权限的操作了');
 };
 
+// 下载图片功能
+const downloadImage = (url, filename) => {
+  // 创建一个a标签
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = filename || 'image.png';
+  link.target = '_blank';
+  
+  // 触发点击事件
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+};
+
 </script>
 
 <style scoped>
@@ -465,5 +473,41 @@ const handleAuthorizeSuccess = () => {
 .empty-icon {
   margin-right: 8px;
   font-size: 18px;
+}
+
+/* 图片操作按钮样式 */
+.image-actions {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  display: flex;
+  gap: 8px;
+  z-index: 1;
+}
+
+.action-button {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background-color: rgba(71, 118, 230, 0.8);
+  color: #ffffff;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.action-button:hover {
+  background-color: rgba(71, 118, 230, 1);
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.action-button i {
+  margin: 0;
 }
 </style>
