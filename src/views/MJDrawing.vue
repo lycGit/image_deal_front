@@ -252,13 +252,15 @@ const handleMessage = (data) => {
     } else {
       // 如果没有找到临时记录（可能是直接从后端推送的消息），则添加新记录
       console.warn('未找到临时图片记录，创建新记录:', data);
-      generatedImages.value.push({
-        id: Date.now(),
-        url: data.imageUrl,
-        description: data.description,
-        timestamp: Date.now(),
-        prompt: data.prompt || '提示词不能为空'
-      });
+      if (data.imageUrl) {
+        generatedImages.value.push({
+          id: Date.now(),
+          url: data.imageUrl,
+          description: data.description,
+          timestamp: Date.now(),
+          prompt: data.prompt || '提示词不能为空'
+        });
+      }
     }
   } catch (error) {
     console.error('解析消息失败，数据不是有效的 JSON 字符串:', error)
