@@ -93,13 +93,14 @@ import eventBus from '../eventBus'
 import { getRemainingPoints, consumePoints } from '../js/localStorageUtil'; // 导入获取剩余积分和消耗积分的方法
 import { getConfigValue } from '../js/configUtil'; // 导入获取配置值的方法
 import { getUserId } from '../js/userIdUtil'; // 导入用户ID工具
+import { showAlert } from '../js/alertUtil'; // 导入公共弹窗工具类
 
 const prompt = ref('')
 const referenceImage = ref(null)
 const fileInput = ref(null)
 const selectedRatio = ref('1:1')
 const instance = getCurrentInstance();
-const baseUrl = instance?.appContext.config.globalProperties.$BASE_URL_8091 
+const baseUrl = instance?.appContext.config.globalProperties.$BASE_URL_8091
 
 // 获取用户ID
 const userId = getUserId();
@@ -156,7 +157,7 @@ const handleGenerate = async () => {
   const imageToImagePoints = Number(getConfigValue('IMAGE_TO_IMAGE')) || 5; // 默认值为5
   
   if (!remainingPoints || remainingPoints < imageToImagePoints) {
-    alert('积分余额不足，需要至少' + imageToImagePoints + '积分才能生成图片');
+    showAlert('积分余额不足，需要至少' + imageToImagePoints + '积分才能生成图片');
     return; // 积分不足时终止函数执行
   }
   

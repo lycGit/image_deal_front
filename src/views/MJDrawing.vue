@@ -103,6 +103,7 @@ import { getRemainingPoints, getExchangeCode, setRemainingPoints, consumePoints,
 import { getConfigValue } from '../js/configUtil'; // 导入获取配置值的方法
 import { getUserId } from '../js/userIdUtil'; // 导入用户ID工具
 import { createDeepSeekApi } from '../js/deepseekApiUtil'; // 导入DeepSeek API工具类
+import { showAlert } from '../js/alertUtil'; // 导入公共弹窗工具类
 
 // 响应式状态
 const prompt = ref('')
@@ -138,7 +139,7 @@ const handleSubmit = async () => {
   // 从配置中获取TEXT_TO_IMAGE的积分消耗值
   const textToImagePoints = Number(getConfigValue('TEXT_TO_IMAGE')) || 5; // 默认值为5
   if (!remainingPoints || remainingPoints < textToImagePoints) {
-    alert('积分余额不足，需要至少' + textToImagePoints + '积分才能生成图片, 请输入兑换码充值积分');
+    showAlert('积分余额不足，需要至少' + textToImagePoints + '积分才能生成图片, 请输入兑换码充值积分');
     return; // 积分不足时终止函数执行
   }
   // 获取有效天数
