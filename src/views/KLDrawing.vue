@@ -195,7 +195,7 @@ const handleGenerate = async () => {
     const result = await response.json()
     console.log('上传成功:', result)
     console.log('上传图片地址:', uploadedImageUrl)
-    const message = JSON.stringify({'msg': prompt.value, 'imageUrl': result.imageUrl1,  'userId': userId, 'targetUserId': 'user_py_llm', 'action': 'image2image'});
+    const message = JSON.stringify({'msg': prompt.value, 'imageUrl': result.imageUrl1,  'userId': userId, 'targetUserId': 'user_py_llm', 'action': 'image_edit'});
     eventBus.emit('websocket-Image2Image', message);
 
     // 添加到生成记录
