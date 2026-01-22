@@ -106,10 +106,36 @@ const generatedImages = ref([])
 // const instance = getCurrentInstance();
 // const baseUrl = instance?.appContext.config.globalProperties.$BASE_URL_8091 
 
+// localStorage缓存键名
+const MIDJOURNEY_IMAGES_CACHE_KEY = 'midjourneyGeneratedImages';
+
 // 获取用户ID
 const userId = getUserId();
 
-// 方法
+// 保存图片数据到localStorage
+const saveImagesToCache = () => {
+  try {
+    // 只保存最近10条数据
+    const imagesToSave = [...generatedImages.value].slice(-10);
+    localStorage.setItem(MIDJOURNEY_IMAGES_CACHE_KEY, JSON.stringify(imagesToSave));
+    console.log('图片数据已保存到本地缓存');
+  } catch (error) {
+    console.error('保存图片数据到本地缓存失败:', error);
+  }
+};
+
+// 从localStorage加载图片数据
+const loadImagesFromCache = () => {
+  try {
+    const cachedImages = localStorage.getItem(MIDJOURNEY_IMAGES_CACHE_KEY);
+    if (cachedImages) {
+      generatedImages.value = JSON.parse(cachedImages);
+      console.log('已从本地缓存加载图片数据:', generatedImages.value.length, '条');
+    }
+  } catch (error) {
+    console.error('从本地缓存加载图片数据失败:', error);
+  }
+};
 // const switchMode = (mode) => {
 //   currentMode.value = mode
 // }
@@ -244,6 +270,8 @@ const handleMessage = (data) => {
         description: data.description,
       };
       console.log('已更新临时图片记录:', generatedImages.value[tempImageIndex]);
+      // 保存到本地缓存
+      saveImagesToCache();
     } else {
       // 如果没有找到临时记录（可能是直接从后端推送的消息），则添加新记录
       console.warn('未找到临时图片记录，创建新记录:', data);
@@ -255,6 +283,8 @@ const handleMessage = (data) => {
           timestamp: Date.now(),
           prompt: data.prompt || '提示词不能为空'
         });
+        // 保存到本地缓存
+        saveImagesToCache();
       }
     }
   } catch (error) {
@@ -265,11 +295,15 @@ const handleMessage = (data) => {
 onMounted(() => { 
   console.log('MJDrawing onMounted') 
   eventBus.on('websocket-message', handleMessage) 
+  // 加载缓存数据
+  loadImagesFromCache();
 })
 
 onUnmounted(() => { 
   console.log(' MJDrawing onUnmounted') 
   eventBus.off('websocket-message', handleMessage) 
+  // 组件卸载时保存数据
+  saveImagesToCache();
 })
 
 const showPasswordModal = ref(false);
