@@ -20,7 +20,7 @@
                 <img v-if="image.url" :src="image.url" :alt="'生成图片 ' + (index + 1)" />
                 <div v-else class="image-loading">
                   <i class="fas fa-spinner fa-spin"></i>
-                  <span>图片生成中...</span>
+                  <span>高清图片生成中，耗时约30秒...</span>
                 </div>
                 <!-- <img src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fcbu01.alicdn.com%2Fimg%2Fibank%2FO1CN01JIwhKu1Bs319GOBwE_%21%210-0-cib.jpg&refer=http%3A%2F%2Fcbu01.alicdn.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1768186848&t=d9a63a0a1b717aeb22faa3150adcaa7b" :alt="'生成图片 ' + (index + 1)" /> -->
                 
@@ -416,8 +416,8 @@ const handleAuthorizeSuccess = () => {
 .image-grid {
   padding: 0 16px 16px;
   display: grid;
-  grid-template-columns: repeat(4, 1fr);  /* 修改为4列 */
-  gap: 12px;  /* 减小间距 */
+  grid-template-columns: repeat(2, 1fr);  /* 修改为2列，使图片大小增加一倍 */
+  gap: 24px;  /* 增加间距以适应更大的图片 */
 }
 
 .image-item {
