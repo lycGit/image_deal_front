@@ -84,6 +84,12 @@
             <div class="image-container">
               <div class="image-wrapper">
                 <img :src="item.url" :alt="item.description" />
+                <!-- 下载按钮 -->
+                <div class="image-actions">
+                  <button class="download-button" @click="downloadImage(item.url, item.description)">
+                    <i class="fas fa-download"></i>
+                  </button>
+                </div>
                 <!-- <div class="image-actions">
                   <button class="image-action">垫图</button>
                   <button class="image-action">生成视频</button>
@@ -247,6 +253,26 @@ const handleMessage = (data) => {
   } finally {
     // WebSocket消息处理完成后，确保loading状态为false
     loading.value = false
+  }
+}
+
+// 下载图片函数
+const downloadImage = async (imageUrl, description) => {
+  try {
+    // 创建下载链接
+    const link = document.createElement('a')
+    link.href = imageUrl
+    // 使用描述作为文件名，替换特殊字符，添加时间戳确保唯一性
+    const fileName = `${description.replace(/[^a-zA-Z0-9\u4e00-\u9fa5]/g, '_')}_${Date.now()}.jpg`
+    link.download = fileName
+    // 触发下载
+    document.body.appendChild(link)
+    link.click()
+    // 清理
+    document.body.removeChild(link)
+  } catch (error) {
+    console.error('下载图片失败:', error)
+    showAlert('下载失败，请重试')
   }
 }
 
@@ -539,6 +565,7 @@ textarea:focus {
   justify-content: center;
 }
 
+/* 修改右侧图片展示样式，确保完整展示 */
 .image-wrapper {
   position: relative;
   border-radius: 8px;
@@ -556,5 +583,39 @@ textarea:focus {
   display: block;
   object-fit: contain;
   max-height: 600px;
+}
+
+/* 图片操作按钮样式 */
+.image-actions {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  display: flex;
+  gap: 8px;
+}
+
+.download-button {
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 50%;
+  background-color: rgba(0, 0, 0, 0.6);
+  color: #ffffff;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s;
+  backdrop-filter: blur(4px);
+}
+
+.download-button:hover {
+  background-color: rgba(71, 118, 230, 0.8);
+  transform: scale(1.1);
+}
+
+.download-button:active {
+  transform: scale(0.95);
 }
 </style>
