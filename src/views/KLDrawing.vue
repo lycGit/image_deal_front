@@ -78,7 +78,7 @@
         <div v-else>
           <div v-for="(item, index) in generatedItems" :key="index" class="image-group">
             <div class="group-title">
-              <i class="copy-icon"></i>
+              <span class="item-index">{{ index + 1 }}</span>
               {{ item.description }}
             </div>
             <div class="image-container">
@@ -509,6 +509,7 @@ textarea:focus {
   flex: 1;
   height: 100vh;
   padding: 20px;
+  padding-bottom: 64px; /* 增加底部内边距，确保内容距离页面底部44px */
   overflow-y: auto;
 }
 
@@ -533,6 +534,7 @@ textarea:focus {
   display: flex;
   flex-direction: column;
   gap: 20px;
+  margin-bottom: 44px; /* 直接添加底部margin，确保距离页面底部44px */
 }
 
 /* 加载中状态 */
@@ -586,11 +588,28 @@ textarea:focus {
   border-bottom: 1px solid #40444b;
 }
 
+/* 修改复制图标样式为序号样式 */
+.item-index {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  background-color: #4776E6;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 500;
+  border-radius: 2px;
+  margin-right: 8px;
+}
+
 .copy-icon {
   width: 16px;
   height: 16px;
   background-color: #8e9297;
   border-radius: 2px;
+  margin-right: 8px;
+  display: inline-block;
 }
 
 .image-container {
@@ -604,11 +623,10 @@ textarea:focus {
   position: relative;
   border-radius: 8px;
   overflow: hidden;
-  width: 50%;  /* 修改为50% */
-  max-width: 600px;  /* 增加最大宽度 */
+  width: 100%;  /* 修改为100%，增加一倍宽度 */
+  max-width: 800px;  /* 增加最大宽度 */
   margin: 0 auto;
-  background-color: #1a1b1e;
-  padding: 16px;
+  padding: 8px;  /* 减少内边距 */
 }
 
 .image-wrapper img {
