@@ -132,9 +132,13 @@
            :src="videoUrl" 
          ></video> 
          <button v-if="videoUrl" class="download-button" @click="handleDownload">
-           <i class="download-icon">⬇️</i>
-           <span class="download-text">下载</span>
+           <i class="fas fa-download"></i>
          </button>
+         <!-- 加载状态 -->
+         <div v-if="isGenerating" class="loading-overlay">
+           <div class="loading-spinner"></div>
+           <div class="loading-text">本视频生成约需要3分钟，请耐心等待...</div>
+         </div>
        </div>
 
       <!-- 视频说明 -->
@@ -292,6 +296,8 @@ const handleMessage = (data) => {
       
       // 只有当videoUrl有有效值时才尝试播放
       if (videoUrl.value) {
+        // 保存视频到本地存储
+        saveToStorage()
         // 等待DOM更新后自动播放视频
         nextTick(() => {
           if (videoPlayer.value) {
@@ -313,6 +319,8 @@ const handleMessage = (data) => {
 onMounted(() => { 
   console.log(' WebSocket onMounted') 
   eventBus.on('websocket-message', handleMessage) 
+  // 从本地存储加载视频
+  loadFromStorage()
 })
 
 onUnmounted(() => { 
@@ -321,6 +329,33 @@ onUnmounted(() => {
 })
 const videoUrl = ref(null)
 const videoPlayer = ref(null)
+
+// 本地存储相关
+const STORAGE_KEY = 'ai-video-vidu-cache'
+const MAX_VIDEOS = 1 // 只保存最新的一个视频
+
+// 从本地存储加载视频
+const loadFromStorage = () => {
+  try {
+    const cachedVideo = localStorage.getItem(STORAGE_KEY)
+    if (cachedVideo) {
+      videoUrl.value = cachedVideo
+    }
+  } catch (error) {
+    console.error('从本地存储加载视频失败:', error)
+  }
+}
+
+// 保存视频到本地存储
+const saveToStorage = () => {
+  try {
+    if (videoUrl.value) {
+      localStorage.setItem(STORAGE_KEY, videoUrl.value)
+    }
+  } catch (error) {
+    console.error('保存视频到本地存储失败:', error)
+  }
+}
 
 // 下载视频函数
 const handleDownload = () => {
@@ -571,39 +606,71 @@ textarea {
   position: absolute;
   top: 24px;
   right: 24px;
+  width: 48px;
+  height: 48px;
+  border: none;
+  border-radius: 50%;
+  background-color: rgba(71, 118, 230, 0.9);
+  color: #ffffff;
+  font-size: 20px;
+  cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 12px 16px;
-  background: rgba(71, 118, 230, 0.9);
-  border: none;
-  border-radius: 8px;
-  color: #ffffff;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
+  justify-content: center;
   transition: all 0.3s ease;
+  backdrop-filter: blur(6px);
   box-shadow: 0 4px 12px rgba(71, 118, 230, 0.4);
   z-index: 10;
 }
 
 .download-button:hover {
-  background: rgba(71, 118, 230, 1);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(71, 118, 230, 0.5);
+  background-color: rgba(59, 98, 204, 1);
+  transform: scale(1.15);
+  box-shadow: 0 6px 20px rgba(71, 118, 230, 0.6);
 }
 
 .download-button:active {
-  transform: translateY(0);
-  box-shadow: 0 2px 8px rgba(71, 118, 230, 0.4);
+  transform: scale(1.05);
+  box-shadow: 0 2px 8px rgba(71, 118, 230, 0.5);
 }
 
-.download-icon {
+/* 加载状态样式 */
+.loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 20;
+  backdrop-filter: blur(4px);
+}
+
+.loading-spinner {
+  width: 60px;
+  height: 60px;
+  border: 4px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top: 4px solid #4776E6;
+  animation: spin 1s linear infinite;
+  margin-bottom: 24px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-text {
+  color: #ffffff;
   font-size: 16px;
-}
-
-.download-text {
-  white-space: nowrap;
+  text-align: center;
+  max-width: 80%;
+  line-height: 1.4;
 }
 
 .placeholder-text {
