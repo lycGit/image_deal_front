@@ -18,7 +18,7 @@
     
       <!-- 参考图片上传区域 -->
       <div class="section">
-        <div class="section-title">参考图/热图（选填）</div>
+        <div class="section-title">参考图/热图</div>
         <div class="upload-area" @click="triggerUpload" @dragover.prevent @drop="handleDrop">
           <input type="file" ref="fileInput" class="hidden" @change="handleFileChange" accept="image/*" />
           <div class="upload-content" v-if="!referenceImage">
