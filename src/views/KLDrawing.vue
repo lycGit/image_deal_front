@@ -51,34 +51,44 @@
         :disabled="!canGenerate"
         @click="handleGenerate"
       >
-        开始生成
+        <span v-if="!loading">开始生成</span>
+        <span v-else>生成中...</span>
       </button>
     </div>
     
     <!-- 添加右侧展示区域 -->
     <div class="right-panel">
-      <div class="top-bar">
-        <!-- <div class="status-text">没有更多了</div> -->
+      <!-- <div class="top-bar">
+        <div class="status-text">没有更多了</div>
         <div class="actions">
-          <!-- <button class="action-button">案例</button> -->
-          <!-- <button class="action-button">我的作品</button> -->
+          <button class="action-button">案例</button>
+          <button class="action-button">我的作品</button>
           <button class="action-button">下载</button>
         </div>
-      </div>
+      </div> -->
       
       <div class="gallery">
-        <div v-for="(item, index) in generatedItems" :key="index" class="image-group">
-          <div class="group-title">
-            <i class="copy-icon"></i>
-            {{ item.description }}
-          </div>
-          <div class="image-container">
-            <div class="image-wrapper">
-              <img :src="item.url" :alt="item.description" />
-              <!-- <div class="image-actions">
-                <button class="image-action">垫图</button>
-                <button class="image-action">生成视频</button>
-              </div> -->
+        <!-- 加载中状态 -->
+        <div v-if="loading" class="loading-container">
+          <div class="loading-spinner"></div>
+          <div class="loading-text">图片生成中，大约需要30秒，请稍候...</div>
+        </div>
+        
+        <!-- 生成结果 -->
+        <div v-else>
+          <div v-for="(item, index) in generatedItems" :key="index" class="image-group">
+            <div class="group-title">
+              <i class="copy-icon"></i>
+              {{ item.description }}
+            </div>
+            <div class="image-container">
+              <div class="image-wrapper">
+                <img :src="item.url" :alt="item.description" />
+                <!-- <div class="image-actions">
+                  <button class="image-action">垫图</button>
+                  <button class="image-action">生成视频</button>
+                </div> -->
+              </div>
             </div>
           </div>
         </div>
@@ -115,7 +125,11 @@ const ratios = [
   { label: '9:16', value: '9:16' }
 ]
 
-const canGenerate = computed(() => prompt.value.trim().length > 0)
+// 添加loading状态管理
+const loading = ref(false)
+const generatedItems = ref([])
+
+const canGenerate = computed(() => prompt.value.trim().length > 0 && referenceImage.value && !loading.value)
 
 const selectRatio = (ratio) => {
   selectedRatio.value = ratio
@@ -145,9 +159,6 @@ const handleFile = (file) => {
   reader.readAsDataURL(file)
 }
 
-// 添加生成记录数组
-const generatedItems = ref([])
-
 const handleGenerate = async () => {
   if (!canGenerate.value) return  
   
@@ -166,6 +177,9 @@ const handleGenerate = async () => {
   consumePoints(points);
 
   try {
+    // 设置loading状态
+    loading.value = true
+    
     // 创建 FormData 对象
     const formData = new FormData()
     let uploadedImageUrl = null
@@ -212,6 +226,8 @@ const handleGenerate = async () => {
 
   } catch (error) {
     console.error('生成失败:', error)
+    showAlert('生成失败，请重试')
+    loading.value = false
   }
 }
 
@@ -228,6 +244,9 @@ const handleMessage = (data) => {
     }
   } catch (error) {
     console.error('解析消息失败，数据不是有效的 JSON 字符串:', error)
+  } finally {
+    // WebSocket消息处理完成后，确保loading状态为false
+    loading.value = false
   }
 }
 
@@ -249,6 +268,7 @@ onUnmounted(() => {
   display: flex;
 }
 
+/* 调整左侧面板布局，确保按钮始终可见 */
 .left-panel {
   width: 33.333%;
   padding: 24px;
@@ -256,6 +276,8 @@ onUnmounted(() => {
   display: flex;
   flex-direction: column;
   gap: 24px;
+  max-height: 100vh;
+  overflow-y: auto;
 }
 
 .header {
@@ -304,19 +326,20 @@ textarea:focus {
   color: #8e9297;
 }
 
+/* 修改上传区域样式，限制最大高度 */
 .upload-area {
-  height: 200px;
   background-color: #2f3136;
   border: 1px dashed #40444b;
   border-radius: 8px;
-  min-height: 80px;
-  max-height: 400px;
+  min-height: 150px;
+  max-height: 300px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   transition: all 0.3s;
   overflow: hidden;
+  padding: 16px;
 }
 
 .upload-area:hover {
@@ -328,6 +351,7 @@ textarea:focus {
   display: flex;
   align-items: center;
   gap: 8px;
+  min-height: 150px;
 }
 
 .upload-icon {
@@ -343,6 +367,9 @@ textarea:focus {
 .reference-image {
   width: 100%;
   height: auto;
+  max-width: 100%;
+  max-height: 260px;
+  object-fit: contain;
 }
 
 .ratio-grid {
@@ -372,8 +399,10 @@ textarea:focus {
   color: #ffffff;
 }
 
+/* 确保生成按钮始终在底部并保持间距 */
 .generate-button {
   margin-top: auto;
+  margin-bottom: 44px;
   height: 48px;
   border: none;
   border-radius: 8px;
@@ -382,6 +411,7 @@ textarea:focus {
   font-size: 16px;
   cursor: pointer;
   transition: opacity 0.3s;
+  flex-shrink: 0;
 }
 
 .generate-button:disabled {
@@ -390,42 +420,88 @@ textarea:focus {
 }
 
 .hidden {
-    display: none;
-  }
+  display: none;
+}
 
-  /* 美化下载按钮样式 */
-  .action-button {
-    padding: 8px 16px;
-    border: none;
-    border-radius: 6px;
-    background: linear-gradient(90deg, #4776E6 0%, #8E54E9 100%);
-    color: #ffffff;
-    font-size: 14px;
-    cursor: pointer;
-    transition: all 0.3s;
-  }
+/* 美化下载按钮样式 */
+.action-button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  background: linear-gradient(90deg, #4776E6 0%, #8E54E9 100%);
+  color: #ffffff;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
 
-  .action-button:hover {
-    opacity: 0.9;
-    transform: translateY(-1px);
-    box-shadow: 0 2px 8px rgba(71, 118, 230, 0.3);
-  }
+.action-button:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(71, 118, 230, 0.3);
+}
 
-  .action-button:active {
-    transform: translateY(0);
-  }
+.action-button:active {
+  transform: translateY(0);
+}
 
-  .right-panel {
-    flex: 1;
-    height: 100vh;
-    padding: 20px;
-    overflow-y: auto;
-  }
+.right-panel {
+  flex: 1;
+  height: 100vh;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.status-text {
+  color: #8e9297;
+  font-size: 14px;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+}
 
 .gallery {
   display: flex;
   flex-direction: column;
   gap: 20px;
+}
+
+/* 加载中状态 */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  gap: 20px;
+}
+
+.loading-spinner {
+  width: 60px;
+  height: 60px;
+  border: 4px solid rgba(71, 118, 230, 0.2);
+  border-left: 4px solid #4776E6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-text {
+  color: #8e9297;
+  font-size: 16px;
 }
 
 .image-group {
@@ -468,15 +544,17 @@ textarea:focus {
   border-radius: 8px;
   overflow: hidden;
   width: 50%;  /* 修改为50% */
-  max-width: 400px;  /* 修改最大宽度 */
+  max-width: 600px;  /* 增加最大宽度 */
   margin: 0 auto;
+  background-color: #1a1b1e;
+  padding: 16px;
 }
 
 .image-wrapper img {
   width: 100%;
   height: auto;
   display: block;
+  object-fit: contain;
+  max-height: 600px;
 }
-
-/* 移除不需要的 .image-grid 相关样式 */
 </style>
