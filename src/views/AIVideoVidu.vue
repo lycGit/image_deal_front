@@ -27,9 +27,24 @@
         </button>
       </div>
 
+      <template v-if="currentSubTab === 'text'">
+        <!-- 创意描述 -->
+        <div class="section">
+          <div class="section-title">创意描述</div>
+          <div class="textarea-box">
+            <textarea 
+              v-model="description" 
+              placeholder="请输入创意描述"
+              maxlength="500"
+            ></textarea>
+            <div class="word-count">{{ description.length }}/500</div>
+          </div>
+        </div>
+      </template>
+
       <!-- 上传图片区域 -->
       <div class="section">
-        <div class="section-title">上传图片（可选）</div>
+        <div class="section-title">上传图片,建议上传正方形图片（可选）</div>
         <div class="upload-area" @click="triggerUpload" @dragover.prevent @drop="handleDrop">
           <input 
             type="file" 
@@ -57,30 +72,17 @@
       </div> -->
 
       <template v-if="currentSubTab === 'text'">
-        <!-- 创意描述 -->
-        <div class="section">
-          <div class="section-title">创意描述</div>
-          <div class="textarea-box">
-            <textarea 
-              v-model="description" 
-              placeholder="请输入创意描述"
-              maxlength="500"
-            ></textarea>
-            <div class="word-count">{{ description.length }}/500</div>
-          </div>
-        </div>
-
         <!-- 参数设置 -->
-        <div class="section">
+        <!-- <div class="section">
           <div class="section-title">参数设置</div>
-          <!-- <div class="param-item">
+          <div class="param-item">
             <span class="param-label">风格</span>
             <div class="select-box">
               <select v-model="style">
                 <option value="realistic">写实</option>
               </select>
             </div>
-          </div> -->
+          </div>
           <div class="param-item">
             <span class="param-label">时长</span>
             <div class="select-box">
@@ -89,7 +91,7 @@
               </select>
             </div>
           </div>
-        </div>
+        </div> -->
 
         <!-- 生成按钮 -->
         <button 
@@ -107,19 +109,19 @@
 
     <div class="right-panel">
       <!-- 顶部操作栏 -->
-      <div class="top-actions">
+      <!-- <div class="top-actions">
         <button class="action-button" @click="handleDownload" :disabled="!videoUrl">下载</button>
-        <!-- <div class="left-actions">
+        <div class="left-actions">
           <button class="action-btn">
             <i class="icon">⬇️</i>
           </button>
-        </div> -->
-        <!-- <div class="right-actions">
+        </div>
+        <div class="right-actions">
           <button class="action-btn">案例</button>
           <button class="action-btn">我的作品</button>
           <button class="action-btn">收藏</button>
-        </div> -->
-      </div>
+        </div>
+      </div> -->
 
       <!-- 视频预览区域 -->
       <div class="video-preview"> 
@@ -129,6 +131,10 @@
            controls 
            :src="videoUrl" 
          ></video> 
+         <button v-if="videoUrl" class="download-button" @click="handleDownload">
+           <i class="download-icon">⬇️</i>
+           <span class="download-text">下载</span>
+         </button>
        </div>
 
       <!-- 视频说明 -->
@@ -558,6 +564,46 @@ textarea {
   height: 100%;
   object-fit: contain;
   background: #000000;
+}
+
+/* 下载按钮样式 */
+.download-button {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: rgba(71, 118, 230, 0.9);
+  border: none;
+  border-radius: 8px;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(71, 118, 230, 0.4);
+  z-index: 10;
+}
+
+.download-button:hover {
+  background: rgba(71, 118, 230, 1);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(71, 118, 230, 0.5);
+}
+
+.download-button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(71, 118, 230, 0.4);
+}
+
+.download-icon {
+  font-size: 16px;
+}
+
+.download-text {
+  white-space: nowrap;
 }
 
 .placeholder-text {
