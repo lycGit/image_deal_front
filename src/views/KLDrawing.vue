@@ -135,6 +135,36 @@ const ratios = [
 const loading = ref(false)
 const generatedItems = ref([])
 
+// 本地存储键名
+const STORAGE_KEY = 'kl_drawing_generated_items'
+const MAX_ITEMS = 10
+
+// 从本地存储加载数据
+const loadFromStorage = () => {
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY)
+    if (stored) {
+      generatedItems.value = JSON.parse(stored)
+    }
+  } catch (error) {
+    console.error('从本地存储加载数据失败:', error)
+  }
+}
+
+// 保存到本地存储
+const saveToStorage = () => {
+  try {
+    // 确保只保存最新的MAX_ITEMS张图片
+    if (generatedItems.value.length > MAX_ITEMS) {
+      generatedItems.value = generatedItems.value.slice(0, MAX_ITEMS)
+    }
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(generatedItems.value))
+  } catch (error) {
+    console.error('保存到本地存储失败:', error)
+  }
+}
+
+// 计算是否可以生成图片
 const canGenerate = computed(() => prompt.value.trim().length > 0 && referenceImage.value && !loading.value)
 
 const selectRatio = (ratio) => {
@@ -247,6 +277,8 @@ const handleMessage = (data) => {
         description: prompt.value,
         timestamp: Date.now()
       })
+      // 保存到本地存储
+      saveToStorage()
     }
   } catch (error) {
     console.error('解析消息失败，数据不是有效的 JSON 字符串:', error)
@@ -278,6 +310,8 @@ const downloadImage = async (imageUrl, description) => {
 
 onMounted(() => { 
   console.log(' WebSocket onMounted') 
+  // 从本地存储加载数据
+  loadFromStorage()
   eventBus.on('websocket-message', handleMessage) 
 })
 
@@ -588,34 +622,38 @@ textarea:focus {
 /* 图片操作按钮样式 */
 .image-actions {
   position: absolute;
-  bottom: 20px;
-  right: 20px;
+  bottom: 24px;
+  right: 24px;
   display: flex;
-  gap: 8px;
+  gap: 12px;
 }
 
 .download-button {
-  width: 40px;
-  height: 40px;
+  width: 48px;
+  height: 48px;
   border: none;
   border-radius: 50%;
-  background-color: rgba(0, 0, 0, 0.6);
+  background-color: rgba(71, 118, 230, 0.9);
   color: #ffffff;
-  font-size: 16px;
+  font-size: 20px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.3s;
-  backdrop-filter: blur(4px);
+  transition: all 0.3s ease;
+  backdrop-filter: blur(6px);
+  box-shadow: 0 4px 12px rgba(71, 118, 230, 0.4);
+  z-index: 10;
 }
 
 .download-button:hover {
-  background-color: rgba(71, 118, 230, 0.8);
-  transform: scale(1.1);
+  background-color: rgba(59, 98, 204, 1);
+  transform: scale(1.15);
+  box-shadow: 0 6px 20px rgba(71, 118, 230, 0.6);
 }
 
 .download-button:active {
-  transform: scale(0.95);
+  transform: scale(1.05);
+  box-shadow: 0 2px 8px rgba(71, 118, 230, 0.5);
 }
 </style>
