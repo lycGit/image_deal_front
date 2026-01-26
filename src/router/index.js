@@ -14,6 +14,7 @@ import AIVideoKL from '../views/AIVideoKL.vue'
 import AIVideoPrka from '../views/AIVideoPrka.vue'
 import ChatRoom from '@/socket/ChatRoom.vue'
 import ExchangeCodePage from '../views/ExchangeCodePage.vue' // 导入新页面组件
+import HeadshotDrawing from '../views/HeadshotDrawing.vue' 
 
 const routes = [
   {
@@ -160,6 +161,15 @@ const routes = [
     meta: {
       keepAlive: false,
       componentName: 'ExchangeCodePage'
+    }
+  },
+  {
+    path: '/head-shot',
+    name: 'headshot',
+    component: HeadshotDrawing,
+    meta: {
+      keepAlive: false,
+      componentName: 'HeadshotDrawing'
     }
   }
 ]

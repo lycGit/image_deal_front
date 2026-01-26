@@ -1,0 +1,995 @@
+<template>
+  <div class="view-container">
+    <div class="left-panel">
+      <div class="header">AI绘画</div>
+      
+      <!-- 创意描述输入区域 -->
+      <!-- <div class="section">
+        <div class="section-title">创意描述</div>
+        <div class="input-wrapper">
+          <textarea
+            v-model="prompt"
+            placeholder="请输入创意描述或选择头像模板"
+            :maxlength="500"
+          ></textarea>
+          <div class="word-count">{{ prompt.length }}/500</div>
+        </div>
+      </div> -->
+    
+      <!-- 头像选择区域 -->
+      <div class="section">
+        <div class="section-title">头像模板选择</div>
+        <div class="avatar-selection">
+          <!-- 男性头像区域 -->
+          <div class="avatar-section">
+            <div class="avatar-section-title">男性一寸照</div>
+            <div class="avatar-grid male-avatars">
+              <div 
+                v-for="(avatar, index) in maleAvatars" 
+                :key="'male-' + index"
+                class="avatar-item"
+                @click="selectAvatar(avatar.prompt)"
+              >
+                <img :src="avatar.image" :alt="avatar.description" />
+                <div class="avatar-tooltip">{{ avatar.description }}</div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 女性头像区域 -->
+          <div class="avatar-section">
+            <div class="avatar-section-title">女性一寸照</div>
+            <div class="avatar-grid female-avatars">
+              <div 
+                v-for="(avatar, index) in femaleAvatars" 
+                :key="'female-' + index"
+                class="avatar-item"
+                @click="selectAvatar(avatar.prompt)"
+              >
+                <img :src="avatar.image" :alt="avatar.description" />
+                <div class="avatar-tooltip">{{ avatar.description }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    
+      <!-- 参考图片上传区域 -->
+      <div class="section">
+        <div class="section-title">参考图/热图</div>
+        <div class="upload-area" @click="triggerUpload" @dragover.prevent @drop="handleDrop">
+          <input type="file" ref="fileInput" class="hidden" @change="handleFileChange" accept="image/*" />
+          <div class="upload-content" v-if="!referenceImage">
+            <div class="upload-icon">+</div>
+            <div class="upload-text">点击/拖拽图片,高宽不小于300px</div>
+          </div>
+          <img v-else :src="referenceImage" class="reference-image" alt="参考图片" />
+        </div>
+      </div>
+    
+    
+      <!-- 生成按钮 -->
+      <button 
+        class="generate-button"
+        :disabled="!canGenerate"
+        @click="handleGenerate"
+      >
+        <span v-if="!loading">开始生成</span>
+        <span v-else>生成中...</span>
+      </button>
+    </div>
+    
+    <!-- 添加右侧展示区域 -->
+    <div class="right-panel"> 
+      <div class="gallery">
+        <!-- 加载中状态 -->
+        <div v-if="loading" class="loading-container">
+          <div class="loading-spinner"></div>
+          <div class="loading-text">图片生成中，大约需要30秒，请稍候...</div>
+        </div>
+        
+        <!-- 生成结果 -->
+        <div v-else>
+          <div v-for="(item, index) in generatedItems" :key="index" class="image-group">
+            <div class="group-title">
+              <span class="item-index">{{ index + 1 }}</span>
+              {{ item.description }}
+            </div>
+            <div class="image-container">
+              <div class="image-wrapper">
+                <img :src="item.url" :alt="item.description" />
+                <!-- 下载按钮 -->
+                <div class="image-actions">
+                  <button class="download-button" @click="downloadImage(item.url, item.description)">
+                    <i class="fas fa-download"></i>
+                  </button>
+                </div>
+                <!-- <div class="image-actions">
+                  <button class="image-action">垫图</button>
+                  <button class="image-action">生成视频</button>
+                </div> -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup>
+import { ref, computed, onMounted, onUnmounted, getCurrentInstance } from 'vue'
+import eventBus from '../eventBus'
+import { getRemainingPoints, consumePoints } from '../js/localStorageUtil'; // 导入获取剩余积分和消耗积分的方法
+import { getConfigValue } from '../js/configUtil'; // 导入获取配置值的方法
+import { getUserId } from '../js/userIdUtil'; // 导入用户ID工具
+import { showAlert } from '../js/alertUtil'; // 导入公共弹窗工具类
+
+const prompt = ref('')
+const referenceImage = ref(null)
+const fileInput = ref(null)
+const selectedRatio = ref('1:1')
+const instance = getCurrentInstance();
+const baseUrl = instance?.appContext.config.globalProperties.$BASE_URL_8091
+
+// 获取用户ID
+const userId = getUserId();
+
+// 男性头像数据
+const maleAvatars = ref([
+  {
+    image: 'https://via.placeholder.com/100x120/4776E6/FFFFFF?text=Male1',
+    description: '经典商务正装',
+    prompt: '藏青色单排扣西装，白色衬衫，海军蓝斜纹领带，发型整洁'
+  },
+  {
+    image: 'https://via.placeholder.com/100x120/4776E6/FFFFFF?text=Male2',
+    description: '面试/求职标准',
+    prompt: '浅蓝色牛津纺衬衫，系深色领带，发型清爽，无夸张胡须'
+  },
+  {
+    image: 'https://via.placeholder.com/100x120/4776E6/FFFFFF?text=Male3',
+    description: 'IT/科技行业',
+    prompt: '深灰色Polo衫或简约圆领毛衣，面带自信微笑，背景干净'
+  },
+  {
+    image: 'https://via.placeholder.com/100x120/4776E6/FFFFFF?text=Male4',
+    description: '公务员/体制内',
+    prompt: '白色或浅蓝色衬衫，不系领带或系保守领带，发型规整'
+  },
+  {
+    image: 'https://via.placeholder.com/100x120/4776E6/FFFFFF?text=Male5',
+    description: '金融法律权威',
+    prompt: '深色（黑/藏青）西装，温莎结领带，戴简约金属框眼镜'
+  },
+  {
+    image: 'https://via.placeholder.com/100x120/4776E6/FFFFFF?text=Male6',
+    description: '学生证/毕业照',
+    prompt: '白色衬衫或学院风毛衣，发型自然，表情略带青涩'
+  },
+  {
+    image: 'https://via.placeholder.com/100x120/4776E6/FFFFFF?text=Male7',
+    description: '外企精英范',
+    prompt: '浅灰色西装，搭配蓝色衬衫与图案含蓄的领带，气质亲和'
+  },
+  {
+    image: 'https://via.placeholder.com/100x120/4776E6/FFFFFF?text=Male8',
+    description: '文艺工作者',
+    prompt: '深色高领毛衣或棉麻衬衫，发型略有设计感，表情从容'
+  },
+  {
+    image: 'https://via.placeholder.com/100x120/4776E6/FFFFFF?text=Male9',
+    description: '蓝底证件标准',
+    prompt: '推荐穿白色或浅色上衣，与蓝色背景形成对比，提升气色'
+  },
+  {
+    image: 'https://via.placeholder.com/100x120/4776E6/FFFFFF?text=Male10',
+    description: '白底通用款',
+    prompt: '推荐穿深色有领上衣（如深蓝、深灰衬衫），轮廓清晰'
+  },
+  {
+    image: 'https://via.placeholder.com/100x120/4776E6/FFFFFF?text=Male11',
+    description: '红底喜庆感',
+    prompt: '穿深色西装或黑色毛衣，与红色背景搭配庄重和谐'
+  },
+  {
+    image: 'https://via.placeholder.com/100x120/4776E6/FFFFFF?text=Male12',
+    description: '资深专家型',
+    prompt: '穿休闲西装外套（不系扣），内搭T恤，发型灰白但整齐'
+  },
+  {
+    image: 'https://via.placeholder.com/100x120/4776E6/FFFFFF?text=Male13',
+    description: '飞行员/军警类',
+    prompt: '制服衬衫（如白色/蓝色），佩戴肩章，发型极短，表情严肃'
+  },
+  {
+    image: 'https://via.placeholder.com/100x120/4776E6/FFFFFF?text=Male14',
+    description: '服务业标准',
+    prompt: '公司统一制服衬衫，系领带，发型干净，面带标准微笑'
+  },
+  {
+    image: 'https://via.placeholder.com/100x120/4776E6/FFFFFF?text=Male15',
+    description: '阳光运动风',
+    prompt: '纯色有领运动T恤或立领夹克，发型清爽，笑容开朗'
+  },
+  {
+    image: 'https://via.placeholder.com/100x120/4776E6/FFFFFF?text=Male16',
+    description: '简洁休闲感',
+    prompt: '纯色（如深蓝、卡其）亨利衫或带领T恤，适合非正式用途'
+  },
+  {
+    image: 'https://via.placeholder.com/100x120/4776E6/FFFFFF?text=Male17',
+    description: '艺术家/设计师',
+    prompt: '黑色衬衫或深色牛仔衬衫，留短须，发型个性但整洁'
+  },
+  {
+    image: 'https://via.placeholder.com/100x120/4776E6/FFFFFF?text=Male18',
+    description: '冬季厚装',
+    prompt: '穿深色V领毛衣，内搭衬衫并露出领子，保暖又正式'
+  },
+  {
+    image: 'https://via.placeholder.com/100x120/4776E6/FFFFFF?text=Male19',
+    description: '无眼镜版本',
+    prompt: '确保发型不遮眉、耳，眼神明亮查看镜头，表情自然'
+  },
+  {
+    image: 'https://via.placeholder.com/100x120/4776E6/FFFFFF?text=Male20',
+    description: '戴眼镜版本',
+    prompt: '佩戴轻便、款式经典的无边框/金属框眼镜，确保镜片无反光'
+  }
+])
+
+// 女性头像数据
+const femaleAvatars = ref([
+  {
+    image: 'https://via.placeholder.com/100x120/8E54E9/FFFFFF?text=Female1',
+    description: '职场精英范',
+    prompt: '藏青色小西装外套，内搭丝质V领衬衫，化精致哑光妆容'
+  },
+  {
+    image: 'https://via.placeholder.com/100x120/8E54E9/FFFFFF?text=Female2',
+    description: '面试/求职优选',
+    prompt: '浅色（米白、浅粉）衬衫，系小丝巾，发型为整齐低马尾'
+  },
+  {
+    image: 'https://via.placeholder.com/100x120/8E54E9/FFFFFF?text=Female3',
+    description: '教师/公务员',
+    prompt: '浅蓝色或条纹衬衫，款式简洁，搭配珍珠耳钉，发型端庄'
+  },
+  {
+    image: 'https://via.placeholder.com/100x120/8E54E9/FFFFFF?text=Female4',
+    description: '金融法律专业',
+    prompt: '深色西装外套配白衬衫，长发梳起，佩戴简约耳钉，表情自信'
+  },
+  {
+    image: 'https://via.placeholder.com/100x120/8E54E9/FFFFFF?text=Female5',
+    description: '创意行业',
+    prompt: '浅灰或燕麦色休闲西装，内搭黑色针织衫，发型微卷披肩'
+  },
+  {
+    image: 'https://via.placeholder.com/100x120/8E54E9/FFFFFF?text=Female6',
+    description: '学生气质',
+    prompt: '白色彼得潘领衬衫或海军风连衣裙，发型梳成公主头，笑容清新'
+  },
+  {
+    image: 'https://via.placeholder.com/100x120/8E54E9/FFFFFF?text=Female7',
+    description: '空乘/服务标准',
+    prompt: '公司制服，盘发整齐，佩戴标准丝巾或领花，妆容亲切'
+  },
+  {
+    image: 'https://via.placeholder.com/100x120/8E54E9/FFFFFF?text=Female8',
+    description: '白领通用款',
+    prompt: '纯色（如裸粉、浅蓝）收腰连衣裙，配小西装外套，知性优雅'
+  },
+  {
+    image: 'https://via.placeholder.com/100x120/8E54E9/FFFFFF?text=Female9',
+    description: '蓝底最佳搭配',
+    prompt: '穿白色、浅鹅黄、浅粉色上衣，提亮肤色，与蓝底和谐'
+  },
+  {
+    image: 'https://via.placeholder.com/100x120/8E54E9/FFFFFF?text=Female10',
+    description: '白底最佳搭配',
+    prompt: '选择深红、宝蓝、墨绿等深色有领上衣，突出面部轮廓'
+  },
+  {
+    image: 'https://via.placeholder.com/100x120/8E54E9/FFFFFF?text=Female11',
+    description: '红底最佳搭配',
+    prompt: '穿黑色、白色、深蓝色上衣，避免与红色冲突，显气质'
+  },
+  {
+    image: 'https://via.placeholder.com/100x120/8E54E9/FFFFFF?text=Female12',
+    description: '文艺清新感',
+    prompt: '穿棉麻质地的浅色衬衫，头发自然散落，化伪素颜淡妆'
+  },
+  {
+    image: 'https://via.placeholder.com/100x120/8E54E9/FFFFFF?text=Female13',
+    description: '甜美亲和型',
+    prompt: '穿圆领或小翻领的浅色针织衫，搭配锁骨链，微笑甜美'
+  },
+  {
+    image: 'https://via.placeholder.com/100x120/8E54E9/FFFFFF?text=Female14',
+    description: '干练短发造型',
+    prompt: '短发烫卷或梳出纹理感，穿西装或衬衫，凸显飒爽气质'
+  },
+  {
+    image: 'https://via.placeholder.com/100x120/8E54E9/FFFFFF?text=Female15',
+    description: '长发盘发造型',
+    prompt: '头发光滑地盘成发髻，不留碎发，适合严肃正式场合'
+  },
+  {
+    image: 'https://via.placeholder.com/100x120/8E54E9/FFFFFF?text=Female16',
+    description: '披肩发造型',
+    prompt: '头发柔顺披肩，确保不遮面，一侧别在耳后，显得温柔'
+  },
+  {
+    image: 'https://via.placeholder.com/100x120/8E54E9/FFFFFF?text=Female17',
+    description: '戴耳饰建议',
+    prompt: '佩戴小巧的珍珠、钻石或金属耳钉，避免夸张吊坠'
+  },
+  {
+    image: 'https://via.placeholder.com/100x120/8E54E9/FFFFFF?text=Female18',
+    description: '冬季质感装',
+    prompt: '穿深色高领毛衣（露出颈部），或V领毛衣内搭衬衫'
+  },
+  {
+    image: 'https://via.placeholder.com/100x120/8E54E9/FFFFFF?text=Female19',
+    description: '无刘海版本',
+    prompt: '露出饱满额头，妆容重点在眉形与唇妆，显得精神'
+  },
+  {
+    image: 'https://via.placeholder.com/100x120/8E54E9/FFFFFF?text=Female20',
+    description: '有刘海版本',
+    prompt: '刘海修剪整齐，不遮眉毛和眼睛，保持清爽感'
+  }
+])
+
+// 选择头像模板
+const selectAvatar = (avatarPrompt) => {
+  prompt.value = avatarPrompt
+}
+
+const ratios = [
+  { label: '1:1', value: '1:1' },
+  { label: '16:9', value: '16:9' },
+  { label: '4:3', value: '4:3' },
+  { label: '3:2', value: '3:2' },
+  { label: '2:3', value: '2:3' },
+  { label: '3:4', value: '3:4' },
+  { label: '9:16', value: '9:16' }
+]
+
+// 添加loading状态管理
+const loading = ref(false)
+const generatedItems = ref([])
+
+// 本地存储键名
+const STORAGE_KEY = 'headshot_drawing_generated_items'
+const MAX_ITEMS = 10
+
+// 从本地存储加载数据
+const loadFromStorage = () => {
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY)
+    if (stored) {
+      generatedItems.value = JSON.parse(stored)
+    }
+  } catch (error) {
+    console.error('从本地存储加载数据失败:', error)
+  }
+}
+
+// 保存到本地存储
+const saveToStorage = () => {
+  try {
+    // 确保只保存最新的MAX_ITEMS张图片
+    if (generatedItems.value.length > MAX_ITEMS) {
+      generatedItems.value = generatedItems.value.slice(0, MAX_ITEMS)
+    }
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(generatedItems.value))
+  } catch (error) {
+    console.error('保存到本地存储失败:', error)
+  }
+}
+
+// 计算是否可以生成图片
+const canGenerate = computed(() => prompt.value.trim().length > 0 && referenceImage.value && !loading.value)
+
+const selectRatio = (ratio) => {
+  selectedRatio.value = ratio
+}
+
+const triggerUpload = () => {
+  fileInput.value.click()
+}
+
+const handleFileChange = (event) => {
+  const file = event.target.files[0]
+  if (file) handleFile(file)
+}
+
+const handleDrop = (event) => {
+  event.preventDefault()
+  const file = event.dataTransfer.files[0]
+  if (file) handleFile(file)
+}
+
+const handleFile = (file) => {
+  if (!file.type.startsWith('image/')) return
+  const reader = new FileReader()
+  reader.onload = (e) => {
+    referenceImage.value = e.target.result
+  }
+  reader.readAsDataURL(file)
+}
+
+const handleGenerate = async () => {
+  if (!canGenerate.value) return  
+  
+  // 检查剩余积分
+  const remainingPoints = getRemainingPoints();
+  // 从配置中获取IMAGE_TO_IMAGE的积分消耗值
+  const imageToImagePoints = Number(getConfigValue('IMAGE_TO_IMAGE')) || 5; // 默认值为5
+  
+  if (!remainingPoints || remainingPoints < imageToImagePoints) {
+    showAlert('积分余额不足，需要至少' + imageToImagePoints + '积分才能生成图片, 请输入兑换码充值积分');
+    return; // 积分不足时终止函数执行
+  }
+  
+  // 消耗积分
+  const points = imageToImagePoints; // 消耗的积分值，现在从配置中获取
+  consumePoints(points);
+
+  try {
+    // 设置loading状态
+    loading.value = true
+    
+    // 创建 FormData 对象
+    const formData = new FormData()
+    let uploadedImageUrl = null
+    
+    // 如果有参考图片，添加到 formData
+    if (referenceImage.value) {
+      const base64Data = referenceImage.value.split(',')[1]
+      const blob = await fetch(`data:image/jpeg;base64,${base64Data}`).then(res => res.blob())
+      formData.append('file', blob, 'reference.jpg')
+      uploadedImageUrl = URL.createObjectURL(blob)
+    }
+    
+    // 添加其他参数
+    formData.append('description', prompt.value)
+    formData.append('category', 'KL_DRAWING')
+    formData.append('tags', selectedRatio.value)
+
+    const response = await fetch(`${baseUrl}/api/files/upload`, {
+      method: 'POST',
+      body: formData
+    })
+
+    if (!response.ok) {
+      throw new Error('网络请求失败')
+    }
+
+    // const result = await response.text()
+    const result = await response.json()
+    console.log('上传成功:', result)
+    console.log('上传图片地址:', uploadedImageUrl)
+    const message = JSON.stringify({'msg': prompt.value, 'imageUrl': result.imageUrl1,  'userId': userId, 'targetUserId': 'user_py_llm', 'action': 'image_edit'});
+    eventBus.emit('websocket-Image2Image', message);
+
+  } catch (error) {
+    console.error('生成失败:', error)
+    showAlert('生成失败，请重试')
+    loading.value = false
+  }
+}
+
+const handleMessage = (data) => { 
+  console.log('收到 WebSocket 消息:', data)
+  try {
+    if (data.imageUrl) {
+      // 添加到生成记录
+      generatedItems.value.unshift({
+        url: data.imageUrl || '/placeholder-image.png', // 如果没有上传图片则使用占位图
+        description: prompt.value,
+        timestamp: Date.now()
+      })
+      // 保存到本地存储
+      saveToStorage()
+    }
+  } catch (error) {
+    console.error('解析消息失败，数据不是有效的 JSON 字符串:', error)
+  } finally {
+    // WebSocket消息处理完成后，确保loading状态为false
+    loading.value = false
+  }
+}
+
+// 下载图片函数
+const downloadImage = async (imageUrl, description) => {
+  try {
+    // 创建下载链接
+    const link = document.createElement('a')
+    link.href = imageUrl
+    // 使用描述作为文件名，替换特殊字符，添加时间戳确保唯一性
+    const fileName = `${description.replace(/[^a-zA-Z0-9\u4e00-\u9fa5]/g, '_')}_${Date.now()}.jpg`
+    link.download = fileName
+    // 触发下载
+    document.body.appendChild(link)
+    link.click()
+    // 清理
+    document.body.removeChild(link)
+  } catch (error) {
+    console.error('下载图片失败:', error)
+    showAlert('下载失败，请重试')
+  }
+}
+
+onMounted(() => { 
+  console.log(' WebSocket onMounted') 
+  // 从本地存储加载数据
+  loadFromStorage()
+  eventBus.on('websocket-message', handleMessage) 
+})
+
+onUnmounted(() => { 
+  console.log(' WebSocket onUnmounted') 
+  eventBus.off('websocket-message', handleMessage) 
+})
+</script>
+
+<style scoped>
+.view-container {
+  height: 100%;
+  background-color: #1a1b1e;
+  display: flex;
+}
+
+/* 调整左侧面板布局，确保按钮始终可见 */
+.left-panel {
+  width: 33.333%;
+  padding: 24px;
+  border-right: 1px solid #2f3136;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  max-height: 100vh;
+  overflow-y: auto;
+}
+
+.header {
+  font-size: 24px;
+  color: #4776E6;
+  font-weight: 500;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.section-title {
+  font-size: 14px;
+  color: #8e9297;
+}
+
+.input-wrapper {
+  position: relative;
+}
+
+textarea {
+  width: 100%;
+  height: 240px;
+  background-color: #2f3136;
+  border: 1px solid #40444b;
+  border-radius: 8px;
+  padding: 12px;
+  color: #ffffff;
+  font-size: 14px;
+  resize: none;
+}
+
+textarea:focus {
+  outline: none;
+  border-color: #4776E6;
+}
+
+.word-count {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  font-size: 12px;
+  color: #8e9297;
+}
+
+/* 修改上传区域样式，限制最大高度 */
+.upload-area {
+  background-color: #2f3136;
+  border: 1px dashed #40444b;
+  border-radius: 8px;
+  min-height: 150px;
+  max-height: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s;
+  overflow: hidden;
+  padding: 16px;
+}
+
+.upload-area:hover {
+  border-color: #4776E6;
+}
+
+.upload-content {
+  text-align: center;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 150px;
+}
+
+.upload-icon {
+  font-size: 24px;
+  color: #8e9297;
+}
+
+.upload-text {
+  color: #8e9297;
+  font-size: 14px;
+}
+
+.reference-image {
+  width: 100%;
+  height: auto;
+  max-width: 100%;
+  max-height: 260px;
+  object-fit: contain;
+}
+
+.ratio-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.ratio-button {
+  background-color: #2f3136;
+  border: 1px solid #40444b;
+  padding: 12px 8px;
+  border-radius: 8px;
+  color: #8e9297;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.3s;
+}
+
+.ratio-button:hover {
+  border-color: #4776E6;
+}
+
+.ratio-button.active {
+  background-color: #4776E6;
+  border-color: #4776E6;
+  color: #ffffff;
+}
+
+/* 头像选择区域样式 */
+.avatar-selection {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-height: 500px;
+  overflow-y: auto;
+  padding-right: 8px;
+}
+
+/* 自定义滚动条 */
+.avatar-selection::-webkit-scrollbar {
+  width: 6px;
+}
+
+.avatar-selection::-webkit-scrollbar-track {
+  background: #2f3136;
+  border-radius: 3px;
+}
+
+.avatar-selection::-webkit-scrollbar-thumb {
+  background: #4776E6;
+  border-radius: 3px;
+}
+
+.avatar-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.avatar-section-title {
+  font-size: 13px;
+  color: #8e9297;
+  font-weight: 500;
+  padding-left: 4px;
+}
+
+.avatar-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+.avatar-item {
+  position: relative;
+  aspect-ratio: 5/6;
+  background-color: #2f3136;
+  border: 2px solid #40444b;
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.avatar-item:hover {
+  border-color: #4776E6;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(71, 118, 230, 0.3);
+}
+
+.avatar-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.avatar-tooltip {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+  color: #ffffff;
+  font-size: 12px;
+  padding: 20px 8px 8px;
+  text-align: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.avatar-item:hover .avatar-tooltip {
+  opacity: 1;
+}
+
+/* 为男性和女性头像添加不同的边框颜色 */
+.male-avatars .avatar-item:hover {
+  border-color: #4776E6;
+}
+
+.female-avatars .avatar-item:hover {
+  border-color: #8E54E9;
+}
+
+/* 头像选择区域的滚动条样式 */
+.avatar-selection {
+  scrollbar-width: thin;
+  scrollbar-color: #4776E6 #2f3136;
+}
+
+/* 确保生成按钮始终在底部并保持间距 */
+
+.generate-button {
+  margin-top: auto;
+  margin-bottom: 44px;
+  height: 48px;
+  border: none;
+  border-radius: 8px;
+  background: linear-gradient(90deg, #4776E6 0%, #8E54E9 100%);
+  color: #ffffff;
+  font-size: 16px;
+  cursor: pointer;
+  transition: opacity 0.3s;
+  flex-shrink: 0;
+}
+
+.generate-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.hidden {
+  display: none;
+}
+
+/* 美化下载按钮样式 */
+.action-button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  background: linear-gradient(90deg, #4776E6 0%, #8E54E9 100%);
+  color: #ffffff;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.action-button:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(71, 118, 230, 0.3);
+}
+
+.action-button:active {
+  transform: translateY(0);
+}
+
+.right-panel {
+  flex: 1;
+  height: 100vh;
+  padding: 20px;
+  padding-bottom: 64px; /* 增加底部内边距，确保内容距离页面底部44px */
+  overflow-y: auto;
+}
+
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.status-text {
+  color: #8e9297;
+  font-size: 14px;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+}
+
+.gallery {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-bottom: 44px; /* 直接添加底部margin，确保距离页面底部44px */
+}
+
+/* 加载中状态 */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  gap: 20px;
+}
+
+.loading-spinner {
+  width: 60px;
+  height: 60px;
+  border: 4px solid rgba(71, 118, 230, 0.2);
+  border-left: 4px solid #4776E6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-text {
+  color: #8e9297;
+  font-size: 16px;
+}
+
+.image-group {
+  min-height: calc(33.333vh - 20px);
+  background-color: #2a2c34;
+  border-radius: 12px;
+  overflow: hidden;
+  animation: fadeIn 0.3s ease-in-out;  /* 添加动画效果 */
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.group-title {
+  padding: 16px;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 1px solid #40444b;
+}
+
+/* 修改复制图标样式为序号样式 */
+.item-index {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  background-color: #4776E6;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 500;
+  border-radius: 2px;
+  margin-right: 8px;
+}
+
+.copy-icon {
+  width: 16px;
+  height: 16px;
+  background-color: #8e9297;
+  border-radius: 2px;
+  margin-right: 8px;
+  display: inline-block;
+}
+
+.image-container {
+  padding: 16px;
+  display: flex;
+  justify-content: center;
+}
+
+/* 修改右侧图片展示样式，确保完整展示 */
+.image-wrapper {
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+  width: 100%;  /* 修改为100%，增加一倍宽度 */
+  max-width: 800px;  /* 增加最大宽度 */
+  margin: 0 auto;
+  padding: 8px;  /* 减少内边距 */
+}
+
+.image-wrapper img {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: contain;
+  max-height: 600px;
+}
+
+/* 图片操作按钮样式 */
+.image-actions {
+  position: absolute;
+  bottom: 24px;
+  right: 24px;
+  display: flex;
+  gap: 12px;
+}
+
+.download-button {
+  width: 48px;
+  height: 48px;
+  border: none;
+  border-radius: 50%;
+  background-color: rgba(71, 118, 230, 0.9);
+  color: #ffffff;
+  font-size: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(6px);
+  box-shadow: 0 4px 12px rgba(71, 118, 230, 0.4);
+  z-index: 10;
+}
+
+.download-button:hover {
+  background-color: rgba(59, 98, 204, 1);
+  transform: scale(1.15);
+  box-shadow: 0 6px 20px rgba(71, 118, 230, 0.6);
+}
+
+.download-button:active {
+  transform: scale(1.05);
+  box-shadow: 0 2px 8px rgba(71, 118, 230, 0.5);
+}
+</style>
