@@ -1,7 +1,7 @@
 <template>
   <div class="view-container">
     <div class="left-panel">
-      <div class="header">AI绘画</div>
+      <div class="header">头像模板选择</div>
       
       <!-- 创意描述输入区域 -->
       <!-- <div class="section">
@@ -18,7 +18,6 @@
     
       <!-- 头像选择区域 -->
       <div class="section">
-        <div class="section-title">头像模板选择</div>
         <div class="avatar-selection">
           <!-- 男性头像区域 -->
           <div class="avatar-section">
@@ -98,19 +97,39 @@
             <div class="image-container">
               <div class="image-wrapper">
                 <img :src="item.url" :alt="item.description" />
-                <!-- 下载按钮 -->
+                <!-- 下载和裁剪按钮 -->
                 <div class="image-actions">
+                  <button class="crop-button" @click="openCropper(item)">
+                    <i class="fas fa-crop-alt"></i>
+                  </button>
                   <button class="download-button" @click="downloadImage(item.url, item.description)">
                     <i class="fas fa-download"></i>
                   </button>
                 </div>
-                <!-- <div class="image-actions">
-                  <button class="image-action">垫图</button>
-                  <button class="image-action">生成视频</button>
-                </div> -->
               </div>
             </div>
           </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 裁剪模态框 -->
+    <div v-if="showCropperModal" class="cropper-modal">
+      <div class="cropper-modal-content">
+        <div class="cropper-header">
+          <h3>图片裁剪</h3>
+          <button class="close-button" @click="closeCropper">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="cropper-body">
+          <div class="cropper-image-container">
+            <img ref="cropperImage" :src="currentImage" alt="待裁剪图片" />
+          </div>
+        </div>
+        <div class="cropper-footer">
+          <button class="cancel-button" @click="closeCropper">取消</button>
+          <button class="confirm-button" @click="confirmCrop">确认裁剪</button>
         </div>
       </div>
     </div>
@@ -124,6 +143,8 @@ import { getRemainingPoints, consumePoints } from '../js/localStorageUtil'; // �
 import { getConfigValue } from '../js/configUtil'; // 导入获取配置值的方法
 import { getUserId } from '../js/userIdUtil'; // 导入用户ID工具
 import { showAlert } from '../js/alertUtil'; // 导入公共弹窗工具类
+import Cropper from 'cropperjs'
+import 'cropperjs/dist/cropper.css'
 
 const prompt = ref('')
 const referenceImage = ref(null)
@@ -131,6 +152,12 @@ const fileInput = ref(null)
 const selectedRatio = ref('1:1')
 const instance = getCurrentInstance();
 const baseUrl = instance?.appContext.config.globalProperties.$BASE_URL_8091
+
+// 裁剪相关状态
+const cropperInstance = ref(null)
+const showCropperModal = ref(false)
+const currentImage = ref('')
+const cropperImage = ref(null)
 
 // 获取用户ID
 const userId = getUserId();
@@ -425,20 +452,6 @@ const handleFile = (file) => {
 const handleGenerate = async () => {
   if (!canGenerate.value) return  
   
-  // 检查剩余积分
-  const remainingPoints = getRemainingPoints();
-  // 从配置中获取IMAGE_TO_IMAGE的积分消耗值
-  const imageToImagePoints = Number(getConfigValue('IMAGE_TO_IMAGE')) || 5; // 默认值为5
-  
-  if (!remainingPoints || remainingPoints < imageToImagePoints) {
-    showAlert('积分余额不足，需要至少' + imageToImagePoints + '积分才能生成图片, 请输入兑换码充值积分');
-    return; // 积分不足时终止函数执行
-  }
-  
-  // 消耗积分
-  const points = imageToImagePoints; // 消耗的积分值，现在从配置中获取
-  consumePoints(points);
-
   try {
     // 设置loading状态
     loading.value = true
@@ -521,6 +534,108 @@ const downloadImage = async (imageUrl, description) => {
   } catch (error) {
     console.error('下载图片失败:', error)
     showAlert('下载失败，请重试')
+  }
+}
+
+// 打开裁剪模态框
+const openCropper = (item) => {
+  currentImage.value = item.url
+  showCropperModal.value = true
+  
+  // 等待DOM更新后初始化cropper
+  setTimeout(() => {
+    if (cropperImage.value) {
+      // 确保图片完全加载
+      if (cropperImage.value.complete) {
+        initCropper()
+      } else {
+        cropperImage.value.onload = initCropper
+      }
+    }
+  }, 200)
+}
+
+// 初始化cropper
+const initCropper = () => {
+  if (cropperInstance.value) {
+    cropperInstance.value.destroy()
+  }
+  
+  cropperInstance.value = new Cropper(cropperImage.value, {
+    aspectRatio: NaN, // 不限制比例，自由裁剪
+    viewMode: 0, // 允许裁剪框超出容器
+    autoCropArea: 1, // 初始裁剪框大小为100%
+    movable: true,
+    zoomable: true,
+    scalable: true,
+    rotatable: true,
+    background: false,
+    modal: true,
+    guides: true,
+    highlight: true,
+    cropBoxMovable: true,
+    cropBoxResizable: true,
+    toggleDragModeOnDblclick: false
+  })
+}
+
+// 关闭裁剪模态框
+const closeCropper = () => {
+  if (cropperInstance.value) {
+    cropperInstance.value.destroy()
+    cropperInstance.value = null
+  }
+  showCropperModal.value = false
+  currentImage.value = ''
+}
+
+// 确认裁剪并保存图片
+const confirmCrop = async () => {
+  if (!cropperInstance.value) {
+    showAlert('裁剪工具未初始化，请重试')
+    return
+  }
+  
+  try {
+    // 获取裁剪后的canvas
+    const canvas = cropperInstance.value.getCroppedCanvas({
+      maxWidth: 4096,
+      maxHeight: 4096,
+      fillColor: '#fff',
+      imageSmoothingEnabled: true,
+      imageSmoothingQuality: 'high'
+    })
+    
+    if (!canvas) {
+      showAlert('裁剪失败，请重试')
+      return
+    }
+    
+    // 将canvas转换为blob
+    canvas.toBlob((blob) => {
+      if (!blob) {
+        showAlert('裁剪失败，请重试')
+        return
+      }
+      
+      // 创建下载链接
+      const url = URL.createObjectURL(blob)
+      const link = document.createElement('a')
+      link.href = url
+      const fileName = `cropped_image_${Date.now()}.jpg`
+      link.download = fileName
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+      URL.revokeObjectURL(url)
+      
+      // 关闭裁剪模态框
+      closeCropper()
+      showAlert('裁剪成功，图片已保存')
+    }, 'image/jpeg', 0.95)
+  } catch (error) {
+    console.error('裁剪失败:', error)
+    showAlert('裁剪失败，请重试')
   }
 }
 
@@ -992,4 +1107,164 @@ textarea:focus {
   transform: scale(1.05);
   box-shadow: 0 2px 8px rgba(71, 118, 230, 0.5);
 }
+
+/* 裁剪按钮样式 */
+.crop-button {
+  width: 48px;
+  height: 48px;
+  border: none;
+  border-radius: 50%;
+  background-color: rgba(142, 84, 233, 0.9);
+  color: #ffffff;
+  font-size: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(6px);
+  box-shadow: 0 4px 12px rgba(142, 84, 233, 0.4);
+  z-index: 10;
+}
+
+.crop-button:hover {
+  background-color: rgba(118, 68, 198, 1);
+  transform: scale(1.15);
+  box-shadow: 0 6px 20px rgba(142, 84, 233, 0.6);
+}
+
+.crop-button:active {
+  transform: scale(1.05);
+  box-shadow: 0 2px 8px rgba(142, 84, 233, 0.5);
+}
+
+/* 裁剪模态框样式 */
+.cropper-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.cropper-modal-content {
+  background-color: #2f3136;
+  border-radius: 12px;
+  max-width: 1200px;
+  width: 100%;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+}
+
+.cropper-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  border-bottom: 1px solid #40444b;
+}
+
+.cropper-header h3 {
+  margin: 0;
+  color: #ffffff;
+  font-size: 20px;
+  font-weight: 500;
+}
+
+.close-button {
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 50%;
+  background-color: #40444b;
+  color: #ffffff;
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.close-button:hover {
+  background-color: #4776E6;
+  transform: rotate(90deg);
+}
+
+.cropper-body {
+  flex: 1;
+  padding: 24px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #1a1b1e;
+}
+
+.cropper-image-container {
+  width: 100%;
+  height: 100%;
+  max-height: 60vh;
+  position: relative;
+  overflow: hidden;
+  border-radius: 8px;
+}
+
+.cropper-image-container img {
+  max-width: 100%;
+  max-height: 100%;
+  display: block;
+}
+
+.cropper-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 20px 24px;
+  border-top: 1px solid #40444b;
+}
+
+.cancel-button,
+.confirm-button {
+  padding: 12px 32px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.cancel-button {
+  background-color: #40444b;
+  color: #ffffff;
+}
+
+.cancel-button:hover {
+  background-color: #4a4d52;
+}
+
+.confirm-button {
+  background: linear-gradient(90deg, #4776E6 0%, #8E54E9 100%);
+  color: #ffffff;
+}
+
+.confirm-button:hover {
+  opacity: 0.9;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(71, 118, 230, 0.4);
+}
+
+.confirm-button:active {
+  transform: translateY(0);
+}
+
 </style>
