@@ -892,7 +892,6 @@ textarea:focus {
 }
 
 /* 确保生成按钮始终在底部并保持间距 */
-
 .generate-button {
   margin-top: auto;
   margin-bottom: 44px;
@@ -942,7 +941,7 @@ textarea:focus {
   flex: 1;
   height: 100vh;
   padding: 20px;
-  padding-bottom: 64px; /* 增加底部内边距，确保内容距离页面底部44px */
+  padding-bottom: 64px;
   overflow-y: auto;
 }
 
@@ -967,7 +966,7 @@ textarea:focus {
   display: flex;
   flex-direction: column;
   gap: 20px;
-  margin-bottom: 44px; /* 直接添加底部margin，确保距离页面底部44px */
+  margin-bottom: 44px;
 }
 
 /* 加载中状态 */
@@ -1004,7 +1003,7 @@ textarea:focus {
   background-color: #2a2c34;
   border-radius: 12px;
   overflow: hidden;
-  animation: fadeIn 0.3s ease-in-out;  /* 添加动画效果 */
+  animation: fadeIn 0.3s ease-in-out;
 }
 
 @keyframes fadeIn {
@@ -1056,10 +1055,10 @@ textarea:focus {
   position: relative;
   border-radius: 8px;
   overflow: hidden;
-  width: 100%;  /* 修改为100%，增加一倍宽度 */
-  max-width: 800px;  /* 增加最大宽度 */
+  width: 100%;
+  max-width: 800px;
   margin: 0 auto;
-  padding: 8px;  /* 减少内边距 */
+  padding: 8px;
 }
 
 .image-wrapper img {
@@ -1149,12 +1148,19 @@ textarea:focus {
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
+  z-index: 9999;
   padding: 20px;
+  backdrop-filter: blur(4px);
+}
+
+/* 当裁剪模态框打开时，隐藏背后的页面元素 */
+.view-container:has(.cropper-modal) .left-panel,
+.view-container:has(.cropper-modal) .right-panel {
+  display: none !important;
 }
 
 .cropper-modal-content {
-  background-color: #2f3136;
+  background-color: #2d2f36;
   border-radius: 12px;
   max-width: 1200px;
   width: 100%;
@@ -1206,7 +1212,6 @@ textarea:focus {
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #1a1b1e;
 }
 
 .cropper-image-container {
@@ -1222,6 +1227,37 @@ textarea:focus {
   max-width: 100%;
   max-height: 100%;
   display: block;
+}
+
+/* 覆盖cropperjs的默认样式，确保背景不透明 */
+.cropper-modal .cropper-container,
+.cropper-modal .cropper-wrap-box,
+.cropper-modal .cropper-canvas,
+.cropper-modal .cropper-drag-box,
+.cropper-modal .cropper-crop-box,
+.cropper-modal .cropper-modal .cropper-view-box,
+.cropper-modal .cropper-face,
+.cropper-modal .cropper-line,
+.cropper-modal .cropper-point {
+  background-color: #ff00ff !important;
+  background-image: none !important;
+}
+
+.cropper-modal .cropper-bg {
+  background-color: #ff00ff !important;
+  background-image: none !important;
+}
+
+.cropper-modal .cropper-canvas {
+  background-color: #ff00ff !important;
+}
+
+.cropper-modal .cropper-view-box {
+  background-color: #ff00ff !important;
+}
+
+.cropper-modal .cropper-drag-box {
+  background-color: #ff00ff !important;
 }
 
 .cropper-footer {
