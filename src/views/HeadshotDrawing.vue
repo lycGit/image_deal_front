@@ -159,6 +159,9 @@ const showCropperModal = ref(false)
 const currentImage = ref('')
 const cropperImage = ref(null)
 
+// 预加载图片缓存
+const preloadedImages = ref(new Map())
+
 // 获取用户ID
 const userId = getUserId();
 
@@ -399,6 +402,10 @@ const loadFromStorage = () => {
     const stored = localStorage.getItem(STORAGE_KEY)
     if (stored) {
       generatedItems.value = JSON.parse(stored)
+      // 预加载所有已生成的图片
+      generatedItems.value.forEach(item => {
+        preloadImage(item.url)
+      })
     }
   } catch (error) {
     console.error('从本地存储加载数据失败:', error)
@@ -508,12 +515,48 @@ const handleMessage = (data) => {
       })
       // 保存到本地存储
       saveToStorage()
+      
+      // 预加载图片到浏览器缓存
+      preloadImage(data.imageUrl)
     }
   } catch (error) {
     console.error('解析消息失败，数据不是有效的 JSON 字符串:', error)
   } finally {
     // WebSocket消息处理完成后，确保loading状态为false
     loading.value = false
+  }
+}
+
+// 预加载图片函数
+const preloadImage = (imageUrl) => {
+  if (!imageUrl) return
+  
+  // 如果已经预加载过，直接返回
+  if (preloadedImages.value.has(imageUrl)) {
+    console.log('图片已预加载:', imageUrl)
+    return
+  }
+  
+  try {
+    const img = new Image()
+    img.crossOrigin = 'anonymous' // 允许跨域加载
+    
+    img.onload = () => {
+      console.log('图片预加载完成:', imageUrl)
+      // 将加载完成的图片对象存储到Map中
+      preloadedImages.value.set(imageUrl, img)
+    }
+    
+    img.onerror = (error) => {
+      console.error('图片预加载失败:', imageUrl, error)
+      // 预加载失败时从Map中移除
+      preloadedImages.value.delete(imageUrl)
+    }
+    
+    // 开始加载图片
+    img.src = imageUrl
+  } catch (error) {
+    console.error('预加载图片失败:', error)
   }
 }
 
@@ -545,14 +588,47 @@ const openCropper = (item) => {
   // 等待DOM更新后初始化cropper
   setTimeout(() => {
     if (cropperImage.value) {
-      // 确保图片完全加载
-      if (cropperImage.value.complete) {
+      // 检查是否已预加载完成
+      const preloadedImg = preloadedImages.value.get(item.url)
+      
+      if (preloadedImg && preloadedImg.complete && preloadedImg.naturalWidth > 0) {
+        // 图片已预加载完成，直接使用预加载的图片对象
+        console.log('使用预加载的图片，立即初始化cropper')
+        
+        // 克隆预加载的图片节点并替换DOM中的img元素
+        const clonedImg = preloadedImg.cloneNode(true)
+        clonedImg.alt = '待裁剪图片'
+        clonedImg.style.maxWidth = '100%'
+        clonedImg.style.maxHeight = '100%'
+        clonedImg.style.display = 'block'
+        
+        // 替换DOM中的img元素
+        cropperImage.value.parentNode.replaceChild(clonedImg, cropperImage.value)
+        cropperImage.value = clonedImg
+        
+        // 立即初始化cropper
         initCropper()
       } else {
-        cropperImage.value.onload = initCropper
+        // 图片未预加载完成，等待加载
+        console.log('图片未预加载，等待加载...')
+        
+        // 检查当前DOM图片是否已加载
+        if (cropperImage.value.complete && cropperImage.value.naturalWidth > 0) {
+          initCropper()
+        } else {
+          cropperImage.value.onload = initCropper
+          
+          // 设置超时保护
+          setTimeout(() => {
+            if (cropperInstance.value === null && cropperImage.value) {
+              console.log('图片加载超时，强制初始化cropper')
+              initCropper()
+            }
+          }, 3000)
+        }
       }
     }
-  }, 200)
+  }, 100)
 }
 
 // 初始化cropper
@@ -1239,25 +1315,25 @@ textarea:focus {
 .cropper-modal .cropper-face,
 .cropper-modal .cropper-line,
 .cropper-modal .cropper-point {
-  background-color: #ff00ff !important;
+  background-color: #000000 !important;
   background-image: none !important;
 }
 
 .cropper-modal .cropper-bg {
-  background-color: #ff00ff !important;
+  background-color: #000000 !important;
   background-image: none !important;
 }
 
 .cropper-modal .cropper-canvas {
-  background-color: #ff00ff !important;
+  background-color: #000000 !important;
 }
 
 .cropper-modal .cropper-view-box {
-  background-color: #ff00ff !important;
+  background-color: #000000 !important;
 }
 
 .cropper-modal .cropper-drag-box {
-  background-color: #ff00ff !important;
+  background-color: #000000 !important;
 }
 
 .cropper-footer {
