@@ -131,6 +131,22 @@
             <div class="size-options">
               <div 
                 class="size-option" 
+                :class="{ active: selectedSize === 'custom' }"
+                @click="selectSize('custom')"
+              >
+                自定义
+                <span class="size-info">自由裁剪</span>
+              </div>
+              <div 
+                class="size-option" 
+                :class="{ active: selectedSize === 'small1inch' }"
+                @click="selectSize('small1inch')"
+              >
+                小一寸
+                <span class="size-info">260×378px</span>
+              </div>
+              <div 
+                class="size-option" 
                 :class="{ active: selectedSize === '1inch' }"
                 @click="selectSize('1inch')"
               >
@@ -139,11 +155,35 @@
               </div>
               <div 
                 class="size-option" 
+                :class="{ active: selectedSize === 'large1inch' }"
+                @click="selectSize('large1inch')"
+              >
+                大一寸
+                <span class="size-info">390×567px</span>
+              </div>
+              <div 
+                class="size-option" 
+                :class="{ active: selectedSize === 'small2inch' }"
+                @click="selectSize('small2inch')"
+              >
+                小二寸
+                <span class="size-info">413×531px</span>
+              </div>
+              <div 
+                class="size-option" 
                 :class="{ active: selectedSize === '2inch' }"
                 @click="selectSize('2inch')"
               >
                 二寸照
                 <span class="size-info">413×579px</span>
+              </div>
+              <div 
+                class="size-option" 
+                :class="{ active: selectedSize === 'large2inch' }"
+                @click="selectSize('large2inch')"
+              >
+                大二寸
+                <span class="size-info">413×625px</span>
               </div>
             </div>
           </div>
@@ -179,7 +219,7 @@ const cropperInstance = ref(null)
 const showCropperModal = ref(false)
 const currentImage = ref('')
 const cropperImage = ref(null)
-const selectedSize = ref('1inch') // 默认选择一寸照
+const selectedSize = ref('custom') // 默认选择自定义
 
 // 预加载图片缓存
 const preloadedImages = ref(new Map())
@@ -781,17 +821,39 @@ const selectSize = (size) => {
   
   // 如果裁剪实例已初始化，更新裁剪框尺寸
   if (cropperInstance.value) {
+    // 自定义选项：设置为自由裁剪模式
+    if (size === 'custom') {
+      cropperInstance.value.setAspectRatio(NaN)
+      return
+    }
+    
     const canvasData = cropperInstance.value.getCanvasData()
     let cropWidth, cropHeight
     
-    if (size === '1inch') {
+    if (size === 'small1inch') {
+      // 小一寸：260×378px
+      cropWidth = 260
+      cropHeight = 378
+    } else if (size === '1inch') {
       // 一寸照：295×413px
       cropWidth = 295
       cropHeight = 413
+    } else if (size === 'large1inch') {
+      // 大一寸：390×567px
+      cropWidth = 390
+      cropHeight = 567
+    } else if (size === 'small2inch') {
+      // 小二寸：413×531px
+      cropWidth = 413
+      cropHeight = 531
     } else if (size === '2inch') {
       // 二寸照：413×579px
       cropWidth = 413
       cropHeight = 579
+    } else if (size === 'large2inch') {
+      // 大二寸：413×625px
+      cropWidth = 413
+      cropHeight = 625
     }
     
     // 根据图片实际大小按比例缩放裁剪框尺寸
@@ -1478,6 +1540,28 @@ textarea:focus {
   display: flex;
   flex-direction: column;
   gap: 8px;
+  max-height: 400px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+/* 添加滚动条样式 */
+.size-options::-webkit-scrollbar {
+  width: 6px;
+}
+
+.size-options::-webkit-scrollbar-track {
+  background: #363840;
+  border-radius: 3px;
+}
+
+.size-options::-webkit-scrollbar-thumb {
+  background: #4776E6;
+  border-radius: 3px;
+}
+
+.size-options::-webkit-scrollbar-thumb:hover {
+  background: #5a7ed9;
 }
 
 .size-option {
