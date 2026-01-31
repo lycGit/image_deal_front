@@ -560,6 +560,70 @@ const preloadImage = (imageUrl) => {
   }
 }
 
+// 图片压缩函数
+const compressImage = (imageUrl, maxSizeKB = 300) => {
+  return new Promise((resolve, reject) => {
+    try {
+      const img = new Image()
+      img.crossOrigin = 'anonymous' // 允许跨域加载
+      
+      img.onload = () => {
+        // 创建canvas元素
+        const canvas = document.createElement('canvas')
+        const ctx = canvas.getContext('2d')
+        
+        // 设置canvas尺寸为图片原始尺寸
+        canvas.width = img.width
+        canvas.height = img.height
+        
+        // 绘制图片到canvas
+        ctx.drawImage(img, 0, 0)
+        
+        // 初始压缩质量
+        let quality = 0.95
+        let compressedDataUrl = ''
+        
+        // 循环压缩直到达到目标大小
+        while (quality > 0.1) {
+          compressedDataUrl = canvas.toDataURL('image/jpeg', quality)
+          
+          // 计算数据URL的大小（大约）
+          // 数据URL格式: data:image/jpeg;base64,[base64数据]
+          // base64编码后的数据大小约为原始二进制大小的1.33倍
+          const base64Data = compressedDataUrl.split(',')[1]
+          const estimatedSizeKB = (base64Data.length * 3) / (4 * 1024) // 估算大小
+          
+          if (estimatedSizeKB <= maxSizeKB) {
+            console.log(`图片压缩完成，压缩前大小未知，压缩后大小约${estimatedSizeKB.toFixed(2)}KB，质量:${quality.toFixed(2)}`)
+            resolve(compressedDataUrl)
+            return
+          }
+          
+          // 降低质量继续压缩
+          quality -= 0.1
+        }
+        
+        // 如果质量低于0.1仍然过大，返回当前压缩结果
+        console.log('图片压缩到最低质量:', compressedDataUrl.split(',')[1].length * 3 / (4 * 1024).toFixed(2), 'KB')
+        resolve(compressedDataUrl)
+      }
+      
+      img.onerror = (error) => {
+        console.error('图片加载失败，无法压缩:', error)
+        // 加载失败时返回原始图片URL
+        resolve(imageUrl)
+      }
+      
+      // 开始加载图片
+      img.src = imageUrl
+    } catch (error) {
+      console.error('压缩图片失败:', error)
+      // 发生错误时返回原始图片URL
+      resolve(imageUrl)
+    }
+  })
+}
+
 // 下载图片函数
 const downloadImage = async (imageUrl, description) => {
   try {
@@ -581,54 +645,78 @@ const downloadImage = async (imageUrl, description) => {
 }
 
 // 打开裁剪模态框
-const openCropper = (item) => {
-  currentImage.value = item.url
-  showCropperModal.value = true
-  
-  // 等待DOM更新后初始化cropper
-  setTimeout(() => {
-    if (cropperImage.value) {
-      // 检查是否已预加载完成
-      const preloadedImg = preloadedImages.value.get(item.url)
+const openCropper = async (item) => {
+  try {
+    // 先压缩图片（如果需要）
+    console.log('开始处理图片:', item.url)
+    const compressedImageUrl = await compressImage(item.url, 300) // 压缩到300kb左右
+    
+    // 检查是否有预加载的图片（如果是原始URL）
+    const preloadedImg = preloadedImages.value.get(item.url)
+    
+    if (preloadedImg && preloadedImg.complete && preloadedImg.naturalWidth > 0 && compressedImageUrl === item.url) {
+      // 有预加载的图片且不需要压缩，直接使用
+      console.log('使用预加载的图片')
+      currentImage.value = compressedImageUrl // 使用压缩后的URL
+      showCropperModal.value = true
       
-      if (preloadedImg && preloadedImg.complete && preloadedImg.naturalWidth > 0) {
-        // 图片已预加载完成，直接使用预加载的图片对象
-        console.log('使用预加载的图片，立即初始化cropper')
-        
-        // 克隆预加载的图片节点并替换DOM中的img元素
-        const clonedImg = preloadedImg.cloneNode(true)
-        clonedImg.alt = '待裁剪图片'
-        clonedImg.style.maxWidth = '100%'
-        clonedImg.style.maxHeight = '100%'
-        clonedImg.style.display = 'block'
-        
-        // 替换DOM中的img元素
-        cropperImage.value.parentNode.replaceChild(clonedImg, cropperImage.value)
-        cropperImage.value = clonedImg
-        
-        // 立即初始化cropper
-        initCropper()
-      } else {
-        // 图片未预加载完成，等待加载
-        console.log('图片未预加载，等待加载...')
-        
-        // 检查当前DOM图片是否已加载
-        if (cropperImage.value.complete && cropperImage.value.naturalWidth > 0) {
-          initCropper()
-        } else {
-          cropperImage.value.onload = initCropper
+      // 等待DOM更新后替换为预加载的图片对象
+      setTimeout(() => {
+        if (cropperImage.value) {
+          // 克隆预加载的图片节点并替换DOM中的img元素
+          const clonedImg = preloadedImg.cloneNode(true)
+          clonedImg.alt = '待裁剪图片'
+          clonedImg.style.maxWidth = '100%'
+          clonedImg.style.maxHeight = '100%'
+          clonedImg.style.display = 'block'
           
-          // 设置超时保护
-          setTimeout(() => {
-            if (cropperInstance.value === null && cropperImage.value) {
-              console.log('图片加载超时，强制初始化cropper')
-              initCropper()
-            }
-          }, 3000)
+          // 替换DOM中的img元素
+          cropperImage.value.parentNode.replaceChild(clonedImg, cropperImage.value)
+          cropperImage.value = clonedImg
+          
+          // 立即初始化cropper
+          initCropper()
         }
-      }
+      }, 100)
+    } else {
+      // 没有预加载的图片或需要使用压缩后的图片
+      console.log('使用处理后的图片（压缩或网络下载）')
+      currentImage.value = compressedImageUrl
+      showCropperModal.value = true
+      
+      // 等待DOM更新后初始化cropper
+      setTimeout(() => {
+        if (cropperImage.value) {
+          // 检查当前DOM图片是否已加载
+          if (cropperImage.value.complete && cropperImage.value.naturalWidth > 0) {
+            initCropper()
+          } else {
+            cropperImage.value.onload = initCropper
+            
+            // 设置超时保护
+            setTimeout(() => {
+              if (cropperInstance.value === null && cropperImage.value) {
+                console.log('图片加载超时，强制初始化cropper')
+                initCropper()
+              }
+            }, 3000)
+          }
+        }
+      }, 100)
     }
-  }, 100)
+  } catch (error) {
+    console.error('打开裁剪模态框失败:', error)
+    // 出错时使用原始图片
+    currentImage.value = item.url
+    showCropperModal.value = true
+    
+    // 等待DOM更新后初始化cropper
+    setTimeout(() => {
+      if (cropperImage.value) {
+        initCropper()
+      }
+    }, 100)
+  }
 }
 
 // 初始化cropper
