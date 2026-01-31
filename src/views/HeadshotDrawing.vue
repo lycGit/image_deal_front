@@ -126,6 +126,27 @@
           <div class="cropper-image-container">
             <img ref="cropperImage" :src="currentImage" alt="待裁剪图片" />
           </div>
+          <div class="cropper-options">
+            <h4>证件照尺寸</h4>
+            <div class="size-options">
+              <div 
+                class="size-option" 
+                :class="{ active: selectedSize === '1inch' }"
+                @click="selectSize('1inch')"
+              >
+                一寸照
+                <span class="size-info">295×413px</span>
+              </div>
+              <div 
+                class="size-option" 
+                :class="{ active: selectedSize === '2inch' }"
+                @click="selectSize('2inch')"
+              >
+                二寸照
+                <span class="size-info">413×579px</span>
+              </div>
+            </div>
+          </div>
         </div>
         <div class="cropper-footer">
           <button class="cancel-button" @click="closeCropper">取消</button>
@@ -158,6 +179,7 @@ const cropperInstance = ref(null)
 const showCropperModal = ref(false)
 const currentImage = ref('')
 const cropperImage = ref(null)
+const selectedSize = ref('1inch') // 默认选择一寸照
 
 // 预加载图片缓存
 const preloadedImages = ref(new Map())
@@ -751,6 +773,43 @@ const closeCropper = () => {
   }
   showCropperModal.value = false
   currentImage.value = ''
+}
+
+// 选择证件照尺寸
+const selectSize = (size) => {
+  selectedSize.value = size
+  
+  // 如果裁剪实例已初始化，更新裁剪框尺寸
+  if (cropperInstance.value) {
+    const canvasData = cropperInstance.value.getCanvasData()
+    let cropWidth, cropHeight
+    
+    if (size === '1inch') {
+      // 一寸照：295×413px
+      cropWidth = 295
+      cropHeight = 413
+    } else if (size === '2inch') {
+      // 二寸照：413×579px
+      cropWidth = 413
+      cropHeight = 579
+    }
+    
+    // 根据图片实际大小按比例缩放裁剪框尺寸
+    const scaleX = canvasData.width / cropperImage.value.naturalWidth
+    const scaleY = canvasData.height / cropperImage.value.naturalHeight
+    const scale = Math.min(scaleX, scaleY)
+    
+    const scaledWidth = cropWidth * scale
+    const scaledHeight = cropHeight * scale
+    
+    // 设置裁剪框尺寸和位置（居中）
+    cropperInstance.value.setCropBoxData({
+      width: scaledWidth,
+      height: scaledHeight,
+      left: (canvasData.width - scaledWidth) / 2,
+      top: (canvasData.height - scaledHeight) / 2
+    })
+  }
 }
 
 // 确认裁剪并保存图片
@@ -1376,6 +1435,7 @@ textarea:focus {
   display: flex;
   align-items: center;
   justify-content: center;
+  position: relative;
 }
 
 .cropper-image-container {
@@ -1391,6 +1451,60 @@ textarea:focus {
   max-width: 100%;
   max-height: 100%;
   display: block;
+}
+
+.cropper-options {
+  position: absolute;
+  right: 24px;
+  top: 24px;
+  width: 200px;
+  padding: 16px;
+  background-color: #363840;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 10;
+}
+
+.cropper-options h4 {
+  margin: 0;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.size-options {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.size-option {
+  padding: 12px;
+  background-color: #40444b;
+  border: 2px solid transparent;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.size-option:hover {
+  background-color: #4a4d52;
+  transform: translateY(-2px);
+}
+
+.size-option.active {
+  border-color: #4776E6;
+  background-color: rgba(71, 118, 230, 0.1);
+}
+
+.size-info {
+  font-size: 12px;
+  color: #a0a3a8;
 }
 
 /* 覆盖cropperjs的默认样式，确保背景不透明 */
