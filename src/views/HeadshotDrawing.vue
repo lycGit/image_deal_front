@@ -874,7 +874,8 @@ const selectSize = (size) => {
       return
     }
     
-    const canvasData = cropperInstance.value.getCanvasData()
+    // 获取容器尺寸
+    const containerData = cropperInstance.value.getContainerData()
     let cropWidth, cropHeight
     
     if (size === 'small1inch') {
@@ -903,9 +904,9 @@ const selectSize = (size) => {
       cropHeight = 625
     }
     
-    // 根据图片实际大小按比例缩放裁剪框尺寸
-    const scaleX = canvasData.width / cropperImage.value.naturalWidth
-    const scaleY = canvasData.height / cropperImage.value.naturalHeight
+    // 根据容器大小和原始图片尺寸计算缩放比例
+    const scaleX = containerData.width / cropperImage.value.naturalWidth
+    const scaleY = containerData.height / cropperImage.value.naturalHeight
     const scale = Math.min(scaleX, scaleY)
     
     const scaledWidth = cropWidth * scale
@@ -915,8 +916,8 @@ const selectSize = (size) => {
     cropperInstance.value.setCropBoxData({
       width: scaledWidth,
       height: scaledHeight,
-      left: (canvasData.width - scaledWidth) / 2,
-      top: (canvasData.height - scaledHeight) / 2
+      left: (containerData.width - scaledWidth) / 2,
+      top: (containerData.height - scaledHeight) / 2
     })
   }
 }
