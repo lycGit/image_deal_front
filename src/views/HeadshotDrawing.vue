@@ -882,8 +882,45 @@ const confirmCrop = async () => {
   }
   
   try {
+    // 根据当前选择的尺寸设置裁剪后的固定尺寸
+    let cropWidth = 0
+    let cropHeight = 0
+    
+    if (selectedSize.value === 'small1inch') {
+      // 小一寸：260×378px
+      cropWidth = 260
+      cropHeight = 378
+    } else if (selectedSize.value === '1inch') {
+      // 一寸照：295×413px
+      cropWidth = 295
+      cropHeight = 413
+    } else if (selectedSize.value === 'large1inch') {
+      // 大一寸：390×567px
+      cropWidth = 390
+      cropHeight = 567
+    } else if (selectedSize.value === 'small2inch') {
+      // 小二寸：413×531px
+      cropWidth = 413
+      cropHeight = 531
+    } else if (selectedSize.value === '2inch') {
+      // 二寸照：413×579px
+      cropWidth = 413
+      cropHeight = 579
+    } else if (selectedSize.value === 'large2inch') {
+      // 大二寸：413×625px
+      cropWidth = 413
+      cropHeight = 625
+    } else {
+      // 自定义：使用裁剪框的实际尺寸
+      const cropBoxData = cropperInstance.value.getCropBoxData()
+      cropWidth = Math.round(cropBoxData.width)
+      cropHeight = Math.round(cropBoxData.height)
+    }
+    
     // 获取裁剪后的canvas
     const canvas = cropperInstance.value.getCroppedCanvas({
+      width: cropWidth,  // 固定宽度
+      height: cropHeight, // 固定高度
       maxWidth: 4096,
       maxHeight: 4096,
       fillColor: '#fff',
