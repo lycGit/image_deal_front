@@ -125,6 +125,15 @@
         <div class="cropper-body">
           <div class="cropper-image-container">
             <img ref="cropperImage" :src="currentImage" alt="待裁剪图片" />
+            <!-- 放大缩小按钮 -->
+            <div class="image-zoom-controls">
+              <button class="zoom-button zoom-out-button" @click="zoomOut">
+                <i class="fas fa-minus"></i>
+              </button>
+              <button class="zoom-button zoom-in-button" @click="zoomIn">
+                <i class="fas fa-plus"></i>
+              </button>
+            </div>
           </div>
           <div class="cropper-options">
             <h4>证件照尺寸</h4>
@@ -813,6 +822,20 @@ const closeCropper = () => {
   }
   showCropperModal.value = false
   currentImage.value = ''
+}
+
+// 缩小图片
+const zoomOut = () => {
+  if (cropperInstance.value) {
+    cropperInstance.value.zoom(-0.1) // 缩小10%
+  }
+}
+
+// 放大图片
+const zoomIn = () => {
+  if (cropperInstance.value) {
+    cropperInstance.value.zoom(0.1) // 放大10%
+  }
 }
 
 // 选择证件照尺寸
@@ -1546,6 +1569,20 @@ textarea:focus {
   border-radius: 8px;
 }
 
+.image-zoom-controls {
+  position: absolute;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 12px;
+  z-index: 5;
+  background-color: rgba(0, 0, 0, 0.6);
+  padding: 8px 16px;
+  border-radius: 24px;
+  backdrop-filter: blur(4px);
+}
+
 .cropper-image-container img {
   max-width: 100%;
   max-height: 100%;
@@ -1665,6 +1702,35 @@ textarea:focus {
   gap: 12px;
   padding: 20px 24px;
   border-top: 1px solid #40444b;
+}
+
+.zoom-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.zoom-button {
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 8px;
+  background-color: #40444b;
+  color: #ffffff;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.zoom-button:hover {
+  background-color: #4776E6;
+  transform: translateY(-2px);
+}
+
+.zoom-button:active {
+  transform: translateY(0);
 }
 
 .cancel-button,
