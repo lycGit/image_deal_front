@@ -133,6 +133,12 @@
               <button class="zoom-button zoom-in-button" @click="zoomIn">
                 <i class="fas fa-plus"></i>
               </button>
+              <button class="zoom-button move-up-button" @click="moveUp">
+                <i class="fas fa-arrow-up"></i>
+              </button>
+              <button class="zoom-button move-down-button" @click="moveDown">
+                <i class="fas fa-arrow-down"></i>
+              </button>
             </div>
           </div>
           <div class="cropper-options">
@@ -835,6 +841,24 @@ const zoomOut = () => {
 const zoomIn = () => {
   if (cropperInstance.value) {
     cropperInstance.value.zoom(0.1) // 放大10%
+  }
+}
+
+// 向上移动图片
+const moveUp = () => {
+  if (cropperInstance.value) {
+    const imageData = cropperInstance.value.getImageData()
+    const moveDistance = -imageData.height * 0.1 // 向上移动10%
+    cropperInstance.value.move(0, moveDistance)
+  }
+}
+
+// 向下移动图片
+const moveDown = () => {
+  if (cropperInstance.value) {
+    const imageData = cropperInstance.value.getImageData()
+    const moveDistance = imageData.height * 0.1 // 向下移动10%
+    cropperInstance.value.move(0, moveDistance)
   }
 }
 
