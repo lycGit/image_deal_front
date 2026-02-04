@@ -1673,6 +1673,7 @@ textarea:focus {
   display: flex;
   flex-direction: column;
   gap: 4px;
+  color: #ffffff;
 }
 
 .size-option:hover {
@@ -1687,7 +1688,7 @@ textarea:focus {
 
 .size-info {
   font-size: 12px;
-  color: #a0a3a8;
+  color: #b0b3b8;
 }
 
 /* 覆盖cropperjs的默认样式，确保背景不透明 */
