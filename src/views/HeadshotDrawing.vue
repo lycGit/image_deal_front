@@ -114,7 +114,7 @@
     </div>
     
     <!-- 裁剪模态框 -->
-    <div v-if="showCropperModal" class="cropper-modal">
+    <div v-if="showCropperModal" class="cus-cropper-modal">
       <div class="cropper-modal-content">
         <div class="cropper-header">
           <h3>图片裁剪</h3>
@@ -1508,7 +1508,7 @@ textarea:focus {
 }
 
 /* 裁剪模态框样式 */
-.cropper-modal {
+.cus-cropper-modal {
   position: fixed;
   top: 0;
   left: 0;
