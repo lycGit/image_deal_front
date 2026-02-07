@@ -804,7 +804,7 @@ const initCropper = () => {
   
   cropperInstance.value = new Cropper(cropperImage.value, {
     aspectRatio: NaN, // 不限制比例，自由裁剪
-    viewMode: 0, // 允许裁剪框超出容器
+    viewMode: 1, // 允许裁剪框超出容器
     autoCropArea: 1, // 初始裁剪框大小为100%
     movable: true,
     zoomable: true,
@@ -828,6 +828,7 @@ const closeCropper = () => {
   }
   showCropperModal.value = false
   currentImage.value = ''
+  selectedSize.value = 'custom' // 重置为默认的自定义选项
 }
 
 // 缩小图片
