@@ -31,6 +31,7 @@
                 @click="selectAvatar(avatar.prompt, avatar.image, avatar.description)"
               >
                 <img :src="avatar.image" :alt="avatar.description" />
+                <!-- <img src="/images/headerTemplate/male-1.jpg" :alt="avatar.description" /> -->
                 <div class="avatar-tooltip">{{ avatar.description }}</div>
               </div>
             </div>
@@ -292,14 +293,14 @@ const selectBackgroundColor = (color) => {
 // 男性头像数据
 const maleAvatars = ref([
   {
-    image: 'https://via.placeholder.com/100x120/4776E6/FFFFFF?text=Male1',
+    image: '/images/headerTemplate/male-1.jpg',
     description: '经典商务正装',
     prompt: '藏青色单排扣西装，白色衬衫，海军蓝斜纹领带，发型整洁'
   },
   {
-    image: 'https://via.placeholder.com/100x120/4776E6/FFFFFF?text=Male2',
+    image: '/images/headerTemplate/male-2.jpg',
     description: '面试/求职标准',
-    prompt: '浅蓝色牛津纺衬衫，系深色领带，发型清爽，无夸张胡须'
+    prompt: '浅蓝色牛津纺衬衫，系深色领带，发型清爽'
   },
   {
     image: 'https://via.placeholder.com/100x120/4776E6/FFFFFF?text=Male3',
