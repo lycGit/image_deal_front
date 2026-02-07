@@ -402,22 +402,22 @@ const femaleAvatars = ref([
     prompt: '藏青色小西装外套，内搭丝质V领衬衫，化精致哑光妆容'
   },
   {
-    image: 'https://via.placeholder.com/100x120/8E54E9/FFFFFF?text=Female2',
+    image: '/images/headerTemplate/female-2.jpg',
     description: '面试/求职优选',
     prompt: '浅色（米白、浅粉）衬衫，系小丝巾，发型为整齐低马尾'
   },
   {
-    image: 'https://via.placeholder.com/100x120/8E54E9/FFFFFF?text=Female3',
+    image: '/images/headerTemplate/female-3.jpg',
     description: '教师/公务员',
     prompt: '浅蓝色或条纹衬衫，款式简洁，搭配珍珠耳钉，发型端庄'
   },
   {
-    image: 'https://via.placeholder.com/100x120/8E54E9/FFFFFF?text=Female4',
+    image: '/images/headerTemplate/female-4.jpg',
     description: '金融法律专业',
     prompt: '深色西装外套配白衬衫，长发梳起，佩戴简约耳钉，表情自信'
   },
   {
-    image: 'https://via.placeholder.com/100x120/8E54E9/FFFFFF?text=Female5',
+    image: '/images/headerTemplate/female-5.jpg',
     description: '创意行业',
     prompt: '浅灰或燕麦色休闲西装，内搭黑色针织衫，发型微卷披肩'
   },
@@ -585,6 +585,20 @@ const handleFile = (file) => {
 
 const handleGenerate = async () => {
   if (!canGenerate.value) return  
+
+    // 检查剩余积分
+  const remainingPoints = getRemainingPoints();
+  // 从配置中获取IMAGE_TO_IMAGE的积分消耗值
+  const imageToImagePoints = Number(getConfigValue('HEADER_IMAGE')) || 5; // 默认值为5
+  
+  if (!remainingPoints || remainingPoints < imageToImagePoints) {
+    showAlert('积分余额不足，需要至少' + imageToImagePoints + '积分才能生成图片, 请输入兑换码充值积分');
+    return; // 积分不足时终止函数执行
+  }
+  
+  // 消耗积分
+  const points = imageToImagePoints; // 消耗的积分值，现在从配置中获取
+  consumePoints(points);
   
   try {
     // 设置loading状态
