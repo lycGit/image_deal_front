@@ -27,7 +27,8 @@
                 v-for="(avatar, index) in maleAvatars" 
                 :key="'male-' + index"
                 class="avatar-item"
-                @click="selectAvatar(avatar.prompt)"
+                :class="{ active: selectedAvatarImage === avatar.image }"
+                @click="selectAvatar(avatar.prompt, avatar.image)"
               >
                 <img :src="avatar.image" :alt="avatar.description" />
                 <div class="avatar-tooltip">{{ avatar.description }}</div>
@@ -43,7 +44,8 @@
                 v-for="(avatar, index) in femaleAvatars" 
                 :key="'female-' + index"
                 class="avatar-item"
-                @click="selectAvatar(avatar.prompt)"
+                :class="{ active: selectedAvatarImage === avatar.image }"
+                @click="selectAvatar(avatar.prompt, avatar.image)"
               >
                 <img :src="avatar.image" :alt="avatar.description" />
                 <div class="avatar-tooltip">{{ avatar.description }}</div>
@@ -265,6 +267,7 @@ const referenceImage = ref(null)
 const fileInput = ref(null)
 const selectedRatio = ref('1:1')
 const selectedBackgroundColor = ref('blue') // 默认选择蓝色背景
+const selectedAvatarImage = ref('') // 存储当前选中的头像图片URL
 const instance = getCurrentInstance();
 const baseUrl = instance?.appContext.config.globalProperties.$BASE_URL_8091
 
@@ -494,8 +497,9 @@ const femaleAvatars = ref([
 ])
 
 // 选择头像模板
-const selectAvatar = (avatarPrompt) => {
+const selectAvatar = (avatarPrompt, avatarImage) => {
   prompt.value = avatarPrompt
+  selectedAvatarImage.value = avatarImage
 }
 
 const ratios = [
@@ -1341,6 +1345,12 @@ textarea:focus {
   box-shadow: 0 4px 12px rgba(71, 118, 230, 0.3);
 }
 
+.avatar-item.active {
+  border-color: #4776E6;
+  box-shadow: 0 0 0 3px rgba(71, 118, 230, 0.3);
+  transform: translateY(-2px);
+}
+
 .avatar-item img {
   width: 100%;
   height: 100%;
@@ -1371,8 +1381,18 @@ textarea:focus {
   border-color: #4776E6;
 }
 
+.male-avatars .avatar-item.active {
+  border-color: #4776E6;
+  box-shadow: 0 0 0 3px rgba(71, 118, 230, 0.3);
+}
+
 .female-avatars .avatar-item:hover {
   border-color: #8E54E9;
+}
+
+.female-avatars .avatar-item.active {
+  border-color: #8E54E9;
+  box-shadow: 0 0 0 3px rgba(142, 84, 233, 0.3);
 }
 
 /* 头像选择区域的滚动条样式 */
