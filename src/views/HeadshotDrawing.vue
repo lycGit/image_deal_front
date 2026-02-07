@@ -397,7 +397,7 @@ const maleAvatars = ref([
 // 女性头像数据
 const femaleAvatars = ref([
   {
-    image: 'https://via.placeholder.com/100x120/8E54E9/FFFFFF?text=Female1',
+    image: '/images/headerTemplate/female-1.jpg',
     description: '职场精英范',
     prompt: '藏青色小西装外套，内搭丝质V领衬衫，化精致哑光妆容'
   },
