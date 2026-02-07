@@ -253,6 +253,13 @@ import { showAlert } from '../js/alertUtil'; // 导入公共弹窗工具类
 import Cropper from 'cropperjs'
 import 'cropperjs/dist/cropper.css'
 
+// 定义颜色对应的背景描述常量
+const COLOR_DESCRIPTIONS = {
+  white: '背景色为证件照纯白色',
+  blue: '背景色为证件照纯蓝色',
+  red: '背景色为证件照纯红色'
+}
+
 const prompt = ref('')
 const referenceImage = ref(null)
 const fileInput = ref(null)
@@ -589,7 +596,10 @@ const handleGenerate = async () => {
     }
     
     // 添加其他参数
-    formData.append('description', prompt.value)
+    // 拼接颜色提示语到prompt后面
+    const colorDescription = COLOR_DESCRIPTIONS[selectedBackgroundColor.value]
+    const fullPrompt = prompt.value ? `${prompt.value}，${colorDescription}` : colorDescription
+    formData.append('description', fullPrompt)
     formData.append('category', 'KL_DRAWING')
     formData.append('tags', selectedRatio.value)
 
@@ -606,7 +616,7 @@ const handleGenerate = async () => {
     const result = await response.json()
     console.log('上传成功:', result)
     console.log('上传图片地址:', uploadedImageUrl)
-    const message = JSON.stringify({'msg': prompt.value, 'imageUrl': result.imageUrl1,  'userId': userId, 'targetUserId': 'user_py_llm', 'action': 'image_edit'});
+    const message = JSON.stringify({'msg': fullPrompt, 'imageUrl': result.imageUrl1,  'userId': userId, 'targetUserId': 'user_py_llm', 'action': 'image_edit'});
     eventBus.emit('websocket-Image2Image', message);
 
   } catch (error) {
