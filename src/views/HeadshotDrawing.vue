@@ -264,7 +264,7 @@ const prompt = ref('')
 const referenceImage = ref(null)
 const fileInput = ref(null)
 const selectedRatio = ref('1:1')
-const selectedBackgroundColor = ref('white') // 默认选择白色背景
+const selectedBackgroundColor = ref('blue') // 默认选择蓝色背景
 const instance = getCurrentInstance();
 const baseUrl = instance?.appContext.config.globalProperties.$BASE_URL_8091
 
