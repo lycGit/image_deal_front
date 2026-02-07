@@ -53,6 +53,37 @@
         </div>
       </div>
     
+      <!-- 证件照背景颜色选择区域 -->
+      <div class="section">
+        <div class="section-title">证件照背景颜色</div>
+        <div class="color-selection">
+          <div 
+            class="color-option" 
+            :class="{ active: selectedBackgroundColor === 'white' }"
+            @click="selectBackgroundColor('white')"
+          >
+            <div class="color-preview white"></div>
+            <span class="color-name">白色</span>
+          </div>
+          <div 
+            class="color-option" 
+            :class="{ active: selectedBackgroundColor === 'blue' }"
+            @click="selectBackgroundColor('blue')"
+          >
+            <div class="color-preview blue"></div>
+            <span class="color-name">蓝色</span>
+          </div>
+          <div 
+            class="color-option" 
+            :class="{ active: selectedBackgroundColor === 'red' }"
+            @click="selectBackgroundColor('red')"
+          >
+            <div class="color-preview red"></div>
+            <span class="color-name">红色</span>
+          </div>
+        </div>
+      </div>
+    
       <!-- 参考图片上传区域 -->
       <div class="section">
         <div class="section-title">参考图/热图</div>
@@ -226,6 +257,7 @@ const prompt = ref('')
 const referenceImage = ref(null)
 const fileInput = ref(null)
 const selectedRatio = ref('1:1')
+const selectedBackgroundColor = ref('white') // 默认选择白色背景
 const instance = getCurrentInstance();
 const baseUrl = instance?.appContext.config.globalProperties.$BASE_URL_8091
 
@@ -242,6 +274,10 @@ const preloadedImages = ref(new Map())
 // 获取用户ID
 const userId = getUserId();
 
+// 选择证件照背景颜色
+const selectBackgroundColor = (color) => {
+  selectedBackgroundColor.value = color
+}
 // 男性头像数据
 const maleAvatars = ref([
   {
@@ -1059,6 +1095,61 @@ onUnmounted(() => {
   color: #8e9297;
 }
 
+/* 颜色选择区域样式 */
+.color-selection {
+  display: flex;
+  gap: 16px;
+  padding: 8px 0;
+}
+
+.color-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background-color: #2f3136;
+  border: 2px solid #40444b;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.color-option:hover {
+  border-color: #4776E6;
+  transform: translateY(-2px);
+}
+
+.color-option.active {
+  border-color: #4776E6;
+  background-color: rgba(71, 118, 230, 0.1);
+}
+
+.color-preview {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid #40444b;
+  transition: all 0.3s ease;
+}
+
+.color-preview.white {
+  background-color: #ffffff;
+}
+
+.color-preview.blue {
+  background-color: #4A90E2;
+}
+
+.color-preview.red {
+  background-color: #E74C3C;
+}
+
+.color-name {
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 500;
+}
+
 .input-wrapper {
   position: relative;
 }
@@ -1193,8 +1284,8 @@ textarea:focus {
 }
 
 .avatar-section-title {
-  font-size: 13px;
-  color: #8e9297;
+  font-size: 18px;
+  color: #ffffff;
   font-weight: 500;
   padding-left: 4px;
 }
@@ -1203,6 +1294,24 @@ textarea:focus {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 12px;
+  max-height: 200px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+/* 头像网格的滚动条样式 */
+.avatar-grid::-webkit-scrollbar {
+  width: 6px;
+}
+
+.avatar-grid::-webkit-scrollbar-track {
+  background: #2f3136;
+  border-radius: 3px;
+}
+
+.avatar-grid::-webkit-scrollbar-thumb {
+  background: #4776E6;
+  border-radius: 3px;
 }
 
 .avatar-item {
