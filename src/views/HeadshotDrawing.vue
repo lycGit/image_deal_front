@@ -28,7 +28,7 @@
                 :key="'male-' + index"
                 class="avatar-item"
                 :class="{ active: selectedAvatarImage === avatar.image }"
-                @click="selectAvatar(avatar.prompt, avatar.image)"
+                @click="selectAvatar(avatar.prompt, avatar.image, avatar.description)"
               >
                 <img :src="avatar.image" :alt="avatar.description" />
                 <div class="avatar-tooltip">{{ avatar.description }}</div>
@@ -45,7 +45,7 @@
                 :key="'female-' + index"
                 class="avatar-item"
                 :class="{ active: selectedAvatarImage === avatar.image }"
-                @click="selectAvatar(avatar.prompt, avatar.image)"
+                @click="selectAvatar(avatar.prompt, avatar.image, avatar.description)"
               >
                 <img :src="avatar.image" :alt="avatar.description" />
                 <div class="avatar-tooltip">{{ avatar.description }}</div>
@@ -125,7 +125,7 @@
           <div v-for="(item, index) in generatedItems" :key="index" class="image-group">
             <div class="group-title">
               <span class="item-index">{{ index + 1 }}</span>
-              {{ item.description }}
+              {{ item.title }}
             </div>
             <div class="image-container">
               <div class="image-wrapper">
@@ -268,6 +268,7 @@ const fileInput = ref(null)
 const selectedRatio = ref('1:1')
 const selectedBackgroundColor = ref('blue') // 默认选择蓝色背景
 const selectedAvatarImage = ref('') // 存储当前选中的头像图片URL
+const selectedAvatarDescription = ref('') // 存储当前选中的头像描述
 const instance = getCurrentInstance();
 const baseUrl = instance?.appContext.config.globalProperties.$BASE_URL_8091
 
@@ -497,9 +498,10 @@ const femaleAvatars = ref([
 ])
 
 // 选择头像模板
-const selectAvatar = (avatarPrompt, avatarImage) => {
+const selectAvatar = (avatarPrompt, avatarImage, avatarDescription) => {
   prompt.value = avatarPrompt
   selectedAvatarImage.value = avatarImage
+  selectedAvatarDescription.value = avatarDescription
 }
 
 const ratios = [
@@ -638,6 +640,7 @@ const handleMessage = (data) => {
       generatedItems.value.unshift({
         url: data.imageUrl || '/placeholder-image.png', // 如果没有上传图片则使用占位图
         description: prompt.value,
+        title: selectedAvatarDescription.value, // 存储选中的头像模板description
         timestamp: Date.now()
       })
       // 保存到本地存储
