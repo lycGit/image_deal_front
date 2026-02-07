@@ -1334,7 +1334,7 @@ textarea:focus {
 
 .avatar-item {
   position: relative;
-  aspect-ratio: 5/6;
+  aspect-ratio: 413/579;
   background-color: #2f3136;
   border: 2px solid #40444b;
   border-radius: 8px;
