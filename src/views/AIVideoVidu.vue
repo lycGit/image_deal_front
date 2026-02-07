@@ -166,8 +166,11 @@
 <script setup>
 import { ref, computed, nextTick, onMounted, onUnmounted} from 'vue'
 import { getCurrentInstance } from 'vue';
+import { getRemainingPoints, consumePoints } from '../js/localStorageUtil'; // 导入获取剩余积分和消耗积分的方法
+import { getConfigValue } from '../js/configUtil'; // 导入获取配置值的方法
 import eventBus from '../eventBus'
 import { getUserId } from '../js/userIdUtil'; // 导入用户ID工具
+import { showAlert } from '../js/alertUtil'; // 导入公共弹窗工具类
 
 const currentTab = ref('vidu')
 const currentSubTab = ref('text')
@@ -224,6 +227,19 @@ const handleFile = (file) => {
 const handleGenerate = async () => {
   if (!canGenerate.value) return
   
+  // 检查剩余积分
+  const remainingPoints = getRemainingPoints();
+  // 从配置中获取IMAGE_TO_IMAGE的积分消耗值
+  const imageToImagePoints = Number(getConfigValue('TEXT_OR_IMAGE_TO_VIDEO')) || 5; // 默认值为5
+  
+  if (!remainingPoints || remainingPoints < imageToImagePoints) {
+    showAlert('积分余额不足，需要至少' + imageToImagePoints + '积分才能生成图片, 请输入兑换码充值积分');
+    return; // 积分不足时终止函数执行
+  }
+  
+  // 消耗积分
+  const points = imageToImagePoints; // 消耗的积分值，现在从配置中获取
+  consumePoints(points);
   // 开始生成时禁用按钮
   isGenerating.value = true
   
