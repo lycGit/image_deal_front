@@ -1001,8 +1001,8 @@ const confirmCrop = async () => {
       URL.revokeObjectURL(url)
       
       // 关闭裁剪模态框
-      closeCropper()
-      showAlert('裁剪成功，图片已保存')
+      // closeCropper()
+      // showAlert('裁剪成功，图片已保存')
     }, 'image/jpeg', 0.95)
   } catch (error) {
     console.error('裁剪失败:', error)
