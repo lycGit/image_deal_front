@@ -20,10 +20,13 @@ onMounted(() => {
     cropperOptions: {
       aspectRatio: NaN,
       viewMode: 1,
-      dragMode: 'move',
+      dragMode: 'none', // 禁止拖动图片
       autoCropArea: 0.8,
-      cropBoxMovable: true,
-      cropBoxResizable: true,
+      cropBoxMovable: true, // 保持裁剪框可拖动
+      cropBoxResizable: true, // 保持裁剪框可调整大小
+      zoomOnWheel: false, // 禁止鼠标滚轮缩放
+      zoomOnTouch: false, // 禁止触摸缩放
+      rotatable: false, // 禁止旋转
       background: false,
       guides: false,
       center: true
