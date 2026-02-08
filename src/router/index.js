@@ -14,7 +14,8 @@ import AIVideoKL from '../views/AIVideoKL.vue'
 import AIVideoPrka from '../views/AIVideoPrka.vue'
 import ChatRoom from '@/socket/ChatRoom.vue'
 import ExchangeCodePage from '../views/ExchangeCodePage.vue' // 导入新页面组件
-import HeadshotDrawing from '../views/HeadshotDrawing.vue' 
+import HeadshotDrawing from '../views/HeadshotDrawing.vue'
+import ImageCropperDemo from '../views/ImageCropperDemo.vue' // 导入图片裁剪演示页面
 
 const routes = [
   {
@@ -170,6 +171,15 @@ const routes = [
     meta: {
       keepAlive: false,
       componentName: 'HeadshotDrawing'
+    }
+  },
+  {
+    path: '/image-cropper',
+    name: 'imageCropper',
+    component: ImageCropperDemo,
+    meta: {
+      keepAlive: false,
+      componentName: 'ImageCropperDemo'
     }
   }
 ]
