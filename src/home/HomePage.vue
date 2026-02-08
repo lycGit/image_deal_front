@@ -5,7 +5,7 @@
       <div class="logo">
         <img src="@/assets/downloaded-image.png" alt="泡咖AI" />
         <div class="logo-text">
-          <span>Midjourney企业内部版</span>
+          <span>灵境企业内部版</span>
           <!-- <div class="subtitle">一站式AI创作平台</div> -->
         </div>
       </div>

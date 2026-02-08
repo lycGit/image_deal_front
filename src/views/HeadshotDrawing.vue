@@ -113,7 +113,14 @@
     </div>
     
     <!-- 添加右侧展示区域 -->
-    <div class="right-panel"> 
+    <div class="right-panel">
+      <!-- 顶部栏 -->
+      <div class="top-bar">
+        <div class="right-buttons">
+          <button class="top-button redeem-button" @click="openModal">输入兑换码</button>
+        </div>
+      </div>
+      
       <div class="gallery">
         <!-- 加载中状态 -->
         <div v-if="loading" class="loading-container">
@@ -1474,10 +1481,46 @@ textarea:focus {
 }
 
 .top-bar {
+  position: fixed;
+  top: 0;
+  right: 0;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
+  justify-content: flex-end;
+  padding: 20px;
+  z-index: 1000;
+}
+
+.right-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.top-button {
+  background: transparent;
+  color: #ffffff;
+  border: none;
+  padding: 8px 16px;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+}
+
+.top-button:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.redeem-button {
+  background: linear-gradient(90deg, #4776E6 0%, #8E54E9 100%);
+}
+
+.redeem-button:hover {
+  opacity: 0.9;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(71, 118, 230, 0.4);
+}
+
+.redeem-button:active {
+  transform: translateY(0);
 }
 
 .status-text {
@@ -1488,6 +1531,30 @@ textarea:focus {
 .actions {
   display: flex;
   gap: 8px;
+}
+
+.top-button {
+  background: transparent;
+  color: #ffffff;
+  border: none;
+  padding: 8px 16px;
+  margin-left: 10px;
+  cursor: pointer;
+}
+
+.top-button:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+}
+
+.redeem-button {
+  background: linear-gradient(90deg, #4776E6 0%, #8E54E9 100%);
+  border-radius: 6px;
+}
+
+.redeem-button:hover {
+  opacity: 0.9;
+  background: linear-gradient(90deg, #4776E6 0%, #8E54E9 100%);
 }
 
 .gallery {
