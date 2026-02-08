@@ -1180,9 +1180,9 @@ onUnmounted(() => {
 /* 提示按钮样式 */
 .hint-button {
   background-color: rgba(71, 118, 230, 0.1);
-  border: 1px solid #4776E6;
+  border: 1px solid #FF9900;
   border-radius: 6px;
-  color: #4776E6;
+  color: #FF9900;
   font-size: 12px;
   padding: 6px 12px;
   cursor: pointer;
@@ -1190,7 +1190,7 @@ onUnmounted(() => {
 }
 
 .hint-button:hover {
-  background-color: rgba(71, 118, 230, 0.2);
+  background-color: rgba(255, 153, 0, 0.2);
   transform: translateY(-1px);
 }
 
