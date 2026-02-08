@@ -18,7 +18,7 @@ onMounted(() => {
   imageCropper = createImageCropper({
     container: '#cropper-container',
     cropperOptions: {
-      aspectRatio: 1,
+      aspectRatio: NaN,
       viewMode: 1,
       dragMode: 'move',
       autoCropArea: 0.8,

@@ -75,7 +75,7 @@ export class ImageCropper {
 
     // 创建裁剪模态框
     this.modal = document.createElement('div');
-    this.modal.className = 'cropper-modal';
+    this.modal.className = 'cropper-modal-custom';
     this.modal.style.cssText = `
       position: fixed;
       top: 0;
