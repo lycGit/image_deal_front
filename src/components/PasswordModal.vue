@@ -128,6 +128,11 @@ const verifyPassword = async () => {
   margin-bottom: 20px;
 }
 
+.modal-header h3 {
+  color: #ffffff;
+  margin: 0;
+}
+
 .close-btn {
   background: transparent;
   border: none;
