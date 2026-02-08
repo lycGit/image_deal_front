@@ -89,7 +89,10 @@
     
       <!-- 参考图片上传区域 -->
       <div class="section">
-        <div class="section-title">参考图/热图</div>
+        <div class="section-header">
+          <div class="section-title">参考图/热图</div>
+          <button class="hint-button" @click="openImageCropper">非单人照？点此裁剪</button>
+        </div>
         <div class="upload-area" @click="triggerUpload" @dragover.prevent @drop="handleDrop">
           <input type="file" ref="fileInput" class="hidden" @change="handleFileChange" accept="image/*" />
           <div class="upload-content" v-if="!referenceImage">
@@ -403,7 +406,7 @@ const maleAvatars = ref([
   {
     image: 'https://via.placeholder.com/100x120/4776E6/FFFFFF?text=Male16',
     description: '简洁休闲感',
-    prompt: '纯色（如深蓝、卡其）亨利衫或带领T恤，适合非正式用途'
+    prompt: '纯色（如深蓝、卡其）亨利衫或leadingT恤，适合非正式用途'
   },
   {
     image: 'https://via.placeholder.com/100x120/4776E6/FFFFFF?text=Male17',
@@ -594,6 +597,12 @@ const selectRatio = (ratio) => {
 
 const triggerUpload = () => {
   fileInput.value.click()
+}
+
+// 打开图片裁剪页面
+const openImageCropper = () => {
+  // 在新标签页中打开图片裁剪页面
+  window.open('/image-cropper', '_blank')
 }
 
 const handleFileChange = (event) => {
@@ -1158,6 +1167,35 @@ onUnmounted(() => {
 .section-title {
   font-size: 14px;
   color: #8e9297;
+}
+
+/* 参考图/热图标题和提示按钮容器 */
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+/* 提示按钮样式 */
+.hint-button {
+  background-color: rgba(71, 118, 230, 0.1);
+  border: 1px solid #4776E6;
+  border-radius: 6px;
+  color: #4776E6;
+  font-size: 12px;
+  padding: 6px 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.hint-button:hover {
+  background-color: rgba(71, 118, 230, 0.2);
+  transform: translateY(-1px);
+}
+
+.hint-button:active {
+  transform: translateY(0);
 }
 
 /* 颜色选择区域样式 */
