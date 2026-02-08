@@ -122,6 +122,7 @@ const verifyPassword = async () => {
 }
 
 .modal-header {
+  position: static;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -162,6 +163,7 @@ const verifyPassword = async () => {
 }
 
 .modal-footer {
+  position: static;
   display: flex;
   justify-content: flex-end;
   gap: 10px;
