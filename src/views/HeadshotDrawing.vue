@@ -251,6 +251,13 @@
       </div>
     </div>
   </div>
+  
+  <!-- 引入密码弹窗组件 -->
+  <PasswordModal
+    :show-modal="showPasswordModal"
+    @close="closeModal"
+    @success="handleAuthorizeSuccess"
+  />
 </template>
 
 <script setup>
@@ -260,6 +267,7 @@ import { getRemainingPoints, consumePoints } from '../js/localStorageUtil'; // �
 import { getConfigValue } from '../js/configUtil'; // 导入获取配置值的方法
 import { getUserId } from '../js/userIdUtil'; // 导入用户ID工具
 import { showAlert } from '../js/alertUtil'; // 导入公共弹窗工具类
+import PasswordModal from '../components/PasswordModal.vue'; // 导入密码弹窗组件
 import Cropper from 'cropperjs'
 import 'cropperjs/dist/cropper.css'
 
@@ -269,6 +277,9 @@ const COLOR_DESCRIPTIONS = {
   blue: '背景色为证件照纯蓝色',
   red: '背景色为证件照纯红色'
 }
+
+// 弹窗状态
+const showPasswordModal = ref(false);
 
 const prompt = ref('')
 const referenceImage = ref(null)
@@ -292,6 +303,21 @@ const preloadedImages = ref(new Map())
 
 // 获取用户ID
 const userId = getUserId();
+
+// 打开弹窗
+const openModal = () => {
+  showPasswordModal.value = true;
+};
+
+// 关闭弹窗
+const closeModal = () => {
+  showPasswordModal.value = false;
+};
+
+// 处理授权成功
+const handleAuthorizeSuccess = () => {
+  console.log('授权成功');
+};
 
 // 选择证件照背景颜色
 const selectBackgroundColor = (color) => {
