@@ -1430,21 +1430,21 @@ textarea:focus {
 
 /* 为男性和女性头像添加不同的边框颜色 */
 .male-avatars .avatar-item:hover {
-  border-color: #4776E6;
+  border-color: #00ff00;
 }
 
 .male-avatars .avatar-item.active {
-  border-color: #4776E6;
-  box-shadow: 0 0 0 3px rgba(71, 118, 230, 0.3);
+  border-color: #00ff00;
+  box-shadow: 0 0 035px rgba(0, 255, 0, 0.3);
 }
 
 .female-avatars .avatar-item:hover {
-  border-color: #8E54E9;
+  border-color: #ff0000;
 }
 
 .female-avatars .avatar-item.active {
-  border-color: #8E54E9;
-  box-shadow: 0 0 0 3px rgba(142, 84, 233, 0.3);
+  border-color: #ff0000;
+  box-shadow: 0 0 0 3px rgba(255, 0, 0, 0.3);
 }
 
 /* 头像选择区域的滚动条样式 */
