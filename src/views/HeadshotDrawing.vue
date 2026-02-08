@@ -336,32 +336,32 @@ const maleAvatars = ref([
     prompt: '浅蓝色牛津纺衬衫，系深色领带，发型清爽'
   },
   {
-    image: 'https://via.placeholder.com/100x120/4776E6/FFFFFF?text=Male3',
+    image: '/images/headerTemplate/male-3.jpg',
     description: 'IT/科技行业',
     prompt: '深灰色Polo衫或简约圆领毛衣，面带自信微笑，背景干净'
   },
   {
-    image: 'https://via.placeholder.com/100x120/4776E6/FFFFFF?text=Male4',
+    image: '/images/headerTemplate/male-4.jpg',
     description: '公务员/体制内',
     prompt: '白色或浅蓝色衬衫，不系领带或系保守领带，发型规整'
   },
   {
-    image: 'https://via.placeholder.com/100x120/4776E6/FFFFFF?text=Male5',
+    image: '/images/headerTemplate/male-5.jpg',
     description: '金融法律权威',
-    prompt: '深色（黑/藏青）西装，温莎结领带，戴简约金属框眼镜'
+    prompt: '深色（黑/藏青）西装，温莎结领带'
   },
   {
-    image: 'https://via.placeholder.com/100x120/4776E6/FFFFFF?text=Male6',
+    image: '/images/headerTemplate/male-6.jpg',
     description: '学生证/毕业照',
     prompt: '白色衬衫或学院风毛衣，发型自然，表情略带青涩'
   },
   {
-    image: 'https://via.placeholder.com/100x120/4776E6/FFFFFF?text=Male7',
+    image: '/images/headerTemplate/male-7.jpg',
     description: '外企精英范',
     prompt: '浅灰色西装，搭配蓝色衬衫与图案含蓄的领带，气质亲和'
   },
   {
-    image: 'https://via.placeholder.com/100x120/4776E6/FFFFFF?text=Male8',
+    image: '/images/headerTemplate/male-8.jpg',
     description: '文艺工作者',
     prompt: '深色高领毛衣或棉麻衬衫，发型略有设计感，表情从容'
   },
@@ -455,37 +455,37 @@ const femaleAvatars = ref([
     prompt: '浅灰或燕麦色休闲西装，内搭黑色针织衫，发型微卷披肩'
   },
   {
-    image: 'https://via.placeholder.com/100x120/8E54E9/FFFFFF?text=Female6',
+    image: '/images/headerTemplate/female-6.jpg',
     description: '学生气质',
     prompt: '白色彼得潘领衬衫或海军风连衣裙，发型梳成公主头，笑容清新'
   },
   {
-    image: 'https://via.placeholder.com/100x120/8E54E9/FFFFFF?text=Female7',
+    image: '/images/headerTemplate/female-7.jpg',
     description: '空乘/服务标准',
     prompt: '公司制服，盘发整齐，佩戴标准丝巾或领花，妆容亲切'
   },
   {
-    image: 'https://via.placeholder.com/100x120/8E54E9/FFFFFF?text=Female8',
+    image: '/images/headerTemplate/female-8.jpg',
     description: '白领通用款',
     prompt: '纯色（如裸粉、浅蓝）收腰连衣裙，配小西装外套，知性优雅'
   },
   {
-    image: 'https://via.placeholder.com/100x120/8E54E9/FFFFFF?text=Female9',
+    image: '/images/headerTemplate/female-9.jpg',
     description: '蓝底最佳搭配',
     prompt: '穿白色、浅鹅黄、浅粉色上衣，提亮肤色，与蓝底和谐'
   },
   {
-    image: 'https://via.placeholder.com/100x120/8E54E9/FFFFFF?text=Female10',
+    image: '/images/headerTemplate/female-10.jpg',
     description: '白底最佳搭配',
     prompt: '选择深红、宝蓝、墨绿等深色有领上衣，突出面部轮廓'
   },
   {
-    image: 'https://via.placeholder.com/100x120/8E54E9/FFFFFF?text=Female11',
+    image: '/images/headerTemplate/female-11.jpg',
     description: '红底最佳搭配',
     prompt: '穿黑色、白色、深蓝色上衣，避免与红色冲突，显气质'
   },
   {
-    image: 'https://via.placeholder.com/100x120/8E54E9/FFFFFF?text=Female12',
+    image: '/images/headerTemplate/female-12.jpg',
     description: '文艺清新感',
     prompt: '穿棉麻质地的浅色衬衫，头发自然散落，化伪素颜淡妆'
   },
