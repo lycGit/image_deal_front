@@ -172,6 +172,8 @@ export class ImageCropper {
       this.openModal(e.target.result);
     };
     reader.readAsDataURL(file);
+    // 重置文件输入框的值，确保下次选择相同文件时change事件会触发
+    this.fileInput.value = '';
   }
 
   /**
@@ -179,16 +181,31 @@ export class ImageCropper {
    * @param {string} imageUrl - 图片URL
    */
   openModal(imageUrl) {
-    this.modalImage.src = imageUrl;
+    // 先设置display为flex，确保模态框可见
     this.modal.style.display = 'flex';
+    
+    // 重置图片的onload事件，确保每次都会执行
+    this.modalImage.onload = null;
+    
+    // 设置图片src
+    this.modalImage.src = imageUrl;
     
     // 等待图片加载完成后初始化cropper
     this.modalImage.onload = () => {
       if (this.cropper) {
         this.cropper.destroy();
+        this.cropper = null;
       }
       this.cropper = new Cropper(this.modalImage, this.cropperOptions);
     };
+    
+    // 立即检查图片是否已经加载完成（可能来自缓存）
+    if (this.modalImage.complete && this.modalImage.naturalWidth > 0) {
+      // 如果图片已经加载完成，手动触发onload事件
+      if (this.modalImage.onload) {
+        this.modalImage.onload();
+      }
+    }
   }
 
   /**
