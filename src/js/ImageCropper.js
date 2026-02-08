@@ -92,13 +92,11 @@ export class ImageCropper {
       <div style="position: relative; max-width: 80%; max-height: 80%; width: 100%; height: 100%;">
         <div class="modal-header" style="position: absolute; top: -40px; left: 0; right: 0; color: white; display: flex; justify-content: space-between; align-items: center;">
           <h3>裁剪图片</h3>
-          <button class="cancel-btn" style="background: none; border: 1px solid white; color: white; padding: 5px 10px; cursor: pointer;">关闭</button>
         </div>
         <div class="modal-content" style="position: relative; width: 100%; height: 100%; overflow: hidden; display: flex; justify-content: center; align-items: center;">
           <img src="" alt="" class="cropper-image" style="max-width: 100%; max-height: 100%; width: auto; height: auto; object-fit: contain; display: block;">
-        </div>
-        <div class="modal-footer" style="position: absolute; bottom: -60px; left: 0; right: 0; display: flex; justify-content: flex-end; gap: 10px;">
-          <button class="save-btn" style="background: #4CAF50; color: white; border: none; padding: 10px 20px; cursor: pointer;">保存</button>
+          <button class="cancel-btn" style="position: absolute; top: 10px; right: 10px; background: rgba(0, 0, 0, 0.5); border: 1px solid white; color: white; padding: 5px 10px; cursor: pointer; z-index: 10;">关闭</button>
+          <button class="save-btn" style="position: absolute; bottom: 10px; right: 10px; background: #4CAF50; color: white; border: none; padding: 10px 20px; cursor: pointer; z-index: 10;">保存</button>
         </div>
       </div>
     `;
