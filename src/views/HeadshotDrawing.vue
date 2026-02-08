@@ -1419,13 +1419,14 @@ textarea:focus {
   font-size: 12px;
   padding: 20px 8px 8px;
   text-align: center;
-  opacity: 0;
+  opacity: 1;
   transition: opacity 0.3s ease;
 }
 
-.avatar-item:hover .avatar-tooltip {
+/* 移除hover显示逻辑，因为现在默认就显示 */
+/* .avatar-item:hover .avatar-tooltip {
   opacity: 1;
-}
+} */
 
 /* 为男性和女性头像添加不同的边框颜色 */
 .male-avatars .avatar-item:hover {
