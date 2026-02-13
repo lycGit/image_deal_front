@@ -27,6 +27,7 @@
             二、积分管理
           </h2>
           <div class="section-content">
+            <img src="/images/introduce/introduce-1.png" alt="积分管理界面" />
             <div class="subsection">
               <h3 class="subsection-title">兑换积分</h3>
               <p class="description">如果积分不足,可以通过兑换码充值:</p>
@@ -51,6 +52,7 @@
             三、使用步骤
           </h2>
           <div class="section-content">
+            <img src="/images/introduce/introduce-2.png" alt="选择头像模板" />
             <div class="step-card">
               <div class="step-number">1</div>
               <div class="step-content">
@@ -66,7 +68,7 @@
                 <p class="step-description">系统提供三种标准证件照背景色</p>
               </div>
             </div>
-
+            <img src="/images/introduce/introduce-3.png" alt="上传参考图片" />
             <div class="step-card">
               <div class="step-number">3</div>
               <div class="step-content">
@@ -100,7 +102,7 @@
                 </div>
               </div>
             </div>
-
+            <img src="/images/introduce/introduce-4.png" alt="查看和下载生成结果" />
             <div class="step-card">
               <div class="step-number">5</div>
               <div class="step-content">
@@ -125,6 +127,7 @@
             四、图片裁剪功能
           </h2>
           <div class="section-content">
+            <img src="/images/introduce/introduce-5.png" alt="图片裁剪功能" />
             <div class="subsection">
               <h3 class="subsection-title">裁剪尺寸选择</h3>
               <p class="description">系统提供7种标准证件照尺寸:</p>
@@ -488,6 +491,15 @@ defineOptions({
   flex-shrink: 0;
   font-weight: 700;
   color: #667eea;
+}
+
+/* 图片样式 */
+.section-content img {
+  display: block;
+  max-width: 85%;
+  margin: 0 auto 30px auto;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
 }
 
 .page-footer {
