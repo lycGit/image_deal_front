@@ -6,7 +6,7 @@
     
     <div class="code-buttons">
       <!-- 1天兑换码 -->
-      <div class="button-group">
+      <!-- <div class="button-group">
         <input 
           type="text" 
           v-model="batchNumbers.day1" 
@@ -14,7 +14,7 @@
           @change="saveBatchNumber('day1', batchNumbers.day1)"
         />
         <button @click="getExchangeCode('day1')">获取1天兑换码</button>
-      </div>
+      </div> -->
       
       <!-- 3天兑换码 -->
       <div class="button-group">
@@ -28,7 +28,7 @@
       </div>
       
       <!-- 7天兑换码 -->
-      <div class="button-group">
+      <!-- <div class="button-group">
         <input 
           type="text" 
           v-model="batchNumbers.day7" 
@@ -36,7 +36,7 @@
           @change="saveBatchNumber('day7', batchNumbers.day7)"
         />
         <button @click="getExchangeCode('day7')">获取7天兑换码</button>
-      </div>
+      </div> -->
       
       <!-- 10天兑换码 -->
       <div class="button-group">
@@ -50,7 +50,7 @@
       </div>
       
       <!-- 1个月兑换码 -->
-      <div class="button-group">
+      <!-- <div class="button-group">
         <input 
           type="text" 
           v-model="batchNumbers.month1" 
@@ -58,7 +58,7 @@
           @change="saveBatchNumber('month1', batchNumbers.month1)"
         />
         <button @click="getExchangeCode('month1')">获取1个月兑换码</button>
-      </div>
+      </div> -->
     </div>
     
     <div class="result-container" v-if="result">
@@ -90,9 +90,9 @@ const baseUrl = instance?.appContext.config.globalProperties.$BASE_URL_8091
 // 批次号输入框数据
 const batchNumbers = ref({
   day1: '',
-  day3: '',
+  day3: 'a7bdb47c',
   day7: '',
-  day10: '',
+  day10: '52f51cb3',
   month1: ''
 });
 
