@@ -16,6 +16,7 @@ import ChatRoom from '@/socket/ChatRoom.vue'
 import ExchangeCodePage from '../views/ExchangeCodePage.vue' // 导入新页面组件
 import HeadshotDrawing from '../views/HeadshotDrawing.vue'
 import ImageCropperDemo from '../views/ImageCropperDemo.vue' // 导入图片裁剪演示页面
+import Introduce from '../views/Introduce.vue' 
 
 const routes = [
   {
@@ -180,6 +181,15 @@ const routes = [
     meta: {
       keepAlive: false,
       componentName: 'ImageCropperDemo'
+    }
+  },
+    {
+    path: '/introduce',
+    name: 'introduce',
+    component: Introduce,
+    meta: {
+      keepAlive: false,
+      componentName: 'IntroducePage'
     }
   }
 ]
