@@ -369,62 +369,62 @@ const maleAvatars = ref([
     prompt: '深色高领毛衣或棉麻衬衫，发型略有设计感，表情从容'
   },
   {
-    image: 'https://via.placeholder.com/100x120/4776E6/FFFFFF?text=Male9',
+    image: '/images/headerTemplate/male-9.jpg',
     description: '蓝底证件标准',
     prompt: '推荐穿白色或浅色上衣，与蓝色背景形成对比，提升气色'
   },
   {
-    image: 'https://via.placeholder.com/100x120/4776E6/FFFFFF?text=Male10',
+    image: '/images/headerTemplate/male-10.jpg',
     description: '白底通用款',
     prompt: '推荐穿深色有领上衣（如深蓝、深灰衬衫），轮廓清晰'
   },
   {
-    image: 'https://via.placeholder.com/100x120/4776E6/FFFFFF?text=Male11',
+    image: '/images/headerTemplate/male-11.jpg',
     description: '红底喜庆感',
     prompt: '穿深色西装或黑色毛衣，与红色背景搭配庄重和谐'
   },
   {
-    image: 'https://via.placeholder.com/100x120/4776E6/FFFFFF?text=Male12',
+    image: '/images/headerTemplate/male-12.jpg',
     description: '资深专家型',
-    prompt: '穿休闲西装外套（不系扣），内搭T恤，发型灰白但整齐'
+    prompt: '穿休闲西装外套（不系扣），内搭T恤'
   },
   {
-    image: 'https://via.placeholder.com/100x120/4776E6/FFFFFF?text=Male13',
+    image: '/images/headerTemplate/male-13.jpg',
     description: '飞行员/军警类',
-    prompt: '制服衬衫（如白色/蓝色），佩戴肩章，发型极短，表情严肃'
+    prompt: '制服衬衫（如白色/蓝色），佩戴肩章'
   },
   {
-    image: 'https://via.placeholder.com/100x120/4776E6/FFFFFF?text=Male14',
+    image: '/images/headerTemplate/male-14.jpg',
     description: '服务业标准',
     prompt: '公司统一制服衬衫，系领带，发型干净，面带标准微笑'
   },
   {
-    image: 'https://via.placeholder.com/100x120/4776E6/FFFFFF?text=Male15',
+    image: '/images/headerTemplate/male-15.jpg',
     description: '阳光运动风',
     prompt: '纯色有领运动T恤或立领夹克，发型清爽，笑容开朗'
   },
   {
-    image: 'https://via.placeholder.com/100x120/4776E6/FFFFFF?text=Male16',
+    image: '/images/headerTemplate/male-16.jpg',
     description: '简洁休闲感',
     prompt: '纯色（如深蓝、卡其）亨利衫或leadingT恤，适合非正式用途'
   },
   {
-    image: 'https://via.placeholder.com/100x120/4776E6/FFFFFF?text=Male17',
+    image: '/images/headerTemplate/male-17.jpg',
     description: '艺术家/设计师',
-    prompt: '黑色衬衫或深色牛仔衬衫，留短须，发型个性但整洁'
+    prompt: '黑色衬衫或深色牛仔衬衫，发型个性但整洁'
   },
   {
-    image: 'https://via.placeholder.com/100x120/4776E6/FFFFFF?text=Male18',
+    image: '/images/headerTemplate/male-18.jpg',
     description: '冬季厚装',
     prompt: '穿深色V领毛衣，内搭衬衫并露出领子，保暖又正式'
   },
   {
-    image: 'https://via.placeholder.com/100x120/4776E6/FFFFFF?text=Male19',
+    image: '/images/headerTemplate/male-19.jpg',
     description: '无眼镜版本',
     prompt: '确保发型不遮眉、耳，眼神明亮查看镜头，表情自然'
   },
   {
-    image: 'https://via.placeholder.com/100x120/4776E6/FFFFFF?text=Male20',
+    image: '/images/headerTemplate/male-20.jpg',
     description: '戴眼镜版本',
     prompt: '佩戴轻便、款式经典的无边框/金属框眼镜，确保镜片无反光'
   }
@@ -493,42 +493,42 @@ const femaleAvatars = ref([
     prompt: '穿棉麻质地的浅色衬衫，头发自然散落，化伪素颜淡妆'
   },
   {
-    image: 'https://via.placeholder.com/100x120/8E54E9/FFFFFF?text=Female13',
+    image: '/images/headerTemplate/female-13.jpg',
     description: '甜美亲和型',
     prompt: '穿圆领或小翻领的浅色针织衫，搭配锁骨链，微笑甜美'
   },
   {
-    image: 'https://via.placeholder.com/100x120/8E54E9/FFFFFF?text=Female14',
+    image: '/images/headerTemplate/female-14.jpg',
     description: '干练短发造型',
     prompt: '短发烫卷或梳出纹理感，穿西装或衬衫，凸显飒爽气质'
   },
   {
-    image: 'https://via.placeholder.com/100x120/8E54E9/FFFFFF?text=Female15',
+    image: '/images/headerTemplate/female-15.jpg',
     description: '长发盘发造型',
     prompt: '头发光滑地盘成发髻，不留碎发，适合严肃正式场合'
   },
   {
-    image: 'https://via.placeholder.com/100x120/8E54E9/FFFFFF?text=Female16',
+    image: '/images/headerTemplate/female-16.jpg',
     description: '披肩发造型',
     prompt: '头发柔顺披肩，确保不遮面，一侧别在耳后，显得温柔'
   },
   {
-    image: 'https://via.placeholder.com/100x120/8E54E9/FFFFFF?text=Female17',
+    image: '/images/headerTemplate/female-17.jpg',
     description: '戴耳饰建议',
     prompt: '佩戴小巧的珍珠、钻石或金属耳钉，避免夸张吊坠'
   },
   {
-    image: 'https://via.placeholder.com/100x120/8E54E9/FFFFFF?text=Female18',
+    image: '/images/headerTemplate/female-18.jpg',
     description: '冬季质感装',
     prompt: '穿深色高领毛衣（露出颈部），或V领毛衣内搭衬衫'
   },
   {
-    image: 'https://via.placeholder.com/100x120/8E54E9/FFFFFF?text=Female19',
+    image: '/images/headerTemplate/female-19.jpg',
     description: '无刘海版本',
     prompt: '露出饱满额头，妆容重点在眉形与唇妆，显得精神'
   },
   {
-    image: 'https://via.placeholder.com/100x120/8E54E9/FFFFFF?text=Female20',
+    image: '/images/headerTemplate/female-20.jpg',
     description: '有刘海版本',
     prompt: '刘海修剪整齐，不遮眉毛和眼睛，保持清爽感'
   }
