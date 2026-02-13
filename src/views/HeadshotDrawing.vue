@@ -1396,6 +1396,7 @@ textarea:focus {
 .avatar-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
+  grid-auto-rows: min-content;
   gap: 12px;
   max-height: 200px;
   overflow-y: auto;
