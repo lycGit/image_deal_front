@@ -90,9 +90,9 @@ const baseUrl = instance?.appContext.config.globalProperties.$BASE_URL_8091
 // 批次号输入框数据
 const batchNumbers = ref({
   day1: '',
-  day3: 'a7bdb47c',
+  day3: '52f51cb3',
   day7: '',
-  day10: '52f51cb3',
+  day10: 'a7bdb47c',
   month1: ''
 });
 
@@ -178,7 +178,7 @@ const copyResult = () => {
     });
     
     // 生成复制文本
-    const copyText = `兑换码${result.value.code}有效期到${formattedExpireTime}，请尽快使用。`;
+    const copyText = `兑换码${result.value.code}有效期到${formattedExpireTime}，请尽快使用。使用说明请参考：http://www.smartassistant.top/introduce`;
     
     // 复制到剪贴板
     navigator.clipboard.writeText(copyText)
