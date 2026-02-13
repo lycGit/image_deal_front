@@ -2,7 +2,7 @@
   <div class="introduce-page">
     <div class="container">
       <header class="page-header">
-        <h1 class="main-title">头像生成系统使用指南</h1>
+        <h1 class="main-title">证件照生成系统使用指南</h1>
         <p class="subtitle">智能证件照生成工具 · 快速上手指南</p>
       </header>
 
@@ -253,8 +253,10 @@ defineOptions({
 <style scoped>
 .introduce-page {
   min-height: 100vh;
+  height: auto;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   padding: 40px 20px;
+  padding-bottom: 60px;
 }
 
 .container {

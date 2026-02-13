@@ -36,13 +36,13 @@ body {
 }
 
 #app {
-  height: 100vh;
+  min-height: 100vh;
   width: 100vw;
   overflow: auto;
 }
 
 .app-container {
-  height: 100%;
+  min-height: 100%;
   display: flex;
   flex-direction: column;
 }
