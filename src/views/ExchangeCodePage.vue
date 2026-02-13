@@ -38,6 +38,17 @@
         <button @click="getExchangeCode('day7')">获取7天兑换码</button>
       </div>
       
+      <!-- 10天兑换码 -->
+      <div class="button-group">
+        <input 
+          type="text" 
+          v-model="batchNumbers.day10" 
+          placeholder="请输入10天批次号" 
+          @change="saveBatchNumber('day10', batchNumbers.day10)"
+        />
+        <button @click="getExchangeCode('day10')">获取10天兑换码</button>
+      </div>
+      
       <!-- 1个月兑换码 -->
       <div class="button-group">
         <input 
@@ -81,6 +92,7 @@ const batchNumbers = ref({
   day1: '',
   day3: '',
   day7: '',
+  day10: '',
   month1: ''
 });
 
