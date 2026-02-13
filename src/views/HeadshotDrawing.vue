@@ -1473,7 +1473,7 @@ textarea:focus {
 
 .male-avatars .avatar-item.active {
   border-color: #00ff00;
-  box-shadow: 0 0 035px rgba(0, 255, 0, 0.3);
+  box-shadow: 0 0 0 3px rgba(0, 255, 0, 0.3);
 }
 
 .female-avatars .avatar-item:hover {
