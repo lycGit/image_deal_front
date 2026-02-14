@@ -180,24 +180,70 @@ const copyResult = () => {
     // 生成复制文本
     const copyText = `兑换码${result.value.code}有效期到${formattedExpireTime}，请尽快使用。使用说明请参考：http://www.smartassistant.top:8083/introduce`;
     
-    // 复制到剪贴板
-    navigator.clipboard.writeText(copyText)
-      .then(() => {
-        copyMessage.value = '复制成功！';
-        setTimeout(() => {
-          copyMessage.value = '';
-        }, 2000);
-      })
-      .catch(err => {
-        console.error('复制失败:', err);
-        copyMessage.value = '复制失败，请手动复制';
-        setTimeout(() => {
-          copyMessage.value = '';
-        }, 2000);
-      });
+    // 检查是否支持 Clipboard API
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      // 使用现代 Clipboard API
+      navigator.clipboard.writeText(copyText)
+        .then(() => {
+          copyMessage.value = '复制成功！';
+          setTimeout(() => {
+            copyMessage.value = '';
+          }, 2000);
+        })
+        .catch(err => {
+          console.error('Clipboard API 复制失败:', err);
+          // 降级到传统方法
+          fallbackCopyText(copyText);
+        });
+    } else {
+      // 降级到传统方法
+      fallbackCopyText(copyText);
+    }
     
   } catch (error) {
     console.error('复制处理失败:', error);
+    copyMessage.value = '复制失败，请手动复制';
+    setTimeout(() => {
+      copyMessage.value = '';
+    }, 2000);
+  }
+};
+
+// 降级复制方法（使用传统的 execCommand）
+const fallbackCopyText = (text) => {
+  try {
+    // 创建一个临时的 textarea 元素
+    const textarea = document.createElement('textarea');
+    textarea.value = text;
+    textarea.style.position = 'fixed';
+    textarea.style.left = '-999999px';
+    textarea.style.top = '-999999px';
+    document.body.appendChild(textarea);
+    
+    // 选中文本
+    textarea.select();
+    textarea.setSelectionRange(0, text.length);
+    
+    // 执行复制命令
+    const successful = document.execCommand('copy');
+    
+    // 移除临时元素
+    document.body.removeChild(textarea);
+    
+    if (successful) {
+      copyMessage.value = '复制成功！';
+      setTimeout(() => {
+        copyMessage.value = '';
+      }, 2000);
+    } else {
+      throw new Error('execCommand 复制失败');
+    }
+  } catch (err) {
+    console.error('降级复制方法失败:', err);
+    copyMessage.value = '复制失败，请手动复制';
+    setTimeout(() => {
+      copyMessage.value = '';
+    }, 2000);
   }
 };
 </script>
