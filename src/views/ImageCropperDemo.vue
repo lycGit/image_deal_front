@@ -26,7 +26,7 @@ onMounted(() => {
       cropBoxResizable: true, // 保持裁剪框可调整大小
       zoomOnWheel: false, // 禁止鼠标滚轮缩放
       zoomOnTouch: false, // 禁止触摸缩放
-      rotatable: false, // 禁止旋转
+      rotatable: true, 
       background: false,
       guides: false,
       center: true
