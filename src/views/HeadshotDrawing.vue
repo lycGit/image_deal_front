@@ -128,7 +128,7 @@
         <!-- 加载中状态 -->
         <div v-if="loading" class="loading-container">
           <div class="loading-spinner"></div>
-          <div class="loading-text">图片生成中，大约需要30秒，请稍候...</div>
+          <div class="loading-text">图片生成中，大约耗时20~40秒，请稍候...</div>
         </div>
         
         <!-- 空状态提示 -->
@@ -670,7 +670,9 @@ const handleGenerate = async () => {
     
     // 如果有参考图片，添加到 formData
     if (referenceImage.value) {
-      const base64Data = referenceImage.value.split(',')[1]
+      // 先压缩图片到300KB以下
+      const compressedImage = await compressImage(referenceImage.value, 300)
+      const base64Data = compressedImage.split(',')[1]
       const blob = await fetch(`data:image/jpeg;base64,${base64Data}`).then(res => res.blob())
       formData.append('file', blob, 'reference.jpg')
       uploadedImageUrl = URL.createObjectURL(blob)
@@ -706,7 +708,7 @@ const handleGenerate = async () => {
         showAlert('服务器繁忙，请稍后再试或刷新浏览器重试');
         loading.value = false;
       }
-    }, 60000); // 1分钟 = 60000毫秒
+    }, 120000); // 1分钟 = 60000毫秒
 
   } catch (error) {
     console.error('生成失败:', error)
@@ -794,12 +796,24 @@ const compressImage = (imageUrl, maxSizeKB = 300) => {
         const canvas = document.createElement('canvas')
         const ctx = canvas.getContext('2d')
         
-        // 设置canvas尺寸为图片原始尺寸
-        canvas.width = img.width
-        canvas.height = img.height
+        // 检查图片尺寸，如果长或宽大于750，则按比例缩放到750以内
+        let width = img.width
+        let height = img.height
+        const maxDimension = 750
+        
+        if (width > maxDimension || height > maxDimension) {
+          const ratio = Math.min(maxDimension / width, maxDimension / height)
+          width = Math.floor(width * ratio)
+          height = Math.floor(height * ratio)
+          console.log(`图片尺寸从 ${img.width}x${img.height} 缩放到 ${width}x${height}`)
+        }
+        
+        // 设置canvas尺寸为调整后的尺寸
+        canvas.width = width
+        canvas.height = height
         
         // 绘制图片到canvas
-        ctx.drawImage(img, 0, 0)
+        ctx.drawImage(img, 0, 0, width, height)
         
         // 初始压缩质量
         let quality = 0.95
@@ -816,7 +830,7 @@ const compressImage = (imageUrl, maxSizeKB = 300) => {
           const estimatedSizeKB = (base64Data.length * 3) / (4 * 1024) // 估算大小
           
           if (estimatedSizeKB <= maxSizeKB) {
-            console.log(`图片压缩完成，压缩前大小未知，压缩后大小约${estimatedSizeKB.toFixed(2)}KB，质量:${quality.toFixed(2)}`)
+            console.log(`图片压缩完成，压缩后大小约${estimatedSizeKB.toFixed(2)}KB，尺寸:${width}x${height}，质量:${quality.toFixed(2)}`)
             resolve(compressedDataUrl)
             return
           }
@@ -826,7 +840,7 @@ const compressImage = (imageUrl, maxSizeKB = 300) => {
         }
         
         // 如果质量低于0.1仍然过大，返回当前压缩结果
-        console.log('图片压缩到最低质量:', compressedDataUrl.split(',')[1].length * 3 / (4 * 1024).toFixed(2), 'KB')
+        console.log('图片压缩到最低质量:', (compressedDataUrl.split(',')[1].length * 3 / (4 * 1024)).toFixed(2), 'KB')
         resolve(compressedDataUrl)
       }
       
@@ -949,7 +963,7 @@ const initCropper = () => {
   
   cropperInstance.value = new Cropper(cropperImage.value, {
     aspectRatio: NaN, // 不限制比例，自由裁剪
-    viewMode: 1, // 允许裁剪框超出容器
+    viewMode: 0, // 允许裁剪框超出容器
     autoCropArea: 1, // 初始裁剪框大小为100%
     movable: true,
     zoomable: true,
