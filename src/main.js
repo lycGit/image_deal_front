@@ -19,7 +19,7 @@ console.log('当前用户ID:', USER_ID);
 // WebSocket 相关逻辑
 let ws = null;
 let pingInterval = null;
-const PING_INTERVAL = 30000; // 30 秒发送一次 ping
+const PING_INTERVAL = 5000; // 5 秒发送一次 ping
 
 const connectWebSocket = () => {
   // ws = new WebSocket('ws://127.0.0.1:8092/webSocket/' + USER_ID);

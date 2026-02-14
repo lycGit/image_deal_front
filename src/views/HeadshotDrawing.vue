@@ -131,6 +131,21 @@
           <div class="loading-text">图片生成中，大约需要30秒，请稍候...</div>
         </div>
         
+        <!-- 空状态提示 -->
+        <div v-else-if="generatedItems.length === 0" class="empty-state">
+          <div class="empty-icon">📸</div>
+          <div class="empty-title">还没有生成图片</div>
+          <div class="empty-description">
+            <p>请按照以下步骤生成您的证件照：</p>
+            <ul class="empty-steps">
+              <li>1. 选择您喜欢的头像模板</li>
+              <li>2. 选择证件照背景颜色</li>
+              <li>3. 上传参考图片</li>
+              <li>4. 点击"开始生成"按钮</li>
+            </ul>
+          </div>
+        </div>
+        
         <!-- 生成结果 -->
         <div v-else>
           <div v-for="(item, index) in generatedItems" :key="index" class="image-group">
@@ -555,6 +570,9 @@ const ratios = [
 const loading = ref(false)
 const generatedItems = ref([])
 
+// 超时定时器
+let timeoutTimer = null
+
 // 本地存储键名
 const STORAGE_KEY = 'headshot_drawing_generated_items'
 const MAX_ITEMS = 10
@@ -681,11 +699,23 @@ const handleGenerate = async () => {
     console.log('上传图片地址:', uploadedImageUrl)
     const message = JSON.stringify({'msg': fullPrompt, 'imageUrl': result.imageUrl1,  'userId': userId, 'targetUserId': 'user_py_llm', 'action': 'image_edit'});
     eventBus.emit('websocket-Image2Image', message);
+    
+    // 设置1分钟超时提示
+    timeoutTimer = setTimeout(() => {
+      if (loading.value) {
+        showAlert('服务器繁忙，请稍后再试或刷新浏览器重试');
+        loading.value = false;
+      }
+    }, 60000); // 1分钟 = 60000毫秒
 
   } catch (error) {
     console.error('生成失败:', error)
     showAlert('生成失败，请重试')
     loading.value = false
+    // 清除超时定时器
+    if (timeoutTimer) {
+      clearTimeout(timeoutTimer);
+    }
   }
 }
 
@@ -711,6 +741,11 @@ const handleMessage = (data) => {
   } finally {
     // WebSocket消息处理完成后，确保loading状态为false
     loading.value = false
+    // 清除超时定时器
+    if (timeoutTimer) {
+      clearTimeout(timeoutTimer);
+      timeoutTimer = null;
+    }
   }
 }
 
