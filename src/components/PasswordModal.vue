@@ -6,6 +6,12 @@
         <h3>请输入兑换码</h3>
         <button class="close-btn" @click="closeModal">&times;</button>
       </div>
+      
+      <!-- 显示兑换码信息 -->
+      <div v-if="exchangeCodeInfo" class="exchange-code-info">
+        当前兑换码：{{ exchangeCodeInfo.code }} 剩余积分：{{ exchangeCodeInfo.remainingPoints }} 过期时间：{{ formattedExpiryDate }}
+      </div>
+      
       <div class="modal-body">
         <input
           v-model="password"
@@ -13,18 +19,6 @@
           class="password-input"
         />
         <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
-        
-        <!-- 显示兑换码信息 -->
-        <div v-if="exchangeCodeInfo" class="exchange-code-info">
-          <div class="info-item">
-            <span class="info-label">剩余积分：</span>
-            <span class="info-value">{{ exchangeCodeInfo.remainingPoints }}</span>
-          </div>
-          <div class="info-item">
-            <span class="info-label">过期时间：</span>
-            <span class="info-value">{{ formattedExpiryDate }}</span>
-          </div>
-        </div>
       </div>
       <div class="modal-footer">
         <button class="cancel-btn" @click="closeModal">取消</button>
@@ -215,33 +209,12 @@ const verifyPassword = async () => {
 }
 
 .exchange-code-info {
-  margin-top: 15px;
-  padding: 12px;
-  background-color: #1f2128;
-  border-radius: 4px;
-  border: 1px solid #444;
-}
-
-.info-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 6px 0;
-}
-
-.info-item:not(:last-child) {
-  border-bottom: 1px solid #333;
-}
-
-.info-label {
-  color: #8b8c91;
+  margin-bottom: 15px;
+  color: #faad14;
   font-size: 14px;
-}
-
-.info-value {
-  color: #ffffff;
-  font-size: 14px;
-  font-weight: 500;
+  text-align: left;
+  word-wrap: break-word;
+  white-space: normal;
 }
 
 .modal-footer {
