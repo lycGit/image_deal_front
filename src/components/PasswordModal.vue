@@ -30,12 +30,12 @@
 
 // 取消注释props定义
 <script setup>
-import { ref, defineProps, defineEmits, getCurrentInstance, computed, onMounted } from 'vue';
+import { ref, defineProps, defineEmits, getCurrentInstance, computed, onMounted, watch } from 'vue';
 import config from '../lib/config/config.js';
 import { getExchangeCodeInfo } from '../js/localStorageUtil.js';
 
 // 使用解构赋值明确指定我们需要的属性
-const { showModal } = defineProps({
+const props = defineProps({
   showModal: {
     type: Boolean,
     required: true
@@ -79,6 +79,13 @@ const formattedExpiryDate = computed(() => {
 // 组件挂载时加载兑换码信息
 onMounted(() => {
   loadExchangeCodeInfo();
+});
+
+// 监听弹窗显示状态，当弹窗打开时重新加载兑换码信息
+watch(() => props.showModal, (newVal) => {
+  if (newVal) {
+    loadExchangeCodeInfo();
+  }
 });
 
 // 加载兑换码信息
