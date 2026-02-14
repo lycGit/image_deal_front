@@ -178,7 +178,7 @@ const copyResult = () => {
     });
     
     // 生成复制文本
-    const copyText = `兑换码${result.value.code}有效期到${formattedExpireTime}，请尽快使用。使用说明请参考：http://www.smartassistant.top/introduce`;
+    const copyText = `兑换码${result.value.code}有效期到${formattedExpireTime}，请尽快使用。使用说明请参考：http://www.smartassistant.top:8083/introduce`;
     
     // 复制到剪贴板
     navigator.clipboard.writeText(copyText)
