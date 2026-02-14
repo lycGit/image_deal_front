@@ -5,6 +5,7 @@
 
 // 弹窗容器元素
 let alertContainer = null;
+let toastContainer = null;
 
 /**
  * 初始化弹窗容器
@@ -91,8 +92,68 @@ function initAlertContainer() {
     .alert-button:active {
       background-color: #2d57c7;
     }
+
+    /* Toast提示样式 */
+    .toast-container {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1001;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      pointer-events: none;
+    }
+
+    .toast {
+      background-color: rgba(0, 0, 0, 0.8);
+      color: #ffffff;
+      padding: 12px 20px;
+      border-radius: 4px;
+      font-size: 14px;
+      animation: toastSlideIn 0.3s ease-out, toastFadeOut 0.3s ease-in 2.7s;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+      max-width: 300px;
+      text-align: center;
+    }
+
+    @keyframes toastSlideIn {
+      from {
+        opacity: 0;
+        transform: translate(-50%, -20px);
+      }
+      to {
+        opacity: 1;
+        transform: translate(-50%, 0);
+      }
+    }
+
+    @keyframes toastFadeOut {
+      from {
+        opacity: 1;
+      }
+      to {
+        opacity: 0;
+        transform: translate(-50%, -20px);
+      }
+    }
   `;
   document.head.appendChild(style);
+}
+
+/**
+ * 初始化Toast容器
+ * @private
+ */
+function initToastContainer() {
+  if (toastContainer) return;
+  
+  initAlertContainer(); // 复用样式初始化
+  
+  toastContainer = document.createElement('div');
+  toastContainer.className = 'toast-container';
+  document.body.appendChild(toastContainer);
 }
 
 /**
@@ -169,8 +230,32 @@ export function showAlertWithCallback(message, callback) {
   });
 }
 
+/**
+ * 显示Toast提示
+ * @param {string} message - Toast消息内容
+ * @param {number} duration - 显示时长（毫秒），默认3000
+ */
+export function showToast(message, duration = 3000) {
+  initToastContainer();
+  
+  // 创建Toast元素
+  const toast = document.createElement('div');
+  toast.className = 'toast';
+  toast.textContent = message;
+  
+  toastContainer.appendChild(toast);
+  
+  // 自动移除
+  setTimeout(() => {
+    if (toast.parentNode) {
+      toast.parentNode.removeChild(toast);
+    }
+  }, duration);
+}
+
 // 导出默认实例
 export default {
   show: showAlert,
-  showWithCallback: showAlertWithCallback
+  showWithCallback: showAlertWithCallback,
+  showToast: showToast
 };

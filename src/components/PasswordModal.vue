@@ -13,6 +13,18 @@
           class="password-input"
         />
         <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
+        
+        <!-- 显示兑换码信息 -->
+        <div v-if="exchangeCodeInfo" class="exchange-code-info">
+          <div class="info-item">
+            <span class="info-label">剩余积分：</span>
+            <span class="info-value">{{ exchangeCodeInfo.remainingPoints }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">过期时间：</span>
+            <span class="info-value">{{ formattedExpiryDate }}</span>
+          </div>
+        </div>
       </div>
       <div class="modal-footer">
         <button class="cancel-btn" @click="closeModal">取消</button>
@@ -24,8 +36,9 @@
 
 // 取消注释props定义
 <script setup>
-import { ref, defineProps, defineEmits, getCurrentInstance } from 'vue';
+import { ref, defineProps, defineEmits, getCurrentInstance, computed, onMounted } from 'vue';
 import config from '../lib/config/config.js';
+import { getExchangeCodeInfo } from '../js/localStorageUtil.js';
 
 // 使用解构赋值明确指定我们需要的属性
 const { showModal } = defineProps({
@@ -44,7 +57,43 @@ const emit = defineEmits(['close', 'success']);
 // 组件内部状态
 const password = ref('');
 const errorMessage = ref('');
+const exchangeCodeInfo = ref(null);
 
+// 计算格式化的过期时间
+const formattedExpiryDate = computed(() => {
+  if (!exchangeCodeInfo.value || !exchangeCodeInfo.value.obtainedTime || !exchangeCodeInfo.value.validDays) {
+    return '未知';
+  }
+  
+  try {
+    const obtainedDate = new Date(exchangeCodeInfo.value.obtainedTime);
+    const validDays = exchangeCodeInfo.value.validDays;
+    const expiryDate = new Date(obtainedDate.getTime() + validDays * 24 * 60 * 60 * 1000);
+    
+    // 格式化日期：YYYY-MM-DD
+    const year = expiryDate.getFullYear();
+    const month = String(expiryDate.getMonth() + 1).padStart(2, '0');
+    const day = String(expiryDate.getDate()).padStart(2, '0');
+    
+    return `${year}-${month}-${day}`;
+  } catch (error) {
+    console.error('计算过期时间失败:', error);
+    return '未知';
+  }
+});
+
+// 组件挂载时加载兑换码信息
+onMounted(() => {
+  loadExchangeCodeInfo();
+});
+
+// 加载兑换码信息
+const loadExchangeCodeInfo = () => {
+  const info = getExchangeCodeInfo();
+  if (info) {
+    exchangeCodeInfo.value = info;
+  }
+};
 
 // 关闭弹窗
 const closeModal = () => {
@@ -75,6 +124,9 @@ const verifyPassword = async () => {
       errorMessage.value = '';
       // 将兑换码数据缓存在本地
       localStorage.setItem('exchangeCodeInfo', JSON.stringify(data));
+      
+      // 更新兑换码信息
+      exchangeCodeInfo.value = data;
       
       emit('success');
       closeModal();
@@ -160,6 +212,36 @@ const verifyPassword = async () => {
   color: #ff4d4f;
   font-size: 14px;
   margin: 0;
+}
+
+.exchange-code-info {
+  margin-top: 15px;
+  padding: 12px;
+  background-color: #1f2128;
+  border-radius: 4px;
+  border: 1px solid #444;
+}
+
+.info-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+}
+
+.info-item:not(:last-child) {
+  border-bottom: 1px solid #333;
+}
+
+.info-label {
+  color: #8b8c91;
+  font-size: 14px;
+}
+
+.info-value {
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 500;
 }
 
 .modal-footer {

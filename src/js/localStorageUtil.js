@@ -1,3 +1,5 @@
+import { showToast } from './alertUtil.js';
+
 /**
  * localStorage工具类，用于处理兑换码信息的存储和获取
  */
@@ -7,6 +9,15 @@ const BASE_URL = process.env.VUE_API_BASE_URL || 'http://120.27.130.190:8091';
 
 // 兑换码信息的localStorage键名
 const EXCHANGE_CODE_INFO_KEY = 'exchangeCodeInfo';
+
+// 本地存储键名常量
+const STORAGE_KEYS = {
+  USER_ID: 'user_id',
+  REMAINING_POINTS: 'remaining_points',
+  TOTAL_POINTS: 'total_points',
+  GENERATED_ITEMS: 'generated_items',
+  CROP_HISTORY: 'crop_history'
+};
 
 /**
  * 获取兑换码信息中的特定字段值
@@ -170,6 +181,11 @@ export const consumePoints = async (points) => {
       
       const result = await response.json();
       console.log('积分消耗成功:', result);
+      
+      // 显示积分消耗提示
+      if (result.success) {
+        showToast(`本次消耗 ${result.consumedPoints} 个积分，剩余 ${result.remainingPoints} 个积分`);
+      }
       
       // 如果API返回了剩余积分，使用API返回的值更新本地存储
       if (result.remainingPoints !== undefined) {
