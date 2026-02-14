@@ -129,6 +129,7 @@
         <div v-if="loading" class="loading-container">
           <div class="loading-spinner"></div>
           <div class="loading-text">图片生成中，大约耗时20~40秒，请稍候...</div>
+          <div class="loading-text">{{ currentLoadingMessage }}</div>
         </div>
         
         <!-- 空状态提示 -->
@@ -570,6 +571,17 @@ const ratios = [
 const loading = ref(false)
 const generatedItems = ref([])
 
+// 滚动文案配置
+const loadingMessages = [
+  '图片上传中...',
+  '图片预处理中...',
+  '意图理解中...',
+  '条件生成...',
+  '反思修正...'
+]
+const currentLoadingMessage = ref(loadingMessages[0])
+let loadingMessageTimer = null
+let loadingMessageIndex = 0
 // 超时定时器
 let timeoutTimer = null
 
@@ -643,6 +655,24 @@ const handleFile = (file) => {
   reader.readAsDataURL(file)
 }
 
+
+// 启动滚动文案
+const startLoadingMessage = () => {
+  loadingMessageIndex = 0
+  currentLoadingMessage.value = loadingMessages[0]
+  loadingMessageTimer = setInterval(() => {
+    loadingMessageIndex = (loadingMessageIndex + 1) % loadingMessages.length
+    currentLoadingMessage.value = loadingMessages[loadingMessageIndex]
+  }, 10000) // 每10秒切换一次
+}
+
+// 停止滚动文案
+const stopLoadingMessage = () => {
+  if (loadingMessageTimer) {
+    clearInterval(loadingMessageTimer)
+    loadingMessageTimer = null
+  }
+}
 const handleGenerate = async () => {
   if (!canGenerate.value) return  
 
@@ -663,7 +693,8 @@ const handleGenerate = async () => {
   try {
     // 设置loading状态
     loading.value = true
-    
+    // 启动滚动文案
+    startLoadingMessage()    
     // 创建 FormData 对象
     const formData = new FormData()
     let uploadedImageUrl = null
@@ -706,14 +737,14 @@ const handleGenerate = async () => {
     timeoutTimer = setTimeout(() => {
       if (loading.value) {
         showAlert('服务器繁忙，请稍后再试或刷新浏览器重试');
-        loading.value = false;
+        stopLoadingMessage(); loading.value = false;
       }
     }, 120000); // 1分钟 = 60000毫秒
 
   } catch (error) {
     console.error('生成失败:', error)
     showAlert('生成失败，请重试')
-    loading.value = false
+    stopLoadingMessage(); loading.value = false
     // 清除超时定时器
     if (timeoutTimer) {
       clearTimeout(timeoutTimer);
@@ -742,7 +773,7 @@ const handleMessage = (data) => {
     console.error('解析消息失败，数据不是有效的 JSON 字符串:', error)
   } finally {
     // WebSocket消息处理完成后，确保loading状态为false
-    loading.value = false
+    stopLoadingMessage(); loading.value = false
     // 清除超时定时器
     if (timeoutTimer) {
       clearTimeout(timeoutTimer);
