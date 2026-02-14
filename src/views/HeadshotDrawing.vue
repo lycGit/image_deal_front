@@ -1663,6 +1663,7 @@ textarea:focus {
   flex-direction: column;
   gap: 20px;
   margin-bottom: 44px;
+  flex: 1;
 }
 
 /* 加载中状态 */
@@ -2118,6 +2119,81 @@ textarea:focus {
 
 .confirm-button:active {
   transform: translateY(0);
+}
+
+/* 空状态样式 */
+.empty-state {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #8b8c91;
+  padding: 40px 20px;
+}
+
+.empty-icon {
+  font-size: 64px;
+  margin-bottom: 24px;
+  animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-10px);
+  }
+  60% {
+    transform: translateY(-5px);
+  }
+}
+
+.empty-title {
+  font-size: 20px;
+  font-weight: 500;
+  color: #ffffff;
+  margin-bottom: 16px;
+}
+
+.empty-description {
+  text-align: center;
+  max-width: 500px;
+}
+
+.empty-description p {
+  font-size: 14px;
+  color: #b0b3b8;
+  margin: 0 0 16px 0;
+}
+
+.empty-steps {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  text-align: left;
+  background-color: #363840;
+  border-radius: 8px;
+  padding: 20px;
+}
+
+.empty-steps li {
+  font-size: 14px;
+  color: #b0b3b8;
+  padding: 8px 0;
+  border-bottom: 1px solid #40444b;
+}
+
+.empty-steps li:last-child {
+  border-bottom: none;
+}
+
+.empty-steps li::before {
+  content: "✓";
+  color: #4776E6;
+  margin-right: 8px;
+  font-weight: bold;
 }
 
 </style>
