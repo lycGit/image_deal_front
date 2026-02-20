@@ -686,10 +686,6 @@ const handleGenerate = async () => {
     return; // 积分不足时终止函数执行
   }
   
-  // 消耗积分
-  const points = imageToImagePoints; // 消耗的积分值，现在从配置中获取
-  consumePoints(points);
-  
   try {
     // 设置loading状态
     loading.value = true
@@ -756,6 +752,11 @@ const handleMessage = (data) => {
   console.log('收到 WebSocket 消息:', data)
   try {
     if (data.imageUrl) {
+      // 从配置中获取IMAGE_TO_IMAGE的积分消耗值
+      const imageToImagePoints = Number(getConfigValue('HEADER_IMAGE')) || 5; // 默认值为5
+       // 消耗积分
+      const points = imageToImagePoints; // 消耗的积分值，现在从配置中获取
+      consumePoints(points);
       // 添加到生成记录
       generatedItems.value.unshift({
         url: data.imageUrl || '/placeholder-image.png', // 如果没有上传图片则使用占位图
@@ -763,6 +764,7 @@ const handleMessage = (data) => {
         title: selectedAvatarDescription.value, // 存储选中的头像模板description
         timestamp: Date.now()
       })
+
       // 保存到本地存储
       saveToStorage()
       
