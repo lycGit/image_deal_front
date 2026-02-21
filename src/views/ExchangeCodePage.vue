@@ -178,7 +178,14 @@ const copyResult = () => {
     });
     
     // 生成复制文本
-    const copyText = `兑换码${result.value.code}有效期到${formattedExpireTime}，请尽快使用。使用说明请参考：http://www.smartassistant.top:8083/introduce`;
+    const copyText = `【兑换码】: ${result.value.code}
+    【有效期】: ${formattedExpireTime}（请在此前使用）
+    
+    【使用步骤】:
+    
+    请在浏览器中打开： http://www.smartassistant.top:8083/head-shot
+    详细使用说明： http://www.smartassistant.top:8083/introduce
+    温馨提示：请尽快兑换，以免过期失效。`;
     
     // 检查是否支持 Clipboard API
     if (navigator.clipboard && navigator.clipboard.writeText) {
