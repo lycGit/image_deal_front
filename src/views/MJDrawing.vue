@@ -187,10 +187,6 @@ const handleSubmit = async () => {
   }
 
   console.log("remainingPoints--",textToImagePoints);
-  // 消耗积分
-  const points = textToImagePoints; // 消耗的积分值，现在从配置中获取
-  // 不阻塞用户使用
-  consumePoints(points);
 
   // 点击提交后立即将prompt添加到显示列表中
   const originalPrompt = prompt.value.trim();
@@ -270,6 +266,12 @@ const handleMessage = (data) => {
         description: data.description,
       };
       console.log('已更新临时图片记录:', generatedImages.value[tempImageIndex]);
+      // 从配置中获取TEXT_TO_IMAGE的积分消耗值
+      const textToImagePoints = Number(getConfigValue('TEXT_TO_IMAGE')) || 5; // 默认值为5
+      // 消耗积分
+      const points = textToImagePoints; // 消耗的积分值，现在从配置中获取
+      // 不阻塞用户使用
+      consumePoints(points);
       // 保存到本地缓存
       saveImagesToCache();
     } else {

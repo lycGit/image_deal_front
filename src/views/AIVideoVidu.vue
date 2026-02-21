@@ -236,10 +236,6 @@ const handleGenerate = async () => {
     showAlert('积分余额不足，需要至少' + imageToImagePoints + '积分才能生成图片, 请输入兑换码充值积分');
     return; // 积分不足时终止函数执行
   }
-  
-  // 消耗积分
-  const points = imageToImagePoints; // 消耗的积分值，现在从配置中获取
-  consumePoints(points);
   // 开始生成时禁用按钮
   isGenerating.value = true
   
@@ -312,6 +308,11 @@ const handleMessage = (data) => {
       
       // 只有当videoUrl有有效值时才尝试播放
       if (videoUrl.value) {
+       // 从配置中获取IMAGE_TO_IMAGE的积分消耗值
+       const imageToImagePoints = Number(getConfigValue('TEXT_OR_IMAGE_TO_VIDEO')) || 5; // 默认值为5
+       // 消耗积分
+        const points = imageToImagePoints; // 消耗的积分值，现在从配置中获取
+        consumePoints(points);
         // 保存视频到本地存储
         saveToStorage()
         // 等待DOM更新后自动播放视频
