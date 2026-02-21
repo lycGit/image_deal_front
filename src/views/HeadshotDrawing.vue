@@ -21,7 +21,7 @@
         <div class="avatar-selection">
           <!-- 男性头像区域 -->
           <div class="avatar-section">
-            <div class="avatar-section-title">男性一寸照</div>
+            <div class="avatar-section-title">男性证件照模板</div>
             <div class="avatar-grid male-avatars">
               <div 
                 v-for="(avatar, index) in maleAvatars" 
@@ -39,7 +39,7 @@
           
           <!-- 女性头像区域 -->
           <div class="avatar-section">
-            <div class="avatar-section-title">女性一寸照</div>
+            <div class="avatar-section-title">女性证件照模板</div>
             <div class="avatar-grid female-avatars">
               <div 
                 v-for="(avatar, index) in femaleAvatars" 
