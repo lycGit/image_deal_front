@@ -327,6 +327,7 @@ const handleGenerate = async () => {
     const result = await response.json()
     console.log('上传成功:', result)
     console.log('上传图片地址:', uploadedImageUrl)
+    prompt.value =  prompt.value + ' 人物要求：严格保持参考图中人物的面部特征，包括脸型、五官比例、眉眼神态，进行自然美化但不过度改变，高还原度人像，面部细节清晰';
     const message = JSON.stringify({'msg': prompt.value, 'imageUrl': result.imageUrl1,  'userId': userId, 'targetUserId': 'user_py_llm', 'action': 'image_edit'});
     eventBus.emit('websocket-Image2Image', message);
     
@@ -423,7 +424,7 @@ const handleGenerateWithPrompt2 = async (imageUrl) => {
     
     // 直接使用第一次生成的图片URL，不重新上传
     const message = JSON.stringify({
-      'msg': prompt.value, 
+      'msg': prompt.value + ' 人物要求：严格保持参考图中人物的面部特征，包括脸型、五官比例、眉眼神态，进行自然美化但不过度改变，高还原度人像，面部细节清晰', 
       'imageUrl': imageUrl,  // 使用第一次生成的图片URL
       'userId': userId, 
       'targetUserId': 'user_py_llm', 
