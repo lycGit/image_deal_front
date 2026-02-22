@@ -126,12 +126,6 @@ import { getUserId } from '../js/userIdUtil'; // 导入用户ID工具
 import { showAlert } from '../js/alertUtil'; // 导入公共弹窗工具类
 import PasswordModal from '../components/PasswordModal.vue'; // 导入密码弹窗组件
 
-// 定义颜色对应的背景描述常量
-const COLOR_DESCRIPTIONS = {
-  white: '背景色为证件照纯白色',
-  blue: '背景色为证件照纯蓝色',
-  red: '背景色为证件照纯红色'
-}
 
 // 弹窗状态
 const showPasswordModal = ref(false);
@@ -140,15 +134,11 @@ const prompt = ref('')
 const referenceImage = ref(null)
 const fileInput = ref(null)
 const selectedRatio = ref('1:1')
-const selectedBackgroundColor = ref('blue') // 默认选择蓝色背景
 const selectedAvatarImage = ref('') // 存储当前选中的头像图片URL
 const selectedAvatarDescription = ref('') // 存储当前选中的头像描述
 const instance = getCurrentInstance();
 const baseUrl = instance?.appContext.config.globalProperties.$BASE_URL_8091
 
-
-// 预加载图片缓存
-const preloadedImages = ref(new Map())
 
 // 获取用户ID
 const userId = getUserId();
@@ -168,10 +158,6 @@ const handleAuthorizeSuccess = () => {
   console.log('授权成功');
 };
 
-// 选择证件照背景颜色
-const selectBackgroundColor = (color) => {
-  selectedBackgroundColor.value = color
-}
 // 男性头像数据
 const maleAvatars = ref([
   {
@@ -323,10 +309,6 @@ const loadFromStorage = () => {
     const stored = localStorage.getItem(STORAGE_KEY)
     if (stored) {
       generatedItems.value = JSON.parse(stored)
-      // 预加载所有已生成的图片
-      generatedItems.value.forEach(item => {
-        preloadImage(item.url)
-      })
     }
   } catch (error) {
     console.error('从本地存储加载数据失败:', error)
@@ -430,10 +412,7 @@ const handleGenerate = async () => {
     }
     
     // 添加其他参数
-    // 拼接颜色提示语到prompt后面
-    const colorDescription = COLOR_DESCRIPTIONS[selectedBackgroundColor.value]
-    const fullPrompt = prompt.value ? `${prompt.value}，${colorDescription}` : colorDescription
-    formData.append('description', fullPrompt)
+    formData.append('description', prompt.value)
     formData.append('category', 'KL_DRAWING')
     formData.append('tags', selectedRatio.value)
 
@@ -450,7 +429,7 @@ const handleGenerate = async () => {
     const result = await response.json()
     console.log('上传成功:', result)
     console.log('上传图片地址:', uploadedImageUrl)
-    const message = JSON.stringify({'msg': fullPrompt, 'imageUrl': result.imageUrl1,  'userId': userId, 'targetUserId': 'user_py_llm', 'action': 'image_edit'});
+    const message = JSON.stringify({'msg': prompt.value, 'imageUrl': result.imageUrl1,  'userId': userId, 'targetUserId': 'user_py_llm', 'action': 'image_edit'});
     eventBus.emit('websocket-Image2Image', message);
     
     // 设置1分钟超时提示
@@ -493,7 +472,6 @@ const handleMessage = (data) => {
       saveToStorage()
       
       // 预加载图片到浏览器缓存
-      preloadImage(data.imageUrl)
     }
   } catch (error) {
     console.error('解析消息失败，数据不是有效的 JSON 字符串:', error)
@@ -505,39 +483,6 @@ const handleMessage = (data) => {
       clearTimeout(timeoutTimer);
       timeoutTimer = null;
     }
-  }
-}
-
-// 预加载图片函数
-const preloadImage = (imageUrl) => {
-  if (!imageUrl) return
-  
-  // 如果已经预加载过，直接返回
-  if (preloadedImages.value.has(imageUrl)) {
-    console.log('图片已预加载:', imageUrl)
-    return
-  }
-  
-  try {
-    const img = new Image()
-    img.crossOrigin = 'anonymous' // 允许跨域加载
-    
-    img.onload = () => {
-      console.log('图片预加载完成:', imageUrl)
-      // 将加载完成的图片对象存储到Map中
-      preloadedImages.value.set(imageUrl, img)
-    }
-    
-    img.onerror = (error) => {
-      console.error('图片预加载失败:', imageUrl, error)
-      // 预加载失败时从Map中移除
-      preloadedImages.value.delete(imageUrl)
-    }
-    
-    // 开始加载图片
-    img.src = imageUrl
-  } catch (error) {
-    console.error('预加载图片失败:', error)
   }
 }
 
