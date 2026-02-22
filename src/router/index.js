@@ -15,6 +15,7 @@ import AIVideoPrka from '../views/AIVideoPrka.vue'
 import ChatRoom from '@/socket/ChatRoom.vue'
 import ExchangeCodePage from '../views/ExchangeCodePage.vue' // 导入新页面组件
 import HeadshotDrawing from '../views/HeadshotDrawing.vue'
+import ArtPhotoDrawing from '../views/ArtPhotoDrawing.vue'
 import ImageCropperDemo from '../views/ImageCropperDemo.vue' // 导入图片裁剪演示页面
 import Introduce from '../views/Introduce.vue' 
 
@@ -172,6 +173,15 @@ const routes = [
     meta: {
       keepAlive: false,
       componentName: 'HeadshotDrawing'
+    }
+  },
+  {
+    path: '/art-photo',
+    name: 'artphoto',
+    component: ArtPhotoDrawing,
+    meta: {
+      keepAlive: false,
+      componentName: 'ArtPhotoDrawing'
     }
   },
   {
