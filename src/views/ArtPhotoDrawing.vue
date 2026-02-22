@@ -15,7 +15,7 @@
                 :key="'male-' + index"
                 class="avatar-item"
                 :class="{ active: selectedAvatarImage === avatar.image }"
-                @click="selectAvatar(avatar.prompt, avatar.image, avatar.description)"
+                @click="selectAvatar(avatar.prompt1, avatar.image, avatar.description)"
               >
                 <img :src="avatar.image" :alt="avatar.description" />
                 <!-- <img src="/images/headerTemplate/male-1.jpg" :alt="avatar.description" /> -->
@@ -161,8 +161,6 @@ const handleAuthorizeSuccess = () => {
 
 // 男性头像数据（从配置文件导入）
 const artPhotos = ref(artPhotoData)
-
-// 女性头像数据
 
 // 选择头像模板
 const selectAvatar = (avatarPrompt, avatarImage, avatarDescription) => {
