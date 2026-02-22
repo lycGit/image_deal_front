@@ -18,7 +18,6 @@
                 @click="selectAvatar(avatar.prompt1, avatar.image, avatar.description)"
               >
                 <img :src="avatar.image" :alt="avatar.description" />
-                <!-- <img src="/images/headerTemplate/male-1.jpg" :alt="avatar.description" /> -->
                 <div class="avatar-tooltip">{{ avatar.description }}</div>
               </div>
             </div>
@@ -167,11 +166,22 @@ const selectAvatar = (avatarPrompt, avatarImage, avatarDescription) => {
   prompt.value = avatarPrompt
   selectedAvatarImage.value = avatarImage
   selectedAvatarDescription.value = avatarDescription
+  
+  // 从artPhotos数组中找到对应的avatar对象，获取prompt2
+  const selectedAvatar = artPhotos.value.find(avatar => avatar.image === avatarImage)
+  if (selectedAvatar && selectedAvatar.prompt2) {
+    selectedAvatarPrompt2.value = selectedAvatar.prompt2
+  }
 }
 
 // 添加loading状态管理
 const loading = ref(false)
 const generatedItems = ref([])
+
+// 生成状态管理
+const isFirstGeneration = ref(true) // 是否第一次生成
+const selectedAvatarPrompt2 = ref('') // 保存选中的avatar的prompt2
+const firstGeneratedImageUrl = ref('') // 保存第一次生成的图片URL
 
 // 滚动文案配置
 const loadingMessages = [
@@ -343,34 +353,94 @@ const handleMessage = (data) => {
   console.log('收到 WebSocket 消息:', data)
   try {
     if (data.imageUrl) {
-      // 从配置中获取IMAGE_TO_IMAGE的积分消耗值
-      const imageToImagePoints = Number(getConfigValue('HEADER_IMAGE')) || 5; // 默认值为5
-       // 消耗积分
-      const points = imageToImagePoints; // 消耗的积分值，现在从配置中获取
-      consumePoints(points);
-      // 添加到生成记录
-      generatedItems.value.unshift({
-        url: data.imageUrl || '/placeholder-image.png', // 如果没有上传图片则使用占位图
-        description: prompt.value,
-        title: selectedAvatarDescription.value, // 存储选中的头像模板description
-        timestamp: Date.now()
-      })
+      // 判断是否是第一次生成
+      if (isFirstGeneration.value) {
+        // 第一次生成完成，保存图片URL但不显示结果
+        firstGeneratedImageUrl.value = data.imageUrl
+        console.log('第一次生成完成，准备使用prompt2重新生成')
+        
+        // 切换到第二次生成
+        isFirstGeneration.value = false
+        prompt.value = selectedAvatarPrompt2.value
+        
+        // 使用prompt2重新生成（不重新上传图片，直接使用第一次生成的图片URL）
+        handleGenerateWithPrompt2(data.imageUrl)
+      } else {
+        // 第二次生成完成，执行后续逻辑
+        console.log('第二次生成完成，执行积分消耗和保存逻辑')
+        
+        // 从配置中获取IMAGE_TO_IMAGE的积分消耗值
+        const imageToImagePoints = Number(getConfigValue('HEADER_IMAGE')) || 5; // 默认值为5
+         // 消耗积分
+        const points = imageToImagePoints; // 消耗的积分值，现在从配置中获取
+        consumePoints(points);
+        // 添加到生成记录
+        generatedItems.value.unshift({
+          url: data.imageUrl || '/placeholder-image.png', // 如果没有上传图片则使用占位图
+          description: prompt.value,
+          title: selectedAvatarDescription.value, // 存储选中的头像模板description
+          timestamp: Date.now()
+        })
 
-      // 保存到本地存储
-      saveToStorage()
-      
-      // 预加载图片到浏览器缓存
+        // 保存到本地存储
+        saveToStorage()
+        
+        // 重置状态
+        isFirstGeneration.value = true
+        // 恢复prompt为prompt1（需要从artPhotos中重新获取）
+        const selectedAvatar = artPhotos.value.find(avatar => avatar.image === selectedAvatarImage.value)
+        if (selectedAvatar && selectedAvatar.prompt1) {
+          prompt.value = selectedAvatar.prompt1
+        }
+        
+        // 停止loading状态
+        stopLoadingMessage(); 
+        loading.value = false
+        // 清除超时定时器
+        if (timeoutTimer) {
+          clearTimeout(timeoutTimer);
+          timeoutTimer = null;
+        }
+      }
     }
   } catch (error) {
     console.error('解析消息失败，数据不是有效的 JSON 字符串:', error)
-  } finally {
-    // WebSocket消息处理完成后，确保loading状态为false
-    stopLoadingMessage(); loading.value = false
+    // 发生错误时停止loading
+    stopLoadingMessage(); 
+    loading.value = false
     // 清除超时定时器
     if (timeoutTimer) {
       clearTimeout(timeoutTimer);
       timeoutTimer = null;
     }
+  }
+}
+
+// 使用prompt2重新生成的函数（不重新上传图片，直接使用第一次生成的图片URL）
+const handleGenerateWithPrompt2 = async (imageUrl) => {
+  try {
+    console.log('使用prompt2重新生成，图片URL:', imageUrl)
+    
+    // 直接使用第一次生成的图片URL，不重新上传
+    const message = JSON.stringify({
+      'msg': prompt.value, 
+      'imageUrl': imageUrl,  // 使用第一次生成的图片URL
+      'userId': userId, 
+      'targetUserId': 'user_py_llm', 
+      'action': 'image_edit'
+    });
+    eventBus.emit('websocket-Image2Image', message);
+    
+  } catch (error) {
+    console.error('第二次生成失败:', error)
+    showAlert('第二次生成失败，请重试')
+    stopLoadingMessage(); loading.value = false
+    // 清除超时定时器
+    if (timeoutTimer) {
+      clearTimeout(timeoutTimer);
+    }
+    // 重置状态
+    isFirstGeneration.value = true
   }
 }
 
