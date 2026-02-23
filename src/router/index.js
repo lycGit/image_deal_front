@@ -18,6 +18,7 @@ import HeadshotDrawing from '../views/HeadshotDrawing.vue'
 import ArtPhotoDrawing from '../views/ArtPhotoDrawing.vue'
 import ImageCropperDemo from '../views/ImageCropperDemo.vue' // 导入图片裁剪演示页面
 import Introduce from '../views/Introduce.vue' 
+import ImageCompress from '../views/ImageCompress.vue' // 导入图片压缩页面
 
 const routes = [
   {
@@ -200,6 +201,15 @@ const routes = [
     meta: {
       keepAlive: false,
       componentName: 'IntroducePage'
+    }
+  },
+  {
+    path: '/image-compress',
+    name: 'imageCompress',
+    component: ImageCompress,
+    meta: {
+      keepAlive: false,
+      componentName: 'ImageCompress'
     }
   }
 ]
