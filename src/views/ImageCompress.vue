@@ -174,8 +174,8 @@ export default {
     const isDragOver = ref(false)
     const imageList = ref([])
     const quality = ref(80)
-    const maxWidth = ref('')
-    const maxHeight = ref('')
+    const maxWidth = ref(1024)
+    const maxHeight = ref(1024)
     const isCompressing = ref(false)
     const compressedCount = ref(0)
 
