@@ -413,7 +413,7 @@ const handleGenerate = async () => {
   }
 }
 
-const handleMessage = (data) => { 
+const handleMessage = async (data) => { 
   console.log('收到 WebSocket 消息:', data)
   try {
     if (data.imageUrl) {
@@ -449,6 +449,16 @@ const handleMessage = (data) => {
         // 保存到本地存储
         saveToStorage()
         
+        // 自动下载生成的图片
+        if (data.imageUrl && selectedAvatarImage.value) {
+          console.log('自动下载触发，data.imageUrl:', data.imageUrl);
+          console.log('自动下载触发，selectedAvatarImage.value:', selectedAvatarImage.value);
+          await downloadGeneratedImage(data.imageUrl, selectedAvatarImage.value);
+        } else {
+          console.log('自动下载条件不满足，data.imageUrl:', data.imageUrl);
+          console.log('自动下载条件不满足，selectedAvatarImage.value:', selectedAvatarImage.value);
+        }
+        
         // 重置状态
         isFirstGeneration.value = true
         // 恢复prompt为prompt1（需要从allSections中重新获取）
@@ -482,6 +492,50 @@ const handleMessage = (data) => {
     }
   }
 }
+
+// 自动下载生成的图片
+const downloadGeneratedImage = async (imageUrl, avatarImagePath) => {
+  if (!imageUrl || !avatarImagePath) {
+    console.log('自动下载条件不满足，imageUrl:', imageUrl, 'avatarImagePath:', avatarImagePath);
+    return;
+  }
+  
+  try {
+    // 从avatarImagePath中提取图片名称
+    const imageName = avatarImagePath.split('/').pop(); // 获取最后一部分，如art-1.jpg
+    const baseName = imageName.split('.')[0]; // 去除扩展名，如art-1
+    const downloadFileName = `${baseName}.png`; // 保存为png格式
+    console.log('生成的downloadFileName:', downloadFileName);
+    
+    // 使用fetch获取图片数据，确保下载文件名正确
+    try {
+      const response = await fetch(imageUrl);
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      
+      // 创建下载链接
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = downloadFileName;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url); // 释放内存
+      console.log('图片已自动下载:', downloadFileName);
+    } catch (error) {
+      console.error('自动下载失败:', error);
+      // 如果fetch失败，回退到直接链接下载
+      const link = document.createElement('a');
+      link.href = imageUrl;
+      link.download = downloadFileName;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  } catch (error) {
+    console.error('处理自动下载时出错:', error);
+  }
+};
 
 // 使用prompt2重新生成的函数（不重新上传图片，直接使用第一次生成的图片URL）
 const handleGenerateWithPrompt2 = async (imageUrl) => {
