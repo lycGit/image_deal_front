@@ -362,16 +362,25 @@ const stopLoadingMessage = () => {
     loadingMessageTimer = null
   }
 }
-const handleGenerate = async () => {
-  if (!canGenerate.value) return  
 
-    // 检查剩余积分
+// 检查剩余积分的私有方法
+const checkRemainingPoints = () => {
   const remainingPoints = getRemainingPoints();
   // 从配置中获取IMAGE_TO_IMAGE的积分消耗值
   const imageToImagePoints = Number(getConfigValue('HEADER_IMAGE')) || 5; // 默认值为5
   
   if (!remainingPoints || remainingPoints < imageToImagePoints) {
     showAlert('积分余额不足，需要至少' + imageToImagePoints + '积分才能生成图片, 请输入兑换码充值积分');
+    return false; // 积分不足
+  }
+  return true; // 积分充足
+}
+
+const handleGenerate = async () => {
+  if (!canGenerate.value) return  
+
+    // 检查剩余积分
+  if (!checkRemainingPoints()) {
     return; // 积分不足时终止函数执行
   }
   
@@ -503,8 +512,13 @@ const handleMessage = async (data) => {
 
         // 生成整个系列的图像
         if (generateWholeSeries.value) {
+          // 检查剩余积分
+          if (!checkRemainingPoints()) {
+            return; // 积分不足时终止函数执行
+          }
           const section = allSections.value[currentSectionIndex];
           if (currentAvartIndex < section.data.length) {
+            loading.value = true;
             console.log('再次处理图片地址--:', origeImageUrl);
             const avatar = section.data[currentAvartIndex];
             currentAvartIndex += 1;
