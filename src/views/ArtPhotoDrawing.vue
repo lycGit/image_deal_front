@@ -6,16 +6,20 @@
       <!-- 头像选择区域 -->
       <div class="section">
         <div class="avatar-selection">
-          <!-- 男性头像区域 -->
-          <div class="avatar-section">
-            <div class="avatar-section-title">男性证件照模板</div>
-            <div class="avatar-grid male-avatars">
+          <!-- 动态遍历所有section -->
+          <div 
+            v-for="(section, sectionIndex) in allSections" 
+            :key="'section-' + sectionIndex"
+            class="avatar-section"
+          >
+            <div class="avatar-section-title">{{ section.title }}</div>
+            <div class="avatar-grid">
               <div 
-                v-for="(avatar, index) in artPhotos" 
-                :key="'male-' + index"
+                v-for="(avatar, index) in section.data" 
+                :key="'avatar-' + sectionIndex + '-' + index"
                 class="avatar-item"
                 :class="{ active: selectedAvatarImage === avatar.image }"
-                @click="selectAvatar(avatar.prompt1, avatar.image, avatar.description)"
+                @click="selectAvatar(avatar.prompt1, avatar.image, avatar.description, section.data)"
               >
                 <img :src="avatar.image" :alt="avatar.description" />
                 <div class="avatar-tooltip">{{ avatar.description }}</div>
@@ -124,7 +128,37 @@ import { getConfigValue } from '../js/configUtil'; // 导入获取配置值的�
 import { getUserId } from '../js/userIdUtil'; // 导入用户ID工具
 import { showAlert } from '../js/alertUtil'; // 导入公共弹窗工具类
 import PasswordModal from '../components/PasswordModal.vue'; // 导入密码弹窗组件
-import artPhotoData from '../config/artPhoto.json'; // 导入男性头像配置数据
+
+// 导入所有images_开头的配置文件
+import images_5382 from '../config/images_5382.json'
+import images_5427 from '../config/images_5427.json'
+import images_5445 from '../config/images_5445.json'
+import images_5450 from '../config/images_5450.json'
+import images_5467 from '../config/images_5467.json'
+import images_5521 from '../config/images_5521.json'
+import images_5595 from '../config/images_5595.json'
+import images_5636 from '../config/images_5636.json'
+import images_5643 from '../config/images_5643.json'
+import images_5661 from '../config/images_5661.json'
+import images_5675 from '../config/images_5675.json'
+import images_5689 from '../config/images_5689.json'
+import images_5692 from '../config/images_5692.json'
+import images_5697 from '../config/images_5697.json'
+import images_5699 from '../config/images_5699.json'
+import images_5725 from '../config/images_5725.json'
+import images_5748 from '../config/images_5748.json'
+import images_5754 from '../config/images_5754.json'
+import images_5761 from '../config/images_5761.json'
+import images_5773 from '../config/images_5773.json'
+import images_5807 from '../config/images_5807.json'
+import images_5844 from '../config/images_5844.json'
+import images_5852 from '../config/images_5852.json'
+import images_5857 from '../config/images_5857.json'
+import images_5863 from '../config/images_5863.json'
+import images_5868 from '../config/images_5868.json'
+import images_5875 from '../config/images_5875.json'
+import images_5890 from '../config/images_5890.json'
+import images_5894 from '../config/images_5894.json'
 
 
 // 弹窗状态
@@ -158,17 +192,47 @@ const handleAuthorizeSuccess = () => {
   console.log('授权成功');
 };
 
-// 男性头像数据（从配置文件导入）
-const artPhotos = ref(artPhotoData)
+// 所有section数据
+const allSections = ref([
+  { title: '竹筏系列', data: images_5382 },
+  { title: '花海系列', data: images_5427 },
+  { title: '抱琴抚弦', data: images_5445 },
+  { title: '樱花树下', data: images_5450 },
+  { title: '水畔佳人', data: images_5467 },
+  { title: '枫林秋色', data: images_5521 },
+  { title: '古风竹筏6', data: images_5595 },
+  { title: '古风竹筏7', data: images_5636 },
+  { title: '古风竹筏8', data: images_5643 },
+  { title: '古风竹筏9', data: images_5661 },
+  { title: '古风竹筏10', data: images_5675 },
+  { title: '古风竹筏11', data: images_5689 },
+  { title: '古风竹筏12', data: images_5692 },
+  { title: '古风竹筏13', data: images_5697 },
+  { title: '古风竹筏14', data: images_5699 },
+  { title: '古风竹筏15', data: images_5725 },
+  { title: '古风竹筏16', data: images_5748 },
+  { title: '古风竹筏17', data: images_5754 },
+  { title: '古风竹筏18', data: images_5761 },
+  { title: '古风竹筏19', data: images_5773 },
+  { title: '古风竹筏20', data: images_5807 },
+  { title: '古风竹筏21', data: images_5844 },
+  { title: '古风竹筏22', data: images_5852 },
+  { title: '古风竹筏23', data: images_5857 },
+  { title: '古风竹筏24', data: images_5863 },
+  { title: '古风竹筏25', data: images_5868 },
+  { title: '古风竹筏26', data: images_5875 },
+  { title: '古风竹筏27', data: images_5890 },
+  { title: '古风竹筏28', data: images_5894 }
+])
 
 // 选择头像模板
-const selectAvatar = (avatarPrompt, avatarImage, avatarDescription) => {
+const selectAvatar = (avatarPrompt, avatarImage, avatarDescription, sectionData) => {
   prompt.value = avatarPrompt
   selectedAvatarImage.value = avatarImage
   selectedAvatarDescription.value = avatarDescription
   
-  // 从artPhotos数组中找到对应的avatar对象，获取prompt2
-  const selectedAvatar = artPhotos.value.find(avatar => avatar.image === avatarImage)
+  // 从sectionData数组中找到对应的avatar对象，获取prompt2
+  const selectedAvatar = sectionData.find(avatar => avatar.image === avatarImage)
   if (selectedAvatar && selectedAvatar.prompt2) {
     selectedAvatarPrompt2.value = selectedAvatar.prompt2
   }
@@ -388,10 +452,13 @@ const handleMessage = (data) => {
         
         // 重置状态
         isFirstGeneration.value = true
-        // 恢复prompt为prompt1（需要从artPhotos中重新获取）
-        const selectedAvatar = artPhotos.value.find(avatar => avatar.image === selectedAvatarImage.value)
-        if (selectedAvatar && selectedAvatar.prompt1) {
-          prompt.value = selectedAvatar.prompt1
+        // 恢复prompt为prompt1（需要从allSections中重新获取）
+        for (const section of allSections.value) {
+          const selectedAvatar = section.data.find(avatar => avatar.image === selectedAvatarImage.value)
+          if (selectedAvatar && selectedAvatar.prompt1) {
+            prompt.value = selectedAvatar.prompt1
+            break
+          }
         }
         
         // 停止loading状态
