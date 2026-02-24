@@ -104,6 +104,10 @@
             <div class="image-container">
               <div class="image-wrapper">
                 <img :src="item.url" :alt="item.description" />
+                <!-- 水印层 -->
+                <div class="watermark-overlay">
+                  <div class="watermark-content">灵境工作室</div>
+                </div>
                 <!-- 下载和裁剪按钮 -->
                 <div class="image-actions">
                   <button class="download-button" @click="downloadImage(item.url, item.description)">
@@ -1387,6 +1391,36 @@ textarea:focus {
 .download-button:active {
   transform: scale(1.05);
   box-shadow: 0 2px 8px rgba(71, 118, 230, 0.5);
+}
+
+/* 水印层样式 */
+.watermark-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.watermark-content {
+  font-family: 'STXingkai', 'Xingkai SC', 'KaiTi', '楷体', 'Georgia', serif;
+  font-size: 24px;
+  font-weight: bold;
+  color: rgba(255, 255, 255, 0.4);
+  padding: 12px 40px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 4px;
+  transform: rotate(-15deg);
+  letter-spacing: 4px;
+  white-space: nowrap;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(4px);
 }
 
 /* 裁剪按钮样式 */
