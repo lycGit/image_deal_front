@@ -45,6 +45,12 @@
       </div>
     
     
+      <!-- 是否生成整个系列的复选框 -->
+      <label class="checkbox-container">
+        <input type="checkbox" v-model="generateWholeSeries" />
+        <span class="checkbox-label">是否生成整个系列</span>
+      </label>
+    
       <!-- 生成按钮 -->
       <button 
         class="generate-button"
@@ -251,6 +257,9 @@ const selectAvatar = (avatarPrompt, avatarImage, avatarDescription, sectionData,
 // 添加loading状态管理
 const loading = ref(false)
 const generatedItems = ref([])
+
+// 是否生成整个系列的复选框状态
+const generateWholeSeries = ref(false)
 
 // 生成状态管理
 const isFirstGeneration = ref(true) // 是否第一次生成
@@ -493,16 +502,18 @@ const handleMessage = async (data) => {
         }
 
         // 生成整个系列的图像
-        const section = allSections.value[currentSectionIndex];
-        if (currentAvartIndex < section.data.length) {
-          console.log('再次处理图片地址--:', origeImageUrl);
-          const avatar = section.data[currentAvartIndex];
-          currentAvartIndex += 1;
-          selectAvatar(avatar.prompt1, avatar.image, avatar.description, section.data, currentSectionIndex)
-          prompt.value += ' 人物要求：严格保持参考图中人物的面部特征，包括脸型、五官比例、眉眼神态，进行自然美化但不过度改变，高还原度人像，面部细节清晰';
-          const message = JSON.stringify({'msg': prompt.value, 'imageUrl': origeImageUrl,  'userId': userId, 'targetUserId': 'user_py_llm', 'action': 'image_edit'});
-          console.log('再次处理图片信息--:', message)
-          eventBus.emit('websocket-Image2Image', message);
+        if (generateWholeSeries.value) {
+          const section = allSections.value[currentSectionIndex];
+          if (currentAvartIndex < section.data.length) {
+            console.log('再次处理图片地址--:', origeImageUrl);
+            const avatar = section.data[currentAvartIndex];
+            currentAvartIndex += 1;
+            selectAvatar(avatar.prompt1, avatar.image, avatar.description, section.data, currentSectionIndex)
+            prompt.value += ' 人物要求：严格保持参考图中人物的面部特征，包括脸型、五官比例、眉眼神态，进行自然美化但不过度改变，高还原度人像，面部细节清晰';
+            const message = JSON.stringify({'msg': prompt.value, 'imageUrl': origeImageUrl,  'userId': userId, 'targetUserId': 'user_py_llm', 'action': 'image_edit'});
+            console.log('再次处理图片信息--:', message)
+            eventBus.emit('websocket-Image2Image', message);
+          }
         }
 
       }
@@ -1061,6 +1072,30 @@ textarea:focus {
 .avatar-selection {
   scrollbar-width: thin;
   scrollbar-color: #4776E6 #2f3136;
+}
+
+/* 复选框容器样式 */
+.checkbox-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 16px;
+  margin-bottom: 16px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.checkbox-container input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: #4776E6;
+}
+
+.checkbox-label {
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 500;
 }
 
 /* 确保生成按钮始终在底部并保持间距 */
