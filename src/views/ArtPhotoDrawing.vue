@@ -1,7 +1,7 @@
 <template>
   <div class="view-container">
     <div class="left-panel">
-      <div class="header">头像模板选择</div>
+      <div class="header">艺术照模板选择</div>
 
       <!-- 头像选择区域 -->
       <div class="section">
@@ -48,7 +48,7 @@
       <!-- 是否生成整个系列的复选框 -->
       <label class="checkbox-container">
         <input type="checkbox" v-model="generateWholeSeries" />
-        <span class="checkbox-label">是否生成整个系列</span>
+        <span class="checkbox-label">是否一次性生成整套艺术照</span>
       </label>
     
       <!-- 生成按钮 -->
@@ -780,7 +780,7 @@ onUnmounted(() => {
 
 /* 调整左侧面板布局，确保按钮始终可见 */
 .left-panel {
-  width: 33.333%;
+  width: 60%;
   padding: 24px;
   border-right: 1px solid #2f3136;
   display: flex;
@@ -1033,11 +1033,9 @@ textarea:focus {
 
 .avatar-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(8, 1fr);
   grid-auto-rows: min-content;
   gap: 12px;
-  max-height: 200px;
-  overflow-y: auto;
   padding-right: 4px;
 }
 
