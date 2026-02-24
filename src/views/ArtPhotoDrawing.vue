@@ -501,11 +501,14 @@ const downloadGeneratedImage = async (imageUrl, avatarImagePath) => {
   }
   
   try {
-    // 从avatarImagePath中提取图片名称
-    const imageName = avatarImagePath.split('/').pop(); // 获取最后一部分，如art-1.jpg
+    // 从avatarImagePath中提取图片名称和文件夹名称
+    const pathParts = avatarImagePath.split('/');
+    const folderName = pathParts[pathParts.length - 2]; // 获取倒数第二部分作为文件夹名称
+    const imageName = pathParts.pop(); // 获取最后一部分，如art-1.jpg
     const baseName = imageName.split('.')[0]; // 去除扩展名，如art-1
-    const downloadFileName = `${baseName}.png`; // 保存为png格式
+    const downloadFileName = `${folderName}_${baseName}.png`; // 保存为png格式，仅使用baseName
     console.log('生成的downloadFileName:', downloadFileName);
+    console.log('图片所属文件夹:', folderName);
     
     // 使用fetch获取图片数据，确保下载文件名正确
     try {
