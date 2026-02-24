@@ -72,15 +72,15 @@
       </div>
       
       <div class="gallery">
-        <!-- 加载中状态 -->
-        <div v-if="loading" class="loading-container">
+        <!-- 加载中状态 - 当有结果且正在加载时显示 -->
+        <div v-if="loading && generatedItems.length > 0" class="loading-container">
           <div class="loading-spinner"></div>
           <div class="loading-text">图片生成中，大约耗时20~40秒，请稍候...</div>
           <div class="loading-text">{{ currentLoadingMessage }}</div>
         </div>
         
-        <!-- 空状态提示 -->
-        <div v-else-if="generatedItems.length === 0" class="empty-state">
+        <!-- 空状态提示 - 当没有结果且不在加载时显示 -->
+        <div v-else-if="generatedItems.length === 0 && !loading" class="empty-state">
           <div class="empty-icon">📸</div>
           <div class="empty-title">还没有生成图片</div>
           <div class="empty-description">
@@ -94,8 +94,8 @@
           </div>
         </div>
         
-        <!-- 生成结果 -->
-        <div v-else>
+        <!-- 生成结果 - 当有结果时显示 -->
+        <div v-if="generatedItems.length > 0">
           <div v-for="(item, index) in generatedItems" :key="index" class="image-group">
             <div class="group-title">
               <span class="item-index">{{ index + 1 }}</span>
