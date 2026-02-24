@@ -75,7 +75,7 @@
         <!-- 加载中状态 - 当有结果且正在加载时显示 -->
         <div v-if="loading && generatedItems.length > 0" class="loading-container">
           <div class="loading-spinner"></div>
-          <div class="loading-text">图片生成中，大约耗时20~40秒，请稍候...</div>
+          <div class="loading-text">图片生成中，大约耗时30~60秒，请稍候...</div>
           <div class="loading-text">{{ currentLoadingMessage }}</div>
         </div>
         
@@ -105,7 +105,7 @@
               <div class="image-wrapper">
                 <img :src="item.url" :alt="item.description" />
                 <!-- 水印层 -->
-                <div class="watermark-overlay">
+                <div class="watermark-overlay" v-if="!enableDownload()">
                   <div class="watermark-content">灵境工作室</div>
                 </div>
                 <!-- 下载和裁剪按钮 -->
@@ -288,7 +288,7 @@ let origeImageUrl = null
 
 // 本地存储键名
 const STORAGE_KEY = 'headshot_drawing_generated_items'
-const MAX_ITEMS = 10
+const MAX_ITEMS = 20
 
 // 从本地存储加载数据
 const loadFromStorage = () => {
@@ -374,8 +374,37 @@ const checkRemainingPoints = () => {
   const imageToImagePoints = Number(getConfigValue('HEADER_IMAGE')) || 5; // 默认值为5
   
   if (!remainingPoints || remainingPoints < imageToImagePoints) {
-    showAlert('积分余额不足，需要至少' + imageToImagePoints + '积分才能生成图片, 请输入兑换码充值积分');
-    return false; // 积分不足
+    // 积分不足，检查7天内免费额度
+    const freeUsageKey = 'free_usage_artphoto';
+    const now = Date.now();
+    const sevenDaysAgo = now - (7 * 24 * 60 * 60 * 1000); // 7天前的时间戳
+    
+    // 获取历史使用记录
+    const usageHistory = JSON.parse(localStorage.getItem(freeUsageKey) || '[]');
+    
+    // 过滤出7天内的使用记录
+    const recentUsage = usageHistory.filter(timestamp => timestamp > sevenDaysAgo);
+    
+    // 检查7天内是否还有免费额度
+    if (recentUsage.length < 3) {
+      // 还有免费额度，记录本次使用
+      recentUsage.push(now);
+      localStorage.setItem(freeUsageKey, JSON.stringify(recentUsage));
+      return true; // 使用免费额度
+    } else {
+      showAlert('积分余额不足，需要至少' + imageToImagePoints + '积分才能生成图片, 请输入兑换码充值积分');
+      return false; // 积分不足且免费额度已用完
+    }
+  }
+  return true; // 积分充足
+}
+
+const enableDownload = () => {
+  const remainingPoints = getRemainingPoints();
+  // 从配置中获取IMAGE_TO_IMAGE的积分消耗值
+  const imageToImagePoints = Number(getConfigValue('HEADER_IMAGE')) || 5; // 默认值为5
+  if (!remainingPoints || remainingPoints < imageToImagePoints) {
+     return false; // 积分不足
   }
   return true; // 积分充足
 }
@@ -471,9 +500,11 @@ const handleMessage = async (data) => {
         
         // 从配置中获取IMAGE_TO_IMAGE的积分消耗值
         const imageToImagePoints = Number(getConfigValue('HEADER_IMAGE')) || 5; // 默认值为5
-         // 消耗积分
-        const points = imageToImagePoints; // 消耗的积分值，现在从配置中获取
-        consumePoints(points);
+        // 只有积分充足时才消耗积分
+        if (enableDownload()) {
+          const points = imageToImagePoints; // 消耗的积分值，现在从配置中获取
+          consumePoints(points);
+        }
         // 添加到生成记录
         generatedItems.value.unshift({
           url: data.imageUrl || '/placeholder-image.png', // 如果没有上传图片则使用占位图
@@ -486,13 +517,14 @@ const handleMessage = async (data) => {
         saveToStorage()
         
         // 自动下载生成的图片
-        if (data.imageUrl && selectedAvatarImage.value) {
+        if (data.imageUrl && selectedAvatarImage.value && enableDownload()) {
           console.log('自动下载触发，data.imageUrl:', data.imageUrl);
           console.log('自动下载触发，selectedAvatarImage.value:', selectedAvatarImage.value);
           await downloadGeneratedImage(data.imageUrl, selectedAvatarImage.value);
         } else {
           console.log('自动下载条件不满足，data.imageUrl:', data.imageUrl);
           console.log('自动下载条件不满足，selectedAvatarImage.value:', selectedAvatarImage.value);
+          console.log('自动下载条件不满足，enableDownload():', enableDownload());
         }
         // 重置状态
         isFirstGeneration.value = true
@@ -702,6 +734,12 @@ const compressImage = (imageUrl, maxSizeKB = 300) => {
 
 // 下载图片函数
 const downloadImage = async (imageUrl, description) => {
+  // 检查是否允许下载
+  if (!enableDownload()) {
+    showAlert('积分不足请购买兑换码');
+    return;
+  }
+  
   try {
     // 创建下载链接
     const link = document.createElement('a')
