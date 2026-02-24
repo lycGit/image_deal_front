@@ -19,7 +19,7 @@
                 :key="'avatar-' + sectionIndex + '-' + index"
                 class="avatar-item"
                 :class="{ active: selectedAvatarImage === avatar.image }"
-                @click="selectAvatar(avatar.prompt1, avatar.image, avatar.description, section.data)"
+                @click="selectAvatar(avatar.prompt1, avatar.image, avatar.description, section.data, sectionIndex)"
               >
                 <img :src="avatar.image" :alt="avatar.description" />
                 <div class="avatar-tooltip">{{ avatar.description }}</div>
@@ -224,8 +224,19 @@ const allSections = ref([
   { title: '荷塘映日', data: images_5894 }
 ])
 
-// 选择头像模板
-const selectAvatar = (avatarPrompt, avatarImage, avatarDescription, sectionData) => {
+// 选择艺术照系列
+let currentSectionIndex = 0;
+// 选择艺术照系列中的特定图片
+let currentAvartIndex = 0;
+
+const selectAvatar = (avatarPrompt, avatarImage, avatarDescription, sectionData, sectionIndex) => {
+    if (currentSectionIndex !== sectionIndex) {
+      currentAvartIndex = 0;
+    }
+  // 存储sectionIndex为全局变量
+  currentSectionIndex = sectionIndex;
+
+  
   prompt.value = avatarPrompt
   selectedAvatarImage.value = avatarImage
   selectedAvatarDescription.value = avatarDescription
@@ -259,6 +270,8 @@ let loadingMessageTimer = null
 let loadingMessageIndex = 0
 // 超时定时器
 let timeoutTimer = null
+// 原始图片的地址
+let origeImageUrl = null
 
 // 本地存储键名
 const STORAGE_KEY = 'headshot_drawing_generated_items'
@@ -390,6 +403,7 @@ const handleGenerate = async () => {
     const result = await response.json()
     console.log('上传成功:', result)
     console.log('上传图片地址:', uploadedImageUrl)
+    origeImageUrl = result.imageUrl1;
     prompt.value =  prompt.value + ' 人物要求：严格保持参考图中人物的面部特征，包括脸型、五官比例、眉眼神态，进行自然美化但不过度改变，高还原度人像，面部细节清晰';
     const message = JSON.stringify({'msg': prompt.value, 'imageUrl': result.imageUrl1,  'userId': userId, 'targetUserId': 'user_py_llm', 'action': 'image_edit'});
     eventBus.emit('websocket-Image2Image', message);
@@ -458,7 +472,6 @@ const handleMessage = async (data) => {
           console.log('自动下载条件不满足，data.imageUrl:', data.imageUrl);
           console.log('自动下载条件不满足，selectedAvatarImage.value:', selectedAvatarImage.value);
         }
-        
         // 重置状态
         isFirstGeneration.value = true
         // 恢复prompt为prompt1（需要从allSections中重新获取）
@@ -478,6 +491,20 @@ const handleMessage = async (data) => {
           clearTimeout(timeoutTimer);
           timeoutTimer = null;
         }
+
+        // 生成整个系列的图像
+        const section = allSections.value[currentSectionIndex];
+        if (currentAvartIndex < section.data.length) {
+          console.log('再次处理图片地址--:', origeImageUrl);
+          const avatar = section.data[currentAvartIndex];
+          currentAvartIndex += 1;
+          selectAvatar(avatar.prompt1, avatar.image, avatar.description, section.data, currentSectionIndex)
+          prompt.value += ' 人物要求：严格保持参考图中人物的面部特征，包括脸型、五官比例、眉眼神态，进行自然美化但不过度改变，高还原度人像，面部细节清晰';
+          const message = JSON.stringify({'msg': prompt.value, 'imageUrl': origeImageUrl,  'userId': userId, 'targetUserId': 'user_py_llm', 'action': 'image_edit'});
+          console.log('再次处理图片信息--:', message)
+          eventBus.emit('websocket-Image2Image', message);
+        }
+
       }
     }
   } catch (error) {
