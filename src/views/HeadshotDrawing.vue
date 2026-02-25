@@ -1019,7 +1019,7 @@ onUnmounted(() => {
 
 /* 调整左侧面板布局，确保按钮始终可见 */
 .left-panel {
-  width: 33.333%;
+  width: 60%;
   padding: 24px;
   border-right: 1px solid #2f3136;
   display: flex;
@@ -1272,7 +1272,7 @@ textarea:focus {
 
 .avatar-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(10, 1fr);
   grid-auto-rows: min-content;
   gap: 12px;
   max-height: 200px;
