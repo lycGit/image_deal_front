@@ -74,6 +74,15 @@
           >
         </div>
 
+        <div class="setting-item">
+          <label>输出格式</label>
+          <select v-model="outputFormat" class="format-select">
+            <option value="image/jpeg">JPG (推荐，体积小)</option>
+            <option value="image/png">PNG (支持透明)</option>
+            <option value="image/webp">WEBP (现代格式)</option>
+          </select>
+        </div>
+
         <button 
           class="compress-btn"
           @click="compressAllImages"
@@ -176,6 +185,7 @@ export default {
     const quality = ref(80)
     const maxWidth = ref(1024)
     const maxHeight = ref(1024)
+    const outputFormat = ref('image/jpeg')
     const isCompressing = ref(false)
     const compressedCount = ref(0)
 
@@ -296,8 +306,17 @@ export default {
           // 绘制图片
           ctx.drawImage(img, 0, 0, width, height)
 
+          // 根据用户选择的输出格式进行压缩
+          let outputType = outputFormat.value
+          let outputQuality = quality.value / 100
+
+          // PNG不支持质量参数
+          if (outputType === 'image/png') {
+            outputQuality = undefined
+          }
+
           // 压缩
-          const compressedDataUrl = canvas.toDataURL('image/jpeg', quality.value / 100)
+          const compressedDataUrl = canvas.toDataURL(outputType, outputQuality)
           
           // 获取压缩后大小
           const base64Length = compressedDataUrl.length - (compressedDataUrl.indexOf(',') + 1)
@@ -329,7 +348,16 @@ export default {
       const link = document.createElement('a')
       link.href = item.compressedImage
       const fileName = item.fileName.replace(/\.[^/.]+$/, '')
-      link.download = `${fileName}_compressed.jpg`
+      
+      // 根据输出格式确定扩展名
+      let extension = 'jpg'
+      if (outputFormat.value === 'image/png') {
+        extension = 'png'
+      } else if (outputFormat.value === 'image/webp') {
+        extension = 'webp'
+      }
+      
+      link.download = `${fileName}_compressed.${extension}`
       document.body.appendChild(link)
       link.click()
       document.body.removeChild(link)
@@ -374,6 +402,7 @@ export default {
       quality,
       maxWidth,
       maxHeight,
+      outputFormat,
       isCompressing,
       compressedCount,
       allCompressed,
