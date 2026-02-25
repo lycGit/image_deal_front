@@ -29,37 +29,45 @@
         </div>
       </div>
     
-      <!-- 参考图片上传区域 -->
-      <div class="section">
-        <div class="section-header">
-          <div class="section-title">参考图/热图</div>
-        </div>
-        <div class="upload-area" @click="triggerUpload" @dragover.prevent @drop="handleDrop">
-          <input type="file" ref="fileInput" class="hidden" @change="handleFileChange" accept="image/*" />
-          <div class="upload-content" v-if="!referenceImage">
-            <div class="upload-icon">+</div>
-            <div class="upload-text">点击/拖拽图片,高宽不小于300px</div>
+      <!-- 参考图片上传区域和生成控制区域 - 左右布局 -->
+      <div class="upload-and-generate-container">
+        <!-- 左侧：参考图片上传区域 -->
+        <div class="upload-section">
+          <div class="section-header">
+            <div class="section-title">参考图/热图</div>
           </div>
-          <img v-else :src="referenceImage" class="reference-image" alt="参考图片" />
+          <div class="upload-area" @click="triggerUpload" @dragover.prevent @drop="handleDrop">
+            <input type="file" ref="fileInput" class="hidden" @change="handleFileChange" accept="image/*" />
+            <div class="upload-content" v-if="!referenceImage">
+              <div class="upload-icon">+</div>
+              <div class="upload-text">点击/拖拽图片,高宽不小于300px</div>
+            </div>
+            <img v-else :src="referenceImage" class="reference-image" alt="参考图片" />
+          </div>
+        </div>
+      
+        <!-- 右侧：生成控制区域 -->
+        <div class="generate-controls">
+          <button class="hint-button" @click="openImageCropper">非单人照？点此裁剪</button>
+          <div class="controls-bottom">
+            <!-- 是否生成整个系列的复选框 -->
+            <label class="checkbox-container">
+              <input type="checkbox" v-model="generateWholeSeries" />
+              <span class="checkbox-label">是否一次性生成整套艺术照</span>
+            </label>
+          
+            <!-- 生成按钮 -->
+            <button 
+              class="generate-button"
+              :disabled="!canGenerate"
+              @click="handleGenerate"
+            >
+              <span v-if="!loading">开始生成</span>
+              <span v-else>生成中...</span>
+            </button>
+          </div>
         </div>
       </div>
-    
-    
-      <!-- 是否生成整个系列的复选框 -->
-      <label class="checkbox-container">
-        <input type="checkbox" v-model="generateWholeSeries" />
-        <span class="checkbox-label">是否一次性生成整套艺术照</span>
-      </label>
-    
-      <!-- 生成按钮 -->
-      <button 
-        class="generate-button"
-        :disabled="!canGenerate"
-        @click="handleGenerate"
-      >
-        <span v-if="!loading">开始生成</span>
-        <span v-else>生成中...</span>
-      </button>
     </div>
     
     <!-- 添加右侧展示区域 -->
@@ -190,6 +198,12 @@ const userId = getUserId();
 // 打开弹窗
 const openModal = () => {
   showPasswordModal.value = true;
+};
+
+// 打开图片裁剪页面
+const openImageCropper = () => {
+  // 在新标签页中打开图片裁剪页面
+  window.open('/image-cropper', '_blank')
 };
 
 // 关闭弹窗
@@ -966,6 +980,50 @@ textarea:focus {
   object-fit: contain;
 }
 
+/* 上传和生成控制区域的左右布局容器 */
+.upload-and-generate-container {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+}
+
+/* 上传区域容器 */
+.upload-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* 生成控制区域 */
+.generate-controls {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 16px;
+  min-width: 200px;
+  height: 100%;
+}
+
+/* 控制区域底部容器 */
+.controls-bottom {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* 生成控制区域中的复选框容器 */
+.generate-controls .checkbox-container {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+/* 生成控制区域中的生成按钮 */
+.generate-controls .generate-button {
+  margin-top: 0;
+  margin-bottom: 0;
+}
 .ratio-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -1154,8 +1212,6 @@ textarea:focus {
 
 /* 确保生成按钮始终在底部并保持间距 */
 .generate-button {
-  margin-top: auto;
-  margin-bottom: 44px;
   height: 48px;
   border: none;
   border-radius: 8px;
