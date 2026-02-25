@@ -16,103 +16,107 @@
         </div>
       </div> -->
     
-      <!-- 头像选择区域 -->
-      <div class="section">
-        <div class="avatar-selection">
-          <!-- 男性头像区域 -->
-          <div class="avatar-section">
-            <div class="avatar-section-title">男性证件照模板</div>
-            <div class="avatar-grid male-avatars">
-              <div 
-                v-for="(avatar, index) in maleAvatars" 
-                :key="'male-' + index"
-                class="avatar-item"
-                :class="{ active: selectedAvatarImage === avatar.image }"
-                @click="selectAvatar(avatar.prompt, avatar.image, avatar.description)"
-              >
-                <img :src="avatar.image" :alt="avatar.description" />
-                <!-- <img src="/images/headerTemplate/male-1.jpg" :alt="avatar.description" /> -->
-                <div class="avatar-tooltip">{{ avatar.description }}</div>
+      <!-- 头像选择区域 - 可滚动 -->
+      <div class="avatar-section-container">
+        <div class="section">
+          <div class="avatar-selection">
+            <!-- 男性头像区域 -->
+            <div class="avatar-section">
+              <div class="avatar-section-title">男性证件照模板</div>
+              <div class="avatar-grid male-avatars">
+                <div 
+                  v-for="(avatar, index) in maleAvatars" 
+                  :key="'male-' + index"
+                  class="avatar-item"
+                  :class="{ active: selectedAvatarImage === avatar.image }"
+                  @click="selectAvatar(avatar.prompt, avatar.image, avatar.description)"
+                >
+                  <img :src="avatar.image" :alt="avatar.description" />
+                  <!-- <img src="/images/headerTemplate/male-1.jpg" :alt="avatar.description" /> -->
+                  <div class="avatar-tooltip">{{ avatar.description }}</div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- 女性头像区域 -->
+            <div class="avatar-section">
+              <div class="avatar-section-title">女性证件照模板</div>
+              <div class="avatar-grid female-avatars">
+                <div 
+                  v-for="(avatar, index) in femaleAvatars" 
+                  :key="'female-' + index"
+                  class="avatar-item"
+                  :class="{ active: selectedAvatarImage === avatar.image }"
+                  @click="selectAvatar(avatar.prompt, avatar.image, avatar.description)"
+                >
+                  <img :src="avatar.image" :alt="avatar.description" />
+                  <div class="avatar-tooltip">{{ avatar.description }}</div>
+                </div>
               </div>
             </div>
           </div>
-          
-          <!-- 女性头像区域 -->
-          <div class="avatar-section">
-            <div class="avatar-section-title">女性证件照模板</div>
-            <div class="avatar-grid female-avatars">
-              <div 
-                v-for="(avatar, index) in femaleAvatars" 
-                :key="'female-' + index"
-                class="avatar-item"
-                :class="{ active: selectedAvatarImage === avatar.image }"
-                @click="selectAvatar(avatar.prompt, avatar.image, avatar.description)"
-              >
-                <img :src="avatar.image" :alt="avatar.description" />
-                <div class="avatar-tooltip">{{ avatar.description }}</div>
-              </div>
+        </div>
+      </div>
+      
+      <!-- 固定底部区域 -->
+      <div class="fixed-bottom-section">
+        <div class="section">
+          <div class="section-title">证件照背景颜色</div>
+          <div class="color-selection">
+            <div 
+              class="color-option" 
+              :class="{ active: selectedBackgroundColor === 'white' }"
+              @click="selectBackgroundColor('white')"
+            >
+              <div class="color-preview white"></div>
+              <span class="color-name">白色</span>
+            </div>
+            <div 
+              class="color-option" 
+              :class="{ active: selectedBackgroundColor === 'blue' }"
+              @click="selectBackgroundColor('blue')"
+            >
+              <div class="color-preview blue"></div>
+              <span class="color-name">蓝色</span>
+            </div>
+            <div 
+              class="color-option" 
+              :class="{ active: selectedBackgroundColor === 'red' }"
+              @click="selectBackgroundColor('red')"
+            >
+              <div class="color-preview red"></div>
+              <span class="color-name">红色</span>
             </div>
           </div>
         </div>
-      </div>
-    
-      <!-- 证件照背景颜色选择区域 -->
-      <div class="section">
-        <div class="section-title">证件照背景颜色</div>
-        <div class="color-selection">
-          <div 
-            class="color-option" 
-            :class="{ active: selectedBackgroundColor === 'white' }"
-            @click="selectBackgroundColor('white')"
-          >
-            <div class="color-preview white"></div>
-            <span class="color-name">白色</span>
+      
+        <!-- 参考图片上传区域 -->
+        <div class="section">
+          <div class="section-header">
+            <div class="section-title">参考图/热图</div>
+            <button class="hint-button" @click="openImageCropper">非单人照？点此裁剪</button>
           </div>
-          <div 
-            class="color-option" 
-            :class="{ active: selectedBackgroundColor === 'blue' }"
-            @click="selectBackgroundColor('blue')"
-          >
-            <div class="color-preview blue"></div>
-            <span class="color-name">蓝色</span>
-          </div>
-          <div 
-            class="color-option" 
-            :class="{ active: selectedBackgroundColor === 'red' }"
-            @click="selectBackgroundColor('red')"
-          >
-            <div class="color-preview red"></div>
-            <span class="color-name">红色</span>
+          <div class="upload-area" @click="triggerUpload" @dragover.prevent @drop="handleDrop">
+            <input type="file" ref="fileInput" class="hidden" @change="handleFileChange" accept="image/*" />
+            <div class="upload-content" v-if="!referenceImage">
+              <div class="upload-icon">+</div>
+              <div class="upload-text">点击/拖拽图片,高宽不小于300px</div>
+            </div>
+            <img v-else :src="referenceImage" class="reference-image" alt="参考图片" />
           </div>
         </div>
+      
+      
+        <!-- 生成按钮 -->
+        <button 
+          class="generate-button"
+          :disabled="!canGenerate"
+          @click="handleGenerate"
+        >
+          <span v-if="!loading">开始生成</span>
+          <span v-else>生成中...</span>
+        </button>
       </div>
-    
-      <!-- 参考图片上传区域 -->
-      <div class="section">
-        <div class="section-header">
-          <div class="section-title">参考图/热图</div>
-          <button class="hint-button" @click="openImageCropper">非单人照？点此裁剪</button>
-        </div>
-        <div class="upload-area" @click="triggerUpload" @dragover.prevent @drop="handleDrop">
-          <input type="file" ref="fileInput" class="hidden" @change="handleFileChange" accept="image/*" />
-          <div class="upload-content" v-if="!referenceImage">
-            <div class="upload-icon">+</div>
-            <div class="upload-text">点击/拖拽图片,高宽不小于300px</div>
-          </div>
-          <img v-else :src="referenceImage" class="reference-image" alt="参考图片" />
-        </div>
-      </div>
-    
-    
-      <!-- 生成按钮 -->
-      <button 
-        class="generate-button"
-        :disabled="!canGenerate"
-        @click="handleGenerate"
-      >
-        <span v-if="!loading">开始生成</span>
-        <span v-else>生成中...</span>
-      </button>
     </div>
     
     <!-- 添加右侧展示区域 -->
@@ -1027,7 +1031,37 @@ onUnmounted(() => {
   flex-direction: column;
   gap: 24px;
   max-height: 100vh;
+  /* 移除整体滚动，改为局部滚动 */
+}
+
+/* 头像选择容器 - 可滚动 */
+.avatar-section-container {
+  flex: 1;
   overflow-y: auto;
+  padding-right: 8px;
+  margin-bottom: 16px;
+}
+
+/* 头像选择容器滚动条样式 */
+.avatar-section-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.avatar-section-container::-webkit-scrollbar-track {
+  background: #2f3136;
+  border-radius: 3px;
+}
+
+.avatar-section-container::-webkit-scrollbar-thumb {
+  background: #4776E6;
+  border-radius: 3px;
+}
+
+/* 固定底部区域 */
+.fixed-bottom-section {
+  margin-top: auto;
+  padding-top: 16px;
+  border-top: 1px solid #2f3136;
 }
 
 .header {
