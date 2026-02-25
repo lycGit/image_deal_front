@@ -289,7 +289,8 @@ import { showAlert } from '../js/alertUtil'; // 导入公共弹窗工具类
 import PasswordModal from '../components/PasswordModal.vue'; // 导入密码弹窗组件
 import Cropper from 'cropperjs'
 import 'cropperjs/dist/cropper.css'
-import headshotAvatarsData from '../config/headshotAvatars.json' // 导入头像数据
+import maleAvatarsData from '../config/male_half_51.json' // 导入男性头像数据
+import femaleAvatarsData from '../config/female_half_102.json' // 导入女性头像数据
 
 // 定义颜色对应的背景描述常量
 const COLOR_DESCRIPTIONS = {
@@ -340,10 +341,10 @@ const handleAuthorizeSuccess = () => {
 };
 
 // 男性头像数据
-const maleAvatars = ref(headshotAvatarsData.maleAvatars)
+const maleAvatars = ref(maleAvatarsData)
 
 // 女性头像数据
-const femaleAvatars = ref(headshotAvatarsData.femaleAvatars)
+const femaleAvatars = ref(femaleAvatarsData)
 
 // 选择头像模板
 const selectAvatar = (avatarPrompt, avatarImage, avatarDescription) => {
