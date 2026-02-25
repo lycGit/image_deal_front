@@ -1081,11 +1081,13 @@ onUnmounted(() => {
   display: flex;
   gap: 24px;
   margin-bottom: 16px;
+  align-items: stretch;
 }
 
 /* 上传区域样式 */
 .upload-section {
-  flex: 2;
+  flex: 1;
+  max-width: 50%;
 }
 
 /* 颜色选择区域样式 */
@@ -1098,7 +1100,8 @@ onUnmounted(() => {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  height: 100%;
+  flex: 1;
+  max-width: 50%;
 }
 
 .header {
