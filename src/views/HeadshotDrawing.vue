@@ -54,6 +54,74 @@
                 </div>
               </div>
             </div>
+            
+            <!-- 男性全身证件照模板 -->
+            <div class="avatar-section">
+              <div class="avatar-section-title">男性全身证件照模板</div>
+              <div class="avatar-grid male-total-avatars">
+                <div 
+                  v-for="(avatar, index) in maleTotalAvatars" 
+                  :key="'male-total-' + index"
+                  class="avatar-item"
+                  :class="{ active: selectedAvatarImage === avatar.image }"
+                  @click="selectAvatar(avatar.prompt, avatar.image, avatar.description)"
+                >
+                  <img :src="avatar.image" :alt="avatar.description" />
+                  <div class="avatar-tooltip">{{ avatar.description }}</div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- 女性全身证件照模板 -->
+            <div class="avatar-section">
+              <div class="avatar-section-title">女性全身证件照模板</div>
+              <div class="avatar-grid female-total-avatars">
+                <div 
+                  v-for="(avatar, index) in femaleTotalAvatars" 
+                  :key="'female-total-' + index"
+                  class="avatar-item"
+                  :class="{ active: selectedAvatarImage === avatar.image }"
+                  @click="selectAvatar(avatar.prompt, avatar.image, avatar.description)"
+                >
+                  <img :src="avatar.image" :alt="avatar.description" />
+                  <div class="avatar-tooltip">{{ avatar.description }}</div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- 男孩证件照模板 -->
+            <div class="avatar-section">
+              <div class="avatar-section-title">男孩证件照模板</div>
+              <div class="avatar-grid boy-avatars">
+                <div 
+                  v-for="(avatar, index) in boyAvatars" 
+                  :key="'boy-' + index"
+                  class="avatar-item"
+                  :class="{ active: selectedAvatarImage === avatar.image }"
+                  @click="selectAvatar(avatar.prompt, avatar.image, avatar.description)"
+                >
+                  <img :src="avatar.image" :alt="avatar.description" />
+                  <div class="avatar-tooltip">{{ avatar.description }}</div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- 女孩证件照模板 -->
+            <div class="avatar-section">
+              <div class="avatar-section-title">女孩证件照模板</div>
+              <div class="avatar-grid girl-avatars">
+                <div 
+                  v-for="(avatar, index) in girlAvatars" 
+                  :key="'girl-' + index"
+                  class="avatar-item"
+                  :class="{ active: selectedAvatarImage === avatar.image }"
+                  @click="selectAvatar(avatar.prompt, avatar.image, avatar.description)"
+                >
+                  <img :src="avatar.image" :alt="avatar.description" />
+                  <div class="avatar-tooltip">{{ avatar.description }}</div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -302,6 +370,10 @@ import Cropper from 'cropperjs'
 import 'cropperjs/dist/cropper.css'
 import maleAvatarsData from '../config/male_half_51.json' // 导入男性头像数据
 import femaleAvatarsData from '../config/female_half_102.json' // 导入女性头像数据
+import femaleTotalAvatarsData from '../config/female_total_30.json' // 导入女性全身头像数据
+import maleTotalAvatarsData from '../config/male_total_15.json' // 导入男性全身头像数据
+import boyAvatarsData from '../config/boy_73.json' // 导入男孩头像数据
+import girlAvatarsData from '../config/girl_77.json' // 导入女孩头像数据
 
 // 定义颜色对应的背景描述常量
 const COLOR_DESCRIPTIONS = {
@@ -353,9 +425,11 @@ const handleAuthorizeSuccess = () => {
 
 // 男性头像数据
 const maleAvatars = ref(maleAvatarsData)
-
-// 女性头像数据
 const femaleAvatars = ref(femaleAvatarsData)
+const femaleTotalAvatars = ref(femaleTotalAvatarsData) // 女性全身头像数据
+const maleTotalAvatars = ref(maleTotalAvatarsData) // 男性全身头像数据
+const boyAvatars = ref(boyAvatarsData) // 男孩头像数据
+const girlAvatars = ref(girlAvatarsData) // 女孩头像数据
 
 // 选择头像模板
 const selectAvatar = (avatarPrompt, avatarImage, avatarDescription) => {
