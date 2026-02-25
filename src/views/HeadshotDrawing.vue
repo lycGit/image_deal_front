@@ -78,47 +78,51 @@
             </div>
           </div>
           
+          <div class="operation-section">
           <!-- 证件照背景颜色选择区域 - 右侧 -->
-          <div class="section color-section">
-            <div class="section-title">证件照背景颜色</div>
-            <div class="color-selection">
-              <div 
-                class="color-option" 
-                :class="{ active: selectedBackgroundColor === 'white' }"
-                @click="selectBackgroundColor('white')"
-              >
-                <div class="color-preview white"></div>
-                <span class="color-name">白色</span>
-              </div>
-              <div 
-                class="color-option" 
-                :class="{ active: selectedBackgroundColor === 'blue' }"
-                @click="selectBackgroundColor('blue')"
-              >
-                <div class="color-preview blue"></div>
-                <span class="color-name">蓝色</span>
-              </div>
-              <div 
-                class="color-option" 
-                :class="{ active: selectedBackgroundColor === 'red' }"
-                @click="selectBackgroundColor('red')"
-              >
-                <div class="color-preview red"></div>
-                <span class="color-name">红色</span>
+            <div class="section color-section">
+              <div class="section-title">证件照背景颜色</div>
+              <div class="color-selection">
+                <div 
+                  class="color-option" 
+                  :class="{ active: selectedBackgroundColor === 'white' }"
+                  @click="selectBackgroundColor('white')"
+                >
+                  <div class="color-preview white"></div>
+                  <span class="color-name">白色</span>
+                </div>
+                <div 
+                  class="color-option" 
+                  :class="{ active: selectedBackgroundColor === 'blue' }"
+                  @click="selectBackgroundColor('blue')"
+                >
+                  <div class="color-preview blue"></div>
+                  <span class="color-name">蓝色</span>
+                </div>
+                <div 
+                  class="color-option" 
+                  :class="{ active: selectedBackgroundColor === 'red' }"
+                  @click="selectBackgroundColor('red')"
+                >
+                  <div class="color-preview red"></div>
+                  <span class="color-name">红色</span>
+                </div>
               </div>
             </div>
+            <!-- 生成按钮 -->
+            <button 
+              class="generate-button"
+              :disabled="!canGenerate"
+              @click="handleGenerate"
+            >
+              <span v-if="!loading">开始生成</span>
+              <span v-else>生成中...</span>
+            </button>
           </div>
+
         </div>
         
-        <!-- 生成按钮 -->
-        <button 
-          class="generate-button"
-          :disabled="!canGenerate"
-          @click="handleGenerate"
-        >
-          <span v-if="!loading">开始生成</span>
-          <span v-else>生成中...</span>
-        </button>
+ 
       </div>
     </div>
     
@@ -1087,6 +1091,14 @@ onUnmounted(() => {
 /* 颜色选择区域样式 */
 .color-section {
   flex: 1;
+}
+
+/* 操作区域 - 垂直方向两端对齐 */
+.operation-section {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
 }
 
 .header {
