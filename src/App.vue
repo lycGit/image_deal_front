@@ -1,12 +1,12 @@
 <template>
   <div class="app-container">
     <!-- 顶部警告区块 -->
-    <div class="warning-banner">
+    <!-- <div class="warning-banner">
       <div class="warning-content">
         <i class="fas fa-exclamation-triangle warning-icon"></i>
         <p class="warning-text">用户须知：本平台严禁生成任何危害国家安全、破坏民族团结、侵犯他人合法权益的内容，包括但不限于侮辱国家、支持分裂、诽谤他人等违法违规信息。请严格遵守国家法律法规，共建清朗网络空间。</p>
       </div>
-    </div>
+    </div> -->
     
     <router-view v-slot="{ Component }">
       <keep-alive :include="cachedComponents" :max="10">

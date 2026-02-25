@@ -60,53 +60,56 @@
       
       <!-- 固定底部区域 -->
       <div class="fixed-bottom-section">
-        <div class="section">
-          <div class="section-title">证件照背景颜色</div>
-          <div class="color-selection">
-            <div 
-              class="color-option" 
-              :class="{ active: selectedBackgroundColor === 'white' }"
-              @click="selectBackgroundColor('white')"
-            >
-              <div class="color-preview white"></div>
-              <span class="color-name">白色</span>
+        <!-- 同行显示的两个区域 -->
+        <div class="row-section">
+          <!-- 参考图片上传区域 - 左侧 -->
+          <div class="section upload-section">
+            <div class="section-header">
+              <div class="section-title">参考图/热图</div>
+              <button class="hint-button" @click="openImageCropper">非单人照？点此裁剪</button>
             </div>
-            <div 
-              class="color-option" 
-              :class="{ active: selectedBackgroundColor === 'blue' }"
-              @click="selectBackgroundColor('blue')"
-            >
-              <div class="color-preview blue"></div>
-              <span class="color-name">蓝色</span>
+            <div class="upload-area" @click="triggerUpload" @dragover.prevent @drop="handleDrop">
+              <input type="file" ref="fileInput" class="hidden" @change="handleFileChange" accept="image/*" />
+              <div class="upload-content" v-if="!referenceImage">
+                <div class="upload-icon">+</div>
+                <div class="upload-text">点击/拖拽图片,高宽不小于300px</div>
+              </div>
+              <img v-else :src="referenceImage" class="reference-image" alt="参考图片" />
             </div>
-            <div 
-              class="color-option" 
-              :class="{ active: selectedBackgroundColor === 'red' }"
-              @click="selectBackgroundColor('red')"
-            >
-              <div class="color-preview red"></div>
-              <span class="color-name">红色</span>
+          </div>
+          
+          <!-- 证件照背景颜色选择区域 - 右侧 -->
+          <div class="section color-section">
+            <div class="section-title">证件照背景颜色</div>
+            <div class="color-selection">
+              <div 
+                class="color-option" 
+                :class="{ active: selectedBackgroundColor === 'white' }"
+                @click="selectBackgroundColor('white')"
+              >
+                <div class="color-preview white"></div>
+                <span class="color-name">白色</span>
+              </div>
+              <div 
+                class="color-option" 
+                :class="{ active: selectedBackgroundColor === 'blue' }"
+                @click="selectBackgroundColor('blue')"
+              >
+                <div class="color-preview blue"></div>
+                <span class="color-name">蓝色</span>
+              </div>
+              <div 
+                class="color-option" 
+                :class="{ active: selectedBackgroundColor === 'red' }"
+                @click="selectBackgroundColor('red')"
+              >
+                <div class="color-preview red"></div>
+                <span class="color-name">红色</span>
+              </div>
             </div>
           </div>
         </div>
-      
-        <!-- 参考图片上传区域 -->
-        <div class="section">
-          <div class="section-header">
-            <div class="section-title">参考图/热图</div>
-            <button class="hint-button" @click="openImageCropper">非单人照？点此裁剪</button>
-          </div>
-          <div class="upload-area" @click="triggerUpload" @dragover.prevent @drop="handleDrop">
-            <input type="file" ref="fileInput" class="hidden" @change="handleFileChange" accept="image/*" />
-            <div class="upload-content" v-if="!referenceImage">
-              <div class="upload-icon">+</div>
-              <div class="upload-text">点击/拖拽图片,高宽不小于300px</div>
-            </div>
-            <img v-else :src="referenceImage" class="reference-image" alt="参考图片" />
-          </div>
-        </div>
-      
-      
+        
         <!-- 生成按钮 -->
         <button 
           class="generate-button"
@@ -355,6 +358,11 @@ const selectAvatar = (avatarPrompt, avatarImage, avatarDescription) => {
   prompt.value = avatarPrompt
   selectedAvatarImage.value = avatarImage
   selectedAvatarDescription.value = avatarDescription
+}
+
+// 选择背景颜色
+const selectBackgroundColor = (color) => {
+  selectedBackgroundColor.value = color
 }
 
 const ratios = [
@@ -1062,6 +1070,23 @@ onUnmounted(() => {
   margin-top: auto;
   padding-top: 16px;
   border-top: 1px solid #2f3136;
+}
+
+/* 同行显示的两个区域 */
+.row-section {
+  display: flex;
+  gap: 24px;
+  margin-bottom: 16px;
+}
+
+/* 上传区域样式 */
+.upload-section {
+  flex: 2;
+}
+
+/* 颜色选择区域样式 */
+.color-section {
+  flex: 1;
 }
 
 .header {
