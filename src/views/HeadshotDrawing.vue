@@ -1237,30 +1237,15 @@ textarea:focus {
   display: flex;
   flex-direction: column;
   gap: 16px;
-  max-height: 500px;
-  overflow-y: auto;
-  padding-right: 8px;
-}
-
-/* 自定义滚动条 */
-.avatar-selection::-webkit-scrollbar {
-  width: 6px;
-}
-
-.avatar-selection::-webkit-scrollbar-track {
-  background: #2f3136;
-  border-radius: 3px;
-}
-
-.avatar-selection::-webkit-scrollbar-thumb {
-  background: #4776E6;
-  border-radius: 3px;
+  flex: 1;
+  /* 移除滚动和高度限制，让内容充满父容器 */
 }
 
 .avatar-section {
   display: flex;
   flex-direction: column;
   gap: 8px;
+  flex: 1;
 }
 
 .avatar-section-title {
@@ -1275,24 +1260,7 @@ textarea:focus {
   grid-template-columns: repeat(10, 1fr);
   grid-auto-rows: min-content;
   gap: 12px;
-  max-height: 200px;
-  overflow-y: auto;
-  padding-right: 4px;
-}
-
-/* 头像网格的滚动条样式 */
-.avatar-grid::-webkit-scrollbar {
-  width: 6px;
-}
-
-.avatar-grid::-webkit-scrollbar-track {
-  background: #2f3136;
-  border-radius: 3px;
-}
-
-.avatar-grid::-webkit-scrollbar-thumb {
-  background: #4776E6;
-  border-radius: 3px;
+  /* 移除滚动和高度限制，让内容充满父容器 */
 }
 
 .avatar-item {
