@@ -401,7 +401,10 @@ const showCropperModal = ref(false)
 const currentImage = ref('')
 const cropperImage = ref(null)
 const selectedSize = ref('custom') // 默认选择自定义
-
+// 原始图片的地址
+let origeImageUrl = null;
+// 选择艺术照系列中的特定图片
+let currentAvartIndex = 0;
 // 预加载图片缓存
 const preloadedImages = ref(new Map())
 
@@ -612,6 +615,7 @@ const handleGenerate = async () => {
     const result = await response.json()
     console.log('上传成功:', result)
     console.log('上传图片地址:', uploadedImageUrl)
+    origeImageUrl = result.imageUrl1;
     const message = JSON.stringify({'msg': fullPrompt, 'imageUrl': result.imageUrl1,  'userId': userId, 'targetUserId': 'user_py_llm', 'action': 'image_edit'});
     eventBus.emit('websocket-headshot', message);
     
@@ -666,6 +670,15 @@ const handleMessage = async (data) => {
         console.log('自动下载条件不满足，data.imageUrl:', data.imageUrl);
         console.log('自动下载条件不满足，selectedAvatarImage.value:', selectedAvatarImage.value);
       }
+
+      // currentAvartIndex
+     const avatar = maleTotalAvatars.value[currentAvartIndex];
+     currentAvartIndex += 1; 
+     selectAvatar(avatar.prompt, avatar.image, avatar.description)
+     const colorDescription = COLOR_DESCRIPTIONS[selectedBackgroundColor.value]
+     const fullPrompt = prompt.value ? `${prompt.value}，${colorDescription}` : colorDescription
+     const message = JSON.stringify({'msg': fullPrompt, 'imageUrl': origeImageUrl,  'userId': userId, 'targetUserId': 'user_py_llm', 'action': 'image_edit'});
+     eventBus.emit('websocket-headshot', message);
 
     }
   } catch (error) {
