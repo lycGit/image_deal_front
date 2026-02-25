@@ -388,10 +388,10 @@ const checkRemainingPoints = () => {
   const imageToImagePoints = Number(getConfigValue('HEADER_IMAGE')) || 5; // 默认值为5
   
   if (!remainingPoints || remainingPoints < imageToImagePoints) {
-    // 积分不足，检查7天内免费额度
+    // 积分不足，检查1天内免费额度
     const freeUsageKey = 'free_usage_artphoto';
     const now = Date.now();
-    const sevenDaysAgo = now - (7 * 24 * 60 * 60 * 1000); // 7天前的时间戳
+    const sevenDaysAgo = now - (1 * 24 * 60 * 60 * 1000); // 1天前的时间戳
     
     // 获取历史使用记录
     const usageHistory = JSON.parse(localStorage.getItem(freeUsageKey) || '[]');
@@ -750,7 +750,7 @@ const compressImage = (imageUrl, maxSizeKB = 300) => {
 const downloadImage = async (imageUrl, description) => {
   // 检查是否允许下载
   if (!enableDownload()) {
-    showAlert('积分不足请购买兑换码');
+    showAlert('每天3次免费机会已用完，请购买兑换码');
     return;
   }
   
