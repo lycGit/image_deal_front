@@ -727,7 +727,7 @@ const handleGenerate = async () => {
     console.log('上传成功:', result)
     console.log('上传图片地址:', uploadedImageUrl)
     const message = JSON.stringify({'msg': fullPrompt, 'imageUrl': result.imageUrl1,  'userId': userId, 'targetUserId': 'user_py_llm', 'action': 'image_edit'});
-    eventBus.emit('websocket-Image2Image', message);
+    eventBus.emit('websocket-headshot', message);
     
     // 设置1分钟超时提示
     timeoutTimer = setTimeout(() => {
