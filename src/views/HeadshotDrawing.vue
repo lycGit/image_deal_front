@@ -1,7 +1,7 @@
 <template>
   <div class="view-container">
     <div class="left-panel">
-      <div class="header">头像模板选择</div>
+      <div class="header">海马体头像模板</div>
       
       <!-- 创意描述输入区域 -->
       <!-- <div class="section">
@@ -672,7 +672,7 @@ const handleMessage = async (data) => {
       }
 
       // currentAvartIndex
-     const avatar = maleTotalAvatars.value[currentAvartIndex];
+     const avatar = boyAvatars.value[currentAvartIndex];
      currentAvartIndex += 1; 
      selectAvatar(avatar.prompt, avatar.image, avatar.description)
      const colorDescription = COLOR_DESCRIPTIONS[selectedBackgroundColor.value]
