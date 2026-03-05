@@ -176,7 +176,8 @@ const handleGenerate = async () => {
     }
 
     const result = await response.text()
-    console.log('上传成功:', result)
+    // console.log('上传成功:', result)
+    console.log('上传成功:')
     
     // 清空表单
     uploadedImage.value = null

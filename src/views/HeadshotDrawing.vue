@@ -613,7 +613,7 @@ const handleGenerate = async () => {
 
     // const result = await response.text()
     const result = await response.json()
-    console.log('上传成功:', result)
+    // console.log('上传成功:', result)
     console.log('上传图片地址:', uploadedImageUrl)
     origeImageUrl = result.imageUrl1;
     const message = JSON.stringify({'msg': fullPrompt, 'imageUrl': result.imageUrl1,  'userId': userId, 'targetUserId': 'user_py_llm', 'action': 'image_edit'});
@@ -661,24 +661,27 @@ const handleMessage = async (data) => {
       // 预加载图片到浏览器缓存
       preloadImage(data.imageUrl)
 
+    /** 这段代码是用来批量跑头像的代码 
       // 自动下载生成的图片
-      if (data.imageUrl && selectedAvatarImage.value) {
-        console.log('自动下载触发，data.imageUrl:', data.imageUrl);
-        console.log('自动下载触发，selectedAvatarImage.value:', selectedAvatarImage.value);
-        await downloadGeneratedImage(data.imageUrl, selectedAvatarImage.value);
-      } else {
-        console.log('自动下载条件不满足，data.imageUrl:', data.imageUrl);
-        console.log('自动下载条件不满足，selectedAvatarImage.value:', selectedAvatarImage.value);
-      }
+    //   if (data.imageUrl && selectedAvatarImage.value) {
+    //     console.log('自动下载触发，data.imageUrl:', data.imageUrl);
+    //     console.log('自动下载触发，selectedAvatarImage.value:', selectedAvatarImage.value);
+    //     await downloadGeneratedImage(data.imageUrl, selectedAvatarImage.value);
+    //   } else {
+    //     console.log('自动下载条件不满足，data.imageUrl:', data.imageUrl);
+    //     console.log('自动下载条件不满足，selectedAvatarImage.value:', selectedAvatarImage.value);
+    //   }
 
-      // currentAvartIndex
-     const avatar = boyAvatars.value[currentAvartIndex];
-     currentAvartIndex += 1; 
-     selectAvatar(avatar.prompt, avatar.image, avatar.description)
-     const colorDescription = COLOR_DESCRIPTIONS[selectedBackgroundColor.value]
-     const fullPrompt = prompt.value ? `${prompt.value}，${colorDescription}` : colorDescription
-     const message = JSON.stringify({'msg': fullPrompt, 'imageUrl': origeImageUrl,  'userId': userId, 'targetUserId': 'user_py_llm', 'action': 'image_edit'});
-     eventBus.emit('websocket-headshot', message);
+    //   // currentAvartIndex
+    //  const avatar = boyAvatars.value[currentAvartIndex];
+    //  currentAvartIndex += 1; 
+    //  selectAvatar(avatar.prompt, avatar.image, avatar.description)
+    //  const colorDescription = COLOR_DESCRIPTIONS[selectedBackgroundColor.value]
+    //  const fullPrompt = prompt.value ? `${prompt.value}，${colorDescription}` : colorDescription
+    //  const message = JSON.stringify({'msg': fullPrompt, 'imageUrl': origeImageUrl,  'userId': userId, 'targetUserId': 'user_py_llm', 'action': 'image_edit'});
+    //  eventBus.emit('websocket-headshot', message);
+    
+    */  
 
     }
   } catch (error) {

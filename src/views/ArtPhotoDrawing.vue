@@ -466,7 +466,7 @@ const handleGenerate = async () => {
 
     // const result = await response.text()
     const result = await response.json()
-    console.log('上传成功:', result)
+    // console.log('上传成功:', result)
     console.log('上传图片地址:', uploadedImageUrl)
     origeImageUrl = result.imageUrl1;
     prompt.value =  prompt.value + ' 人物要求：严格保持参考图中人物的面部特征，包括脸型、五官比例、眉眼神态，进行自然美化但不过度改变，高还原度人像，面部细节清晰';

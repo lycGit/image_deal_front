@@ -96,38 +96,44 @@ const connectWebSocket = () => {
 
 // 注册 eventBus 监听
 const handleMJDrawingMessage = (data) => {
-  console.log('main.js 收到 WebSocket 消息:', data);
+  // console.log('main.js 收到 WebSocket 消息:', data);
+  console.log('main.js 收到 WebSocket 消息:');
   ws.send(data);
   // 这里可以添加更多的消息处理逻辑
 };
 
 // 注册 eventBus 监听
 const handleImageSwapMessage = (data) => {
-  console.log('main.js 收到 WebSocket 消息:', data);
+  // console.log('main.js 收到 WebSocket 消息:', data);
+  console.log('main.js 收到 WebSocket 消息:');
   ws.send(data);
   // 这里可以添加更多的消息处理逻辑
 };
 
 const handleImage2ImageMessage = (data) => {
-  console.log('main.js 收到 WebSocket 消息:', data);
+  // console.log('main.js 收到 WebSocket 消息:', data);
+  console.log('main.js 收到 WebSocket 消息:');
   ws.send(data);
   // 这里可以添加更多的消息处理逻辑
 };
 
 const handleHeadShotMessage = (data) => {
-  console.log('main.js 收到 WebSocket 消息:', data);
+  // console.log('main.js 收到 WebSocket 消息:', data);
+  console.log('main.js 收到 WebSocket 消息:');
   ws.send(data);
   // 这里可以添加更多的消息处理逻辑
 };
 
 const handleArtPhotoMessage = (data) => {
-  console.log('main.js 收到 WebSocket 消息:', data);
+  // console.log('main.js 收到 WebSocket 消息:', data);
+  console.log('main.js 收到 WebSocket 消息:');
   ws.send(data);
   // 这里可以添加更多的消息处理逻辑
 };
 
 const handleImage2VideoMessage = (data) => {
-  console.log('main.js 收到 WebSocket 消息:', data);
+  // console.log('main.js 收到 WebSocket 消息:', data);
+  console.log('main.js 收到 WebSocket 消息:');
   ws.send(data);
   // 这里可以添加更多的消息处理逻辑
 };

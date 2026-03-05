@@ -265,7 +265,8 @@ const handleGenerate = async () => {
       }
 
       const result = await response.json()
-      console.log('上传成功:', result)
+      // console.log('上传成功:', result)
+      console.log('上传成功:')
       uploadedImageUrl = result.imageUrl1
     }
     
