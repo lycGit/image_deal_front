@@ -183,8 +183,8 @@ const copyResult = () => {
     
     【使用步骤】:
     
-    请在浏览器中打开： http://www.smartassistant.top:8083/head-shot
-    详细使用说明： http://www.smartassistant.top:8083/introduce
+    请在浏览器中打开： http://www.smartassistant.top/head-shot
+    详细使用说明： http://www.smartassistant.top/introduce
     温馨提示：请尽快兑换，以免过期失效。`;
     
     // 检查是否支持 Clipboard API
