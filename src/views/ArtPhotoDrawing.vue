@@ -800,25 +800,30 @@ onUnmounted(() => {
   display: flex;
   flex-direction: column;
   gap: 24px;
-  max-height: 100vh;
-  overflow-y: auto;
+  height: 100vh;
+  overflow: hidden;
 }
 
 .header {
   font-size: 24px;
   color: #4776E6;
   font-weight: 500;
+  flex-shrink: 0;
 }
 
 .section {
   display: flex;
   flex-direction: column;
   gap: 12px;
+  flex: 1;
+  overflow: hidden;
+  min-height: 0;
 }
 
 .section-title {
   font-size: 14px;
   color: #8e9297;
+  flex-shrink: 0;
 }
 
 /* 参考图/热图标题和提示按钮容器 */
@@ -827,6 +832,7 @@ onUnmounted(() => {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 12px;
+  flex-shrink: 0;
 }
 
 /* 提示按钮样式 */
@@ -839,6 +845,7 @@ onUnmounted(() => {
   padding: 6px 12px;
   cursor: pointer;
   transition: all 0.3s ease;
+  flex-shrink: 0;
 }
 
 .hint-button:hover {
@@ -855,6 +862,7 @@ onUnmounted(() => {
   display: flex;
   gap: 16px;
   padding: 8px 0;
+  flex-shrink: 0;
 }
 
 .color-option {
@@ -907,6 +915,7 @@ onUnmounted(() => {
 
 .input-wrapper {
   position: relative;
+  flex-shrink: 0;
 }
 
 textarea {
@@ -948,6 +957,7 @@ textarea:focus {
   transition: all 0.3s;
   overflow: hidden;
   padding: 16px;
+  flex-shrink: 0;
 }
 
 .upload-area:hover {
@@ -985,6 +995,8 @@ textarea:focus {
   display: flex;
   gap: 24px;
   align-items: flex-start;
+  margin-bottom: 64px;
+  flex-shrink: 0;
 }
 
 /* 上传区域容器 */
@@ -1056,9 +1068,10 @@ textarea:focus {
   display: flex;
   flex-direction: column;
   gap: 16px;
-  max-height: 500px;
   overflow-y: auto;
   padding-right: 8px;
+  flex: 1;
+  min-height: 0;
 }
 
 /* 自定义滚动条 */
