@@ -597,7 +597,7 @@ const handleGenerate = async () => {
     // 添加其他参数
     // 拼接颜色提示语到prompt后面
     const colorDescription = COLOR_DESCRIPTIONS[selectedBackgroundColor.value]
-    const fullPrompt = prompt.value ? `${prompt.value}，${colorDescription}` : colorDescription
+    const fullPrompt = (prompt.value ? `${prompt.value}，${colorDescription}` : colorDescription) + '，正脸，看向镜头，对称脸，正面视角，完整头像，完整脸部，无裁切'
     formData.append('description', fullPrompt)
     formData.append('category', 'KL_DRAWING')
     formData.append('tags', selectedRatio.value)
