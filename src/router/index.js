@@ -19,6 +19,7 @@ import ArtPhotoDrawing from '../views/ArtPhotoDrawing.vue'
 import ImageCropperDemo from '../views/ImageCropperDemo.vue' // 导入图片裁剪演示页面
 import Introduce from '../views/Introduce.vue' 
 import ImageCompress from '../views/ImageCompress.vue' // 导入图片压缩页面
+import SystemMonitor from '../views/SystemMonitor.vue' // 导入系统监测页面
 
 const routes = [
   {
@@ -210,6 +211,15 @@ const routes = [
     meta: {
       keepAlive: false,
       componentName: 'ImageCompress'
+    }
+  },
+  {
+    path: '/system-monitor',
+    name: 'systemMonitor',
+    component: SystemMonitor,
+    meta: {
+      keepAlive: false,
+      componentName: 'SystemMonitor'
     }
   }
 ]
