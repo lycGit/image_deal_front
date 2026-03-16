@@ -147,7 +147,7 @@ const waitForWebSocketResponse = (message) => {
     const timeout = setTimeout(() => {
       if (!isResolved) {
         isResolved = true
-        eventBus.off('websocket-headshot-response', handleMessage)
+        eventBus.off('websocket-message', handleMessage)
         reject(new Error('检测超时，系统响应时间超过2分钟'))
       }
     }, 120000)
@@ -158,13 +158,13 @@ const waitForWebSocketResponse = (message) => {
       if (data.msg === '图片已创建完成' && data.imageUrl && !isResolved) {
         isResolved = true
         clearTimeout(timeout)
-        eventBus.off('websocket-headshot-response', handleMessage)
+        eventBus.off('websocket-message', handleMessage)
         resolve(data)
       }
     }
     
     // 注册监听器
-    eventBus.on('websocket-headshot-response', handleMessage)
+    eventBus.on('websocket-message', handleMessage)
     
     // 发送消息
     eventBus.emit('websocket-headshot', message)
