@@ -20,6 +20,7 @@ import ImageCropperDemo from '../views/ImageCropperDemo.vue' // 导入图片裁�
 import Introduce from '../views/Introduce.vue' 
 import ImageCompress from '../views/ImageCompress.vue' // 导入图片压缩页面
 import SystemMonitor from '../views/SystemMonitor.vue' // 导入系统监测页面
+import AutoShortPlayer from '../views/AutoShortPlayer.vue' // 导入自动短视频生成页面
 
 const routes = [
   {
@@ -220,6 +221,15 @@ const routes = [
     meta: {
       keepAlive: false,
       componentName: 'SystemMonitor'
+    }
+  },
+  {
+    path: '/auto-short-player',
+    name: 'autoShortPlayer',
+    component: AutoShortPlayer,
+    meta: {
+      keepAlive: false,
+      componentName: 'AutoShortPlayer'
     }
   }
 ]
