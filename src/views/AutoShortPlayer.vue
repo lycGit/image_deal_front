@@ -48,13 +48,19 @@ const startGenerate = async () => {
   generatedImages.value = []
   pendingPromises.value = []
   
+  console.log('========== 开始串行生成图片 ==========')
+  
   // 依次处理每个episode
   for (let i = 0; i < plotConfig.episodes.length; i++) {
     currentEpisode.value = i
-    await processEpisode(plotConfig.episodes[i])
-    console.log(`Episode ${plotConfig.episodes[i].episode} 处理完成，继续下一个`)
+    const episode = plotConfig.episodes[i]
+    console.log(`\n>>> 开始处理 Episode ${episode.episode} (${i + 1}/${plotConfig.episodes.length})`)
+    
+    await processEpisode(episode)
+    console.log(`<<< Episode ${episode.episode} 处理完成，等待 ${i + 1 < plotConfig.episodes.length ? '下一个...' : '全部完成'}`)
   }
   
+  console.log('========== 所有集数生成完成 ==========')
   isGenerating.value = false
   alert('所有集数生成完成！')
 }
@@ -62,19 +68,23 @@ const startGenerate = async () => {
 // 处理单个episode
 const processEpisode = async (episode) => {
   try {
+    console.log(`[Episode ${episode.episode}] 步骤1: 生成提示词...`)
     // 生成提示词
     const prompt = generatePrompt(episode)
-    console.log(`Episode ${episode.episode} 提示词:`, prompt)
+    console.log(`[Episode ${episode.episode}] 原始提示词:`, prompt.substring(0, 50) + '...')
     
+    console.log(`[Episode ${episode.episode}] 步骤2: 优化提示词...`)
     // 优化提示词
     const optimizedPrompt = await optimizePrompt(prompt)
-    console.log(`Episode ${episode.episode} 优化后提示词:`, optimizedPrompt)
+    console.log(`[Episode ${episode.episode}] 优化后提示词:`, optimizedPrompt.substring(0, 50) + '...')
     
+    console.log(`[Episode ${episode.episode}] 步骤3: 创建Promise等待WebSocket响应...`)
     // 创建一个Promise来等待WebSocket响应
     const promise = new Promise((resolve) => {
       pendingPromises.value.push(resolve)
     })
     
+    console.log(`[Episode ${episode.episode}] 步骤4: 发送WebSocket消息...`)
     // 发送websocket消息（不需要tempId和episode字段）
     const message = JSON.stringify({
       'msg': optimizedPrompt,
@@ -92,12 +102,13 @@ const processEpisode = async (episode) => {
       prompt: prompt
     })
     
+    console.log(`[Episode ${episode.episode}] 步骤5: 等待WebSocket响应（图片生成）...`)
     // 等待WebSocket响应
     await promise
-    console.log(`Episode ${episode.episode} 图片生成完成`)
+    console.log(`[Episode ${episode.episode}] 步骤6: 图片生成完成！`)
     
   } catch (error) {
-    console.error(`处理Episode ${episode.episode}失败:`, error)
+    console.error(`[Episode ${episode.episode}] 处理失败:`, error)
   }
 }
 
