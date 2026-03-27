@@ -183,8 +183,10 @@ const copyResult = () => {
     
     【使用步骤】:
     
-    请在浏览器中打开： http://www.smartassistant.top/head-shot
-    详细使用说明： http://www.smartassistant.top/introduce
+    请在浏览器中打开：
+    证件照： http://www.smartassistant.top/head-shot
+    汉服照： http://www.smartassistant.top/art-photo
+    详细使用说明（汉服照与证件照操作类似）： http://www.smartassistant.top/introduce
     温馨提示：请尽快兑换，以免过期失效。`;
     
     // 检查是否支持 Clipboard API
