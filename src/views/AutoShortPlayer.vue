@@ -204,17 +204,38 @@ const handleMessage = (data) => {
 }
 
 // 下载图片功能
-const downloadImage = (url, filename) => {
-  // 创建一个a标签
-  const link = document.createElement('a')
-  link.href = url
-  link.download = filename || 'image.png'
-  link.target = '_blank'
-  
-  // 触发点击事件
-  document.body.appendChild(link)
-  link.click()
-  document.body.removeChild(link)
+const downloadImage = async (url, filename) => {
+  try {
+    console.log(`开始下载图片: ${url}, 文件名: ${filename}`)
+    
+    // 使用fetch获取图片数据，解决跨域问题
+    const response = await fetch(url)
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+    
+    const blob = await response.blob()
+    const blobUrl = window.URL.createObjectURL(blob)
+    
+    // 创建一个a标签
+    const link = document.createElement('a')
+    link.href = blobUrl
+    link.download = filename || 'image.png'
+    
+    // 触发点击事件
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    
+    // 清理blob URL
+    window.URL.revokeObjectURL(blobUrl)
+    
+    console.log(`图片下载成功: ${filename}`)
+  } catch (error) {
+    console.error('下载图片失败:', error)
+    // 如果fetch方式失败，尝试直接使用链接打开
+    window.open(url, '_blank')
+  }
 }
 
 onMounted(() => {
