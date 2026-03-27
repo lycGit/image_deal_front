@@ -34,7 +34,7 @@ const isGenerating = ref(false)
 const currentEpisode = ref(0)
 const totalEpisodes = ref(plotConfig.episodes.length)
 const generatedImages = ref([])
-const pendingPromises = ref({}) // 存储等待中的Promise
+const pendingPromises = ref([]) // 使用队列存储Promise，按顺序处理
 
 // 获取用户ID
 const userId = getUserId()
@@ -46,7 +46,7 @@ const startGenerate = async () => {
   isGenerating.value = true
   currentEpisode.value = 0
   generatedImages.value = []
-  pendingPromises.value = {}
+  pendingPromises.value = []
   
   // 依次处理每个episode
   for (let i = 0; i < plotConfig.episodes.length; i++) {
@@ -71,25 +71,22 @@ const processEpisode = async (episode) => {
     console.log(`Episode ${episode.episode} 优化后提示词:`, optimizedPrompt)
     
     // 创建一个Promise来等待WebSocket响应
-    const tempImageId = Date.now()
     const promise = new Promise((resolve) => {
-      pendingPromises.value[tempImageId] = resolve
+      pendingPromises.value.push(resolve)
     })
     
-    // 发送websocket消息
+    // 发送websocket消息（不需要tempId和episode字段）
     const message = JSON.stringify({
       'msg': optimizedPrompt,
       'userId': userId,
       'targetUserId': 'user_py_llm',
-      'action': 'text2image',
-      'tempId': tempImageId,
-      'episode': episode.episode
+      'action': 'text2image'
     })
     eventBus.emit('websocket-AutoShortPlayer', message)
     
     // 添加临时记录
     generatedImages.value.push({
-      id: tempImageId,
+      id: Date.now(),
       episode: episode.episode,
       url: null,
       prompt: prompt
@@ -167,53 +164,27 @@ forest and very expensive stuff everywhere there are paintings on the walls
 const handleMessage = (data) => {
   console.log('AutoShortPlayer 收到 WebSocket 消息:', data)
   try {
-    // 查找临时图片记录
-    let tempImageIndex = generatedImages.value.findIndex(img => img.id === data.tempId)
-    
-    // 如果没有找到tempId，尝试通过episode匹配
-    if (tempImageIndex === -1 && data.episode) {
-      tempImageIndex = generatedImages.value.findIndex(img => img.episode === data.episode)
-    }
-    
-    if (tempImageIndex !== -1) {
-      // 更新临时记录，添加图片URL
-      generatedImages.value[tempImageIndex] = {
-        ...generatedImages.value[tempImageIndex],
-        url: data.imageUrl,
-        description: data.description,
-      }
-      console.log('已更新临时图片记录:', generatedImages.value[tempImageIndex])
+    if (data.imageUrl) {
+      // 找到第一个url为null的图片记录
+      const tempImageIndex = generatedImages.value.findIndex(img => !img.url)
       
-      // 自动下载图片
-      if (data.imageUrl) {
-        downloadImage(data.imageUrl, `episode${data.episode}.png`)
-      }
-      
-      // 解析对应的Promise，让processEpisode继续执行
-      if (pendingPromises.value[data.tempId]) {
-        pendingPromises.value[data.tempId]()
-        delete pendingPromises.value[data.tempId]
-      }
-    } else {
-      // 如果没有找到临时记录，则添加新记录
-      console.warn('未找到临时图片记录，创建新记录:', data)
-      if (data.imageUrl) {
-        generatedImages.value.push({
-          id: Date.now(),
-          episode: data.episode || 0,
+      if (tempImageIndex !== -1) {
+        // 更新临时记录，添加图片URL
+        generatedImages.value[tempImageIndex] = {
+          ...generatedImages.value[tempImageIndex],
           url: data.imageUrl,
           description: data.description,
-          prompt: data.prompt || ''
-        })
+        }
+        console.log('已更新图片记录:', generatedImages.value[tempImageIndex])
         
         // 自动下载图片
-        downloadImage(data.imageUrl, `episode${data.episode || 0}.png`)
-      }
-      
-      // 如果有tempId，也解析对应的Promise
-      if (data.tempId && pendingPromises.value[data.tempId]) {
-        pendingPromises.value[data.tempId]()
-        delete pendingPromises.value[data.tempId]
+        downloadImage(data.imageUrl, `episode${generatedImages.value[tempImageIndex].episode}.png`)
+        
+        // 取出队列中的第一个Promise并解析
+        if (pendingPromises.value.length > 0) {
+          const resolve = pendingPromises.value.shift()
+          resolve()
+        }
       }
     }
   } catch (error) {
