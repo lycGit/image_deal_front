@@ -145,6 +145,13 @@ const handleShortPlayMessage = (data) => {
   // 这里可以添加更多的消息处理逻辑
 };
 
+const handleShortPlayVideoMessage = (data) => {
+  // console.log('main.js 收到 WebSocket 消息:', data);
+  console.log('main.js 收到 WebSocket 消息:');
+  ws.send(data);
+  // 这里可以添加更多的消息处理逻辑
+};
+
 // 添加监听器
 if (eventBus.on) {
   eventBus.on('websocket-MJDrawing', handleMJDrawingMessage);
@@ -154,6 +161,7 @@ if (eventBus.on) {
   eventBus.on('websocket-headshot', handleHeadShotMessage);
   eventBus.on('websocket-artphoto', handleArtPhotoMessage);
   eventBus.on('websocket-AutoShortPlayer', handleShortPlayMessage);
+  eventBus.on('websocket-AutoShortPlayer', handleShortPlayVideoMessage);
 }
 
 // 启动时连接 WebSocket

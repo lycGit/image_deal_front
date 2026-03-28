@@ -13,6 +13,7 @@
         <div class="image-item" v-for="(image, index) in generatedImages" :key="image.id">
           <img :src="image.url" :alt="`Episode ${image.episode}`" />
           <p>Episode {{ image.episode }}</p>
+          <video v-if="image.videoUrl" :src="image.videoUrl" controls class="video-preview"></video>
         </div>
       </div>
     </div>
@@ -79,33 +80,67 @@ const processEpisode = async (episode) => {
     console.log(`[Episode ${episode.episode}] 优化后提示词:`, optimizedPrompt.substring(0, 50) + '...')
     
     console.log(`[Episode ${episode.episode}] 步骤3: 创建Promise等待WebSocket响应...`)
-    // 创建一个Promise来等待WebSocket响应
-    const promise = new Promise((resolve) => {
-      pendingPromises.value.push(resolve)
+    // 创建一个Promise来等待WebSocket响应（图片生成）
+    const imagePromise = new Promise((resolve) => {
+      pendingPromises.value.push({ type: 'image', resolve })
     })
     
-    console.log(`[Episode ${episode.episode}] 步骤4: 发送WebSocket消息...`)
-    // 发送websocket消息（不需要tempId和episode字段）
-    const message = JSON.stringify({
+    console.log(`[Episode ${episode.episode}] 步骤4: 发送WebSocket消息（图片生成）...`)
+    // 发送websocket消息（图片生成）
+    const imageMessage = JSON.stringify({
       'msg': optimizedPrompt,
       'userId': userId,
       'targetUserId': 'user_py_llm',
       'action': 'text2image'
     })
-    eventBus.emit('websocket-AutoShortPlayer', message)
+    eventBus.emit('websocket-AutoShortPlayer', imageMessage)
     
     // 添加临时记录
+    const tempImageId = Date.now()
     generatedImages.value.push({
-      id: Date.now(),
+      id: tempImageId,
       episode: episode.episode,
       url: null,
-      prompt: prompt
+      prompt: prompt,
+      videoUrl: null
     })
     
     console.log(`[Episode ${episode.episode}] 步骤5: 等待WebSocket响应（图片生成）...`)
-    // 等待WebSocket响应
-    await promise
-    console.log(`[Episode ${episode.episode}] 步骤6: 图片生成完成！`)
+    // 等待图片生成完成
+    const imageResult = await imagePromise
+    console.log(`[Episode ${episode.episode}] 步骤6: 图片生成完成！`, imageResult)
+    
+    // 自动下载图片
+    if (imageResult && imageResult.imageUrl) {
+      await downloadImage(imageResult.imageUrl, `episode${episode.episode}.png`)
+    }
+    
+    console.log(`[Episode ${episode.episode}] 步骤7: 创建Promise等待视频生成...`)
+    // 创建一个Promise来等待WebSocket响应（视频生成）
+    const videoPromise = new Promise((resolve) => {
+      pendingPromises.value.push({ type: 'video', resolve })
+    })
+    
+    console.log(`[Episode ${episode.episode}] 步骤8: 发送WebSocket消息（视频生成）...`)
+    // 发送websocket消息（图生视频）
+    const videoMessage = JSON.stringify({
+      'msg': episode.剧情,
+      'imageUrl': imageResult.imageUrl,
+      'userId': userId,
+      'targetUserId': 'user_py_llm',
+      'action': 'image2video'
+    })
+    eventBus.emit('websocket-AutoShortPlayer', videoMessage)
+    
+    console.log(`[Episode ${episode.episode}] 步骤9: 等待WebSocket响应（视频生成）...`)
+    // 等待视频生成完成
+    const videoResult = await videoPromise
+    console.log(`[Episode ${episode.episode}] 步骤10: 视频生成完成！`, videoResult)
+    
+    // 自动下载视频
+    if (videoResult && videoResult.videoUrl) {
+      await downloadVideo(videoResult.videoUrl, `episode${episode.episode}.mp4`)
+    }
     
   } catch (error) {
     console.error(`[Episode ${episode.episode}] 处理失败:`, error)
@@ -175,26 +210,51 @@ forest and very expensive stuff everywhere there are paintings on the walls
 const handleMessage = (data) => {
   console.log('AutoShortPlayer 收到 WebSocket 消息:', data)
   try {
+    // 处理图片生成响应
     if (data.imageUrl) {
       // 找到第一个url为null的图片记录
       const tempImageIndex = generatedImages.value.findIndex(img => !img.url)
       
       if (tempImageIndex !== -1) {
         // 更新临时记录，添加图片URL
+        const imageUrl = data.imageUrl
         generatedImages.value[tempImageIndex] = {
           ...generatedImages.value[tempImageIndex],
-          url: data.imageUrl,
+          url: imageUrl,
           description: data.description,
         }
         console.log('已更新图片记录:', generatedImages.value[tempImageIndex])
         
-        // 自动下载图片
-        downloadImage(data.imageUrl, `episode${generatedImages.value[tempImageIndex].episode}.png`)
-        
-        // 取出队列中的第一个Promise并解析
+        // 取出队列中的第一个Promise并解析（图片类型）
         if (pendingPromises.value.length > 0) {
-          const resolve = pendingPromises.value.shift()
-          resolve()
+          const pendingItem = pendingPromises.value.shift()
+          if (pendingItem && pendingItem.type === 'image') {
+            pendingItem.resolve({ imageUrl })
+          }
+        }
+      }
+    }
+    
+    // 处理视频生成响应
+    if (data.videoUrl) {
+      // 找到第一个videoUrl为null的图片记录
+      const tempVideoIndex = generatedImages.value.findIndex(img => img.url && !img.videoUrl)
+      
+      if (tempVideoIndex !== -1) {
+        // 更新记录，添加视频URL
+        const videoUrl = data.videoUrl
+        generatedImages.value[tempVideoIndex] = {
+          ...generatedImages.value[tempVideoIndex],
+          videoUrl: videoUrl,
+        }
+        console.log('已更新视频记录:', generatedImages.value[tempVideoIndex])
+        
+        // 取出队列中的第一个Promise并解析（视频类型）
+        if (pendingPromises.value.length > 0) {
+          const pendingItem = pendingPromises.value.shift()
+          if (pendingItem && pendingItem.type === 'video') {
+            pendingItem.resolve({ videoUrl })
+          }
         }
       }
     }
@@ -233,6 +293,41 @@ const downloadImage = async (url, filename) => {
     console.log(`图片下载成功: ${filename}`)
   } catch (error) {
     console.error('下载图片失败:', error)
+    // 如果fetch方式失败，尝试直接使用链接打开
+    window.open(url, '_blank')
+  }
+}
+
+// 下载视频功能
+const downloadVideo = async (url, filename) => {
+  try {
+    console.log(`开始下载视频: ${url}, 文件名: ${filename}`)
+    
+    // 使用fetch获取视频数据，解决跨域问题
+    const response = await fetch(url)
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+    
+    const blob = await response.blob()
+    const blobUrl = window.URL.createObjectURL(blob)
+    
+    // 创建一个a标签
+    const link = document.createElement('a')
+    link.href = blobUrl
+    link.download = filename || 'video.mp4'
+    
+    // 触发点击事件
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    
+    // 清理blob URL
+    window.URL.revokeObjectURL(blobUrl)
+    
+    console.log(`视频下载成功: ${filename}`)
+  } catch (error) {
+    console.error('下载视频失败:', error)
     // 如果fetch方式失败，尝试直接使用链接打开
     window.open(url, '_blank')
   }
@@ -326,5 +421,12 @@ h1 {
   margin: 0;
   font-weight: bold;
   color: #333;
+}
+
+.video-preview {
+  max-width: 100%;
+  height: auto;
+  border-radius: 5px;
+  margin-top: 10px;
 }
 </style>
