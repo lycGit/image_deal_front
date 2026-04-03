@@ -194,9 +194,27 @@ Victorian mansion lit by candlelight with a bright window to the foggy
 forest and very expensive stuff everywhere there are paintings on the walls
 这个样式和结构优化为更专业、更详细的英文绘画提示词，适合AI图像生成：${originalPrompt}，
 同时只需要返回最佳的一个优化后的英文提示词结果就行，不要返回改写说明等对于生成图片无用的内容`
-      const optimizedResult = await deepseekApi.chat(optimizationPrompt, options)
       
-      console.log('DeepSeek API优化提示词结果:', optimizedResult)
+      // 添加重试机制，最多尝试10次
+      let optimizedResult = '';
+      const maxRetries = 10;
+      let retryCount = 0;
+      let isSuccess = false;
+      
+      while (retryCount < maxRetries && !isSuccess) {
+        optimizedResult = await deepseekApi.chat(optimizationPrompt, options);
+        console.log(`DeepSeek API优化提示词结果 (尝试 ${retryCount + 1}):`, optimizedResult);
+        
+        // 检查结果是否包含失败标志字符串
+        if (!optimizedResult.includes('cute anime girl with massive')) {
+          isSuccess = true;
+        } else {
+          retryCount++;
+          console.log(`优化失败，重新尝试 (${retryCount}/${maxRetries})...`);
+        }
+      }
+      
+      console.log('最终优化提示词结果:', optimizedResult);
       return optimizedResult
     }
   } catch (error) {
