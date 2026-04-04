@@ -185,19 +185,11 @@ const optimizePrompt = async (originalPrompt) => {
       }
       
       // 发送提示词优化请求
-      const optimizationPrompt = `请将以下中文绘画提示词参考
-cute anime girl with massive fluffy fennec ears and a big fluffy tail
-blonde messy long hair blue eyes wearing a maid outfit with a long black
-gold leaf pattern dress and a white apron mouth open placing a fancy
-black forest cake with candles on top of a dinner table of an old dark
-Victorian mansion lit by candlelight with a bright window to the foggy
-forest and very expensive stuff everywhere there are paintings on the walls
-这个样式和结构优化为更专业、更详细的英文绘画提示词，适合AI图像生成：${originalPrompt}，
-同时只需要返回最佳的一个优化后的英文提示词结果就行，不要返回改写说明等对于生成图片无用的内容`
+      const optimizationPrompt = `请将以下中文绘画提示词优化为专业、详细、适合AI图像生成的英文提示词，必须严格保留原意和主要元素，只返回最佳的一个英文结果，不要返回任何解释、说明或原文：${originalPrompt}`
       
       // 添加重试机制，最多尝试10次
       let optimizedResult = '';
-      const maxRetries = 10;
+      const maxRetries = 3;
       let retryCount = 0;
       let isSuccess = false;
       
@@ -206,7 +198,7 @@ forest and very expensive stuff everywhere there are paintings on the walls
         console.log(`DeepSeek API优化提示词结果 (尝试 ${retryCount + 1}):`, optimizedResult);
         
         // 检查结果是否包含失败标志字符串
-        if (!optimizedResult.includes('cute anime girl with massive')) {
+        if (!optimizedResult.includes('cute anime girl') && !optimizedResult.includes('Cute anime girl')) {
           isSuccess = true;
         } else {
           retryCount++;
