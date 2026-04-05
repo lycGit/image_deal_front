@@ -111,9 +111,9 @@ const processEpisode = async (episode) => {
     console.log(`[Episode ${episode.episode}] 步骤6: 图片生成完成！`, imageResult)
     
     // 自动下载图片
-    if (imageResult && imageResult.imageUrl) {
-      await downloadImage(imageResult.imageUrl, `episode${episode.episode}.png`)
-    }
+    // if (imageResult && imageResult.imageUrl) {
+    //   await downloadImage(imageResult.imageUrl, `episode${episode.episode}.png`)
+    // }
     
     console.log(`[Episode ${episode.episode}] 步骤7: 创建Promise等待视频生成...`)
     // 创建一个Promise来等待WebSocket响应（视频生成）
