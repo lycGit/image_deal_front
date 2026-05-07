@@ -12,6 +12,7 @@ import AIDressing from '../views/AIDressing.vue'
 import AIVideoVidu from '../views/AIVideoVidu.vue'
 import AIVideoKL from '../views/AIVideoKL.vue'
 import AIVideoPrka from '../views/AIVideoPrka.vue'
+import AIVideoLTX2 from '../views/AIVideoLTX2.vue'
 import ChatRoom from '@/socket/ChatRoom.vue'
 import ExchangeCodePage from '../views/ExchangeCodePage.vue' // 导入新页面组件
 import HeadshotDrawing from '../views/HeadshotDrawing.vue'
@@ -129,6 +130,15 @@ const routes = [
         meta: {
           keepAlive: true,
           componentName: 'AIVideoVidu'
+        }
+      },
+      {
+        path: '/ai-video-ltx2',
+        name: 'aiVideoLTX2',
+        component: AIVideoLTX2,
+        meta: {
+          keepAlive: true,
+          componentName: 'AIVideoLTX2'
         }
       },
       {

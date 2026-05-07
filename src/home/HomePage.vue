@@ -112,6 +112,13 @@
               @click="navigate"
             >AI视频(Vidu)</div>
           </router-link>
+          <router-link to="/ai-video-ltx2" custom v-slot="{ navigate, isActive }">
+            <div 
+              class="nav-subitem" 
+              :class="{ active: isActive }"
+              @click="navigate"
+            >LTX视频</div>
+          </router-link>
           <!-- <router-link to="/ai-video-kl" custom v-slot="{ navigate, isActive }">
             <div 
               class="nav-subitem" 
