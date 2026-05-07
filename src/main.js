@@ -138,6 +138,11 @@ const handleImage2VideoMessage = (data) => {
   // 这里可以添加更多的消息处理逻辑
 };
 
+const handleImage2VideoLTXMessage = (data) => {
+  console.log('main.js 收到 LTX Image2Video WebSocket 消息:');
+  ws.send(data);
+};
+
 const handleShortPlayMessage = (data) => {
   // console.log('main.js 收到 WebSocket 消息:', data);
   console.log('main.js 收到 WebSocket 消息:');
@@ -158,6 +163,7 @@ if (eventBus.on) {
   eventBus.on('websocket-ImageSwap', handleImageSwapMessage);
   eventBus.on('websocket-Image2Image', handleImage2ImageMessage);
   eventBus.on('websocket-Image2Video', handleImage2VideoMessage);
+  eventBus.on('websocket-Image2Video-ltx', handleImage2VideoLTXMessage);
   eventBus.on('websocket-headshot', handleHeadShotMessage);
   eventBus.on('websocket-artphoto', handleArtPhotoMessage);
   eventBus.on('websocket-AutoShortPlayer', handleShortPlayMessage);

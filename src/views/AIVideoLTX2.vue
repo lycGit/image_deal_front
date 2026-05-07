@@ -274,8 +274,8 @@ const handleGenerate = async () => {
     // 根据参考图是否存在决定action类型
     const actionType = referenceImage.value ? 'ltximage2video' : 'ltxtext2video'
     const message = JSON.stringify({'msg': description.value, 'imageUrl': uploadedImageUrl,  'userId': userId, 'targetUserId': 'user_py_llm', 'action': actionType, 'duration': 5});
-    console.log('Image2Image websocket message:', message)
-    eventBus.emit('websocket-Image2Video', message);
+    console.log('LTX Image2Video websocket message:', message)
+    eventBus.emit('websocket-Image2Video-ltx', message);
 
   } catch (error) {
     console.error('生成失败:', error)
